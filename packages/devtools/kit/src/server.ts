@@ -8,9 +8,19 @@ import type {
   WebpackConfig,
   RspackConfig,
 } from '@modern-js/uni-builder';
-import { NormalizedConfig } from '@modern-js/core';
-import { RouteLegacy, NestedRouteForCli, PageRoute } from '@modern-js/types';
+import type { NormalizedConfig } from '@modern-js/core';
+import type {
+  RouteLegacy,
+  NestedRouteForCli,
+  PageRoute,
+} from '@modern-js/types';
 import type { Manifest } from '@rsdoctor/types';
+import type {
+  StoragePresetConfig,
+  StoragePresetContext,
+  StoragePresetWithIdent,
+} from './storage-preset';
+import type { ExportedServerState } from './state';
 import type { ClientDefinition } from './client';
 
 export type BuilderContext = RsbuildContext;
@@ -29,13 +39,19 @@ export type Aliases = NonNullable<
 
 export type BundlerConfig = WebpackConfig | RspackConfig;
 
+export interface DevtoolsContext {
+  enable: boolean;
+  def: ClientDefinition;
+  storagePresets: StoragePresetContext[];
+}
+
 export type Compiler =
   | webpack.Compiler
   | Rspack.Compiler
   | webpack.MultiCompiler
   | Rspack.MultiCompiler;
 
-export type AppContext = Omit<IAppContext, 'builder' | 'serverInternalPlugins'>;
+export type AppContext = Omit<IAppContext, 'builder'>;
 
 export type FileSystemRoutes =
   | RouteLegacy[]
@@ -49,19 +65,21 @@ export interface DoctorManifestOverview {
   errors: Manifest.RsdoctorManifest['data']['errors'];
 }
 
+export interface DevtoolsConfig {
+  storagePresets?: StoragePresetConfig[];
+}
+
+export interface ResolvedDevtoolsConfig {
+  storagePresets: StoragePresetContext[];
+}
+
 export interface ServerFunctions {
-  getFrameworkConfig: () => Promise<FrameworkConfig>;
-  getTransformedFrameworkConfig: () => Promise<TransformedFrameworkConfig>;
-  getBuilderConfig: () => Promise<BuilderConfig>;
-  getTransformedBuilderConfig: () => Promise<NormalizedBuilderConfig>;
-  getBundlerConfigs: () => Promise<BundlerConfig[]>;
-  getTransformedBundlerConfigs: () => Promise<BundlerConfig[]>;
-  getAppContext: () => Promise<AppContext>;
-  getFileSystemRoutes: (entryName: string) => Promise<FileSystemRoutes>;
-  getBuilderContext: () => Promise<RsbuildContext>;
-  getDependencies: () => Promise<Record<string, string>>;
-  getCompileTimeCost: () => Promise<number>;
-  getClientDefinition: () => Promise<ClientDefinition>;
-  getDoctorOverview: () => Promise<DoctorManifestOverview>;
   echo: (content: string) => string;
+  pullExportedState: () => Promise<ExportedServerState>;
+  createTemporaryStoragePreset: () => Promise<StoragePresetWithIdent>;
+  pasteStoragePreset: (target: {
+    filename: string;
+    id: string;
+  }) => Promise<void>;
+  open: (filename: string) => Promise<void>;
 }

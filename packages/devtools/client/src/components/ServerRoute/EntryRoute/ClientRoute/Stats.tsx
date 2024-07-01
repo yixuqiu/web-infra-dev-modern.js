@@ -6,8 +6,7 @@ import { proxy, useSnapshot } from 'valtio';
 import { Promisable } from 'type-fest';
 import { LegacyRouteStats } from './LegacyRoute/Stats';
 import { RemixRouteStats } from './RemixRoute/Stats';
-import { $framework, $server } from '@/entries/client/routes/state';
-import { useThrowable } from '@/utils';
+import { useGlobals } from '@/entries/client/globals';
 
 export const $fileSystemRoutes = proxy<
   Record<string, Promisable<FileSystemRoutes>>
@@ -20,11 +19,20 @@ export interface ClientRouteStatsProps {
 export const ClientRouteStats: React.FC<ClientRouteStatsProps> = ({
   route,
 }) => {
-  const server = useThrowable($server);
-  const framework = useSnapshot($framework);
-  const { entrypoints } = framework.context;
-  const entrypoint =
-    route.entryName && _.find(entrypoints, { entryName: route.entryName });
+  const { entryName } = route;
+  if (!entryName) {
+    throw new TypeError('');
+  }
+  const $globals = useGlobals();
+  const { entrypoints } = useSnapshot($globals.framework).context;
+  const entrypoint = _.find(entrypoints, { entryName });
+  if (!entrypoint) {
+    throw new TypeError(
+      `Can't found the entrypoint named ${JSON.stringify(route.entryName)}`,
+    );
+  }
+  const fileSystemRoutes = useSnapshot($globals.fileSystemRoutes);
+  const fileSystemRoute = fileSystemRoutes[entrypoint.entryName];
 
   if (!entrypoint) {
     throw new Error(
@@ -32,13 +40,8 @@ export const ClientRouteStats: React.FC<ClientRouteStatsProps> = ({
     );
   }
 
-  const $fileSystemRoute = server.remote.getFileSystemRoutes(
-    entrypoint.entryName,
-  );
-
   const Dispatcher: React.FC = () => {
-    const fileSystemRoute = useThrowable($fileSystemRoute);
-    if (isLegacyRoutes(fileSystemRoute as any)) {
+    if (isLegacyRoutes(fileSystemRoute as FileSystemRoutes)) {
       return <LegacyRouteStats />;
     } else {
       return (
@@ -54,4 +57,4 @@ export const ClientRouteStats: React.FC<ClientRouteStatsProps> = ({
 };
 
 const isLegacyRoutes = (routes: FileSystemRoutes): routes is RouteLegacy[] =>
-  routes[0] && !('type' in routes[0]);
+  routes?.[0] && !('type' in routes[0]);

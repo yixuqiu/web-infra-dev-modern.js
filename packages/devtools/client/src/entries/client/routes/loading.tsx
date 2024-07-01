@@ -1,17 +1,15 @@
 import { useUnmount } from 'react-use';
-import { $mountPoint } from './state';
+import styles from './loading.module.scss';
+import { useGlobals } from '@/entries/client/globals';
 import { Loading } from '@/components/Loading';
 
-export default () => {
+const GlobalLoading = () => {
+  const { mountPoint } = useGlobals();
   useUnmount(async () => {
-    const mountPoint = await $mountPoint;
     mountPoint.remote.onFinishRender();
   });
 
-  return (
-    <Loading
-      width="100%"
-      style={{ height: 'calc(100vh - var(--breadcrumb-height))' }}
-    />
-  );
+  return <Loading className={styles.loading} />;
 };
+
+export default GlobalLoading;

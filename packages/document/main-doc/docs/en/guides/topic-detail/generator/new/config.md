@@ -60,8 +60,6 @@ Options:
 
 - Enable Micro Frontend -- micro_frontend
 
-- Enable Unit Test / Integration Test -- test
-
 - Enable UA-based Polyfill Feature -- polyfill
 
 - Enable Global Proxy -- proxy
@@ -110,39 +108,8 @@ Question: Please select the feature name.
 
 Options:
 
-- Enable Unit Test / Integration Test -- test
-
 - Enable Tailwind CSS -- tailwindcss
 
 - Enable Storybook -- storybook
 
 - Enable Runtime API -- runtime_api
-
-## Monorepo
-
-### sub_solution
-
-Question: Please select the type of project you want to create.
-
-Options:
-
-- Web App -- mwa
-- Npm Module -- module
-
-### packageName
-
-Question: Please fill in the project name
-
-:::info
-The value of the `name` field in the `package.json` file of the sub-project, which is a string type.
-
-:::
-
-### packagePath
-
-Question: Please fill in the sub-project directory name
-
-:::info
-The name of the subdirectory in the `apps` or `packages` directory on which the sub-project is based, which is a string type.
-
-:::

@@ -1,5 +1,118 @@
 # @modern-js/new-action
 
+## 2.54.5
+
+### Patch Changes
+
+- @modern-js/utils@2.54.5
+- @modern-js/generator-common@3.4.6
+- @modern-js/generator-utils@3.4.6
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/utils@2.54.4
+- @modern-js/generator-common@3.4.5
+- @modern-js/generator-utils@3.4.5
+
+## 2.54.3
+
+### Patch Changes
+
+- @modern-js/utils@2.54.3
+- @modern-js/generator-common@3.4.4
+- @modern-js/generator-utils@3.4.4
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/utils@2.54.2
+- @modern-js/generator-common@3.4.3
+- @modern-js/generator-utils@3.4.3
+
+## 2.54.1
+
+### Patch Changes
+
+- @modern-js/generator-common@3.4.2
+- @modern-js/generator-utils@3.4.2
+- @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Patch Changes
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+  - @modern-js/generator-common@3.4.1
+  - @modern-js/generator-utils@3.4.1
+
+## 2.53.0
+
+### Minor Changes
+
+- f0aa3d3: feat: @modern-js/create not support create Monorepo Project
+
+  feat: @modern-js/create 移除创建 Monorepo 项目
+
+### Patch Changes
+
+- Updated dependencies [f0aa3d3]
+- Updated dependencies [5e442c1]
+- Updated dependencies [f0aa3d3]
+  - @modern-js/generator-common@3.4.0
+  - @modern-js/generator-utils@3.4.0
+  - @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- @modern-js/utils@2.52.0
+- @modern-js/generator-common@3.3.25
+- @modern-js/generator-utils@3.3.25
+
+## 2.51.0
+
+### Patch Changes
+
+- @modern-js/utils@2.51.0
+- @modern-js/generator-common@3.3.24
+- @modern-js/generator-utils@3.3.24
+
+## 2.50.0
+
+### Patch Changes
+
+- e759876: feat: new command add already enable function tooltip
+
+  feat: new 命令增加已经开启功能的提示
+
+- Updated dependencies [e759876]
+  - @modern-js/generator-common@3.3.23
+  - @modern-js/generator-utils@3.3.23
+  - @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- @modern-js/generator-common@3.3.22
+- @modern-js/generator-utils@3.3.22
+- @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- @modern-js/utils@2.49.3
+- @modern-js/generator-common@3.3.21
+- @modern-js/generator-utils@3.3.21
+
 ## 2.49.2
 
 ### Patch Changes

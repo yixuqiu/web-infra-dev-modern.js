@@ -1,5 +1,53 @@
 # @modern-js/module-tools-docs
 
+## 2.54.5
+
+## 2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- aee1898: docs: remove module tools test doc
+
+  docs: 移除模块工程方案测试相关文档
+
+## 2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- 44ef03f: fix: remove test command doc
+
+  fix: 移除 test 命令相关文档
+
+## 2.54.0
+
+### Patch Changes
+
+- 38537fc: optimize the doc content
+
+## 2.53.0
+
+### Patch Changes
+
+- 51bd725: docs: correcting the name of the document product added to .gitignore
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- b1db211: docs: update buildConfig in plugin-vue docs
+
 ## 2.49.2
 
 ## 2.49.1

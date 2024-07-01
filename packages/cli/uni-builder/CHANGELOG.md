@@ -1,5 +1,126 @@
 # @modern-js/uni-builder
 
+## 2.54.5
+
+### Patch Changes
+
+- Updated dependencies [5525a23]
+  - @modern-js/prod-server@2.54.5
+  - @modern-js/server@2.54.5
+  - @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/prod-server@2.54.4
+- @modern-js/server@2.54.4
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- Updated dependencies [b50d7ec]
+- Updated dependencies [c5644c9]
+  - @modern-js/prod-server@2.54.3
+  - @modern-js/server@2.54.3
+  - @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/prod-server@2.54.2
+- @modern-js/server@2.54.2
+- @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- @modern-js/prod-server@2.54.1
+- @modern-js/server@2.54.1
+- @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- a8d8f0c: feat: support new server plugin & discard server plugin some hooks
+  feat: 支持新 server plugin & 减少 server plugin 钩子
+
+### Patch Changes
+
+- da84b0a: chore(deps): bump rsbuild to 0.7.7
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+  - @modern-js/prod-server@2.54.0
+  - @modern-js/server@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @modern-js/prod-server@2.53.0
+- @modern-js/server@2.53.0
+- @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- b520609: chore(deps): bump Rsbuild v0.7.3
+
+  chore(deps): 升级 Rsbuild v0.7.3
+
+  - @modern-js/prod-server@2.52.0
+  - @modern-js/server@2.52.0
+  - @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Minor Changes
+
+- e8d41fe: feat: bump rsbuild to 0.7.x and use CssExtractRspackPlugin to extract CSS
+
+### Patch Changes
+
+- @modern-js/prod-server@2.51.0
+- @modern-js/server@2.51.0
+- @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @modern-js/prod-server@2.50.0
+- @modern-js/server@2.50.0
+- @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- Updated dependencies [6e12e9f]
+  - @modern-js/prod-server@2.49.4
+  - @modern-js/server@2.49.4
+  - @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- 496703a: fix: uni-builder should depedency prod-server correctly
+  fix: uni-builder 需要正确依赖 prod-server
+- 3114955: chore(uni-builder): use rspack-manifest-plugin stable version
+- Updated dependencies [72b864d]
+  - @modern-js/server@2.49.3
+  - @modern-js/prod-server@2.49.3
+  - @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

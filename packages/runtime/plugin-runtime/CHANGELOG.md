@@ -1,5 +1,172 @@
 # @modern-js/runtime
 
+## 2.54.5
+
+### Patch Changes
+
+- 5510104: fix: fix router info error when use custom file system routes entry
+
+  fix: 修复当使用自定义约定式路由入口时生成 router 信息问题
+
+  - @modern-js/plugin-data-loader@2.54.5
+  - @modern-js/plugin@2.54.5
+  - @modern-js/runtime-utils@2.54.5
+  - @modern-js/types@2.54.5
+  - @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/plugin-data-loader@2.54.4
+- @modern-js/plugin@2.54.4
+- @modern-js/runtime-utils@2.54.4
+- @modern-js/types@2.54.4
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- @modern-js/plugin-data-loader@2.54.3
+- @modern-js/plugin@2.54.3
+- @modern-js/runtime-utils@2.54.3
+- @modern-js/types@2.54.3
+- @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- 8c71964: fix: Fix the failure of App entry recognition when there are pages and routes paths.
+
+  fix: 修复当存在 pages 和 routes 路径时，App 入口识别失败
+
+  - @modern-js/plugin-data-loader@2.54.2
+  - @modern-js/plugin@2.54.2
+  - @modern-js/runtime-utils@2.54.2
+  - @modern-js/types@2.54.2
+  - @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- @modern-js/plugin-data-loader@2.54.1
+- @modern-js/plugin@2.54.1
+- @modern-js/runtime-utils@2.54.1
+- @modern-js/types@2.54.1
+- @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- 09798ac: feat: refactor runtime plugin
+
+  feat: 重构 runtime 插件
+
+- 9da873c: feat(ssr): support for loaderFailureMode configure
+  feat(ssr): 支持 loaderFailureMode 配置
+
+### Patch Changes
+
+- 15a090c: feat: refactor app-tools command and analyze check entry point
+
+  feat: 重构 app-tools 命令和 analyze 插件识别入口逻辑
+
+- 413b27f: fix: entrypoint error when use custom index entry
+
+  fix: 修复当使用自定义 index 入口时入口路径错误
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+- Updated dependencies [9da873c]
+  - @modern-js/utils@2.54.0
+  - @modern-js/plugin-data-loader@2.54.0
+  - @modern-js/types@2.54.0
+  - @modern-js/plugin@2.54.0
+  - @modern-js/runtime-utils@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @modern-js/plugin@2.53.0
+- @modern-js/runtime-utils@2.53.0
+- @modern-js/types@2.53.0
+- @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 85ac453: feat: support control status code by data loader
+  feat: 支持通过 data loader 控制页面状态码
+
+### Patch Changes
+
+- Updated dependencies [85ac453]
+  - @modern-js/runtime-utils@2.52.0
+  - @modern-js/plugin@2.52.0
+  - @modern-js/types@2.52.0
+  - @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- 4c09d57: fix: streaming ssr should set renderLevel correctly when render occur error
+  fix: streaming ssr 当渲染遇到错误，应该设置正确的 renderLevel
+- 08d9466: feat: support stream to string & support server ender styled components
+  feat: 支持 stream 模式转 string ，并且支持服务端渲染 styled compoents
+- 7834d4b: fix: default types should be `Record<string, unknown>`
+  fix: 默认 types 应该是 `Record<string, unknown>`
+  - @modern-js/plugin@2.51.0
+  - @modern-js/runtime-utils@2.51.0
+  - @modern-js/types@2.51.0
+  - @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- 4a9c0c7: feat: add typings for Body、Root、Style components
+
+  feat: 为 Body、Root、Style 组件添加类型
+
+  - @modern-js/plugin@2.50.0
+  - @modern-js/runtime-utils@2.50.0
+  - @modern-js/types@2.50.0
+  - @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- a5fdc8d: fix: useLoader should run normally in csr when webpack build
+  fix: useLoader 当使用 webpack 构建是，在 csr 下应该需要正常跑
+  - @modern-js/plugin@2.49.4
+  - @modern-js/runtime-utils@2.49.4
+  - @modern-js/types@2.49.4
+  - @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- 644a226: fix: <Html> should add <html> props types
+  fix: 组件 Html 应该添加上 html 标签属性的类型
+- 6d980e4: fix: helmet can't replace <html> when streaming ssr
+  fix: 使用 streaming ssr 时, helmet 无法替换 <html>
+- b57ca76: fix: add originalBaseUrl param
+  fix: 添加 originalBaseUrl 参数
+  - @modern-js/plugin@2.49.3
+  - @modern-js/runtime-utils@2.49.3
+  - @modern-js/types@2.49.3
+  - @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

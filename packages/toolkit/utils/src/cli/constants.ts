@@ -11,8 +11,9 @@ export {
   SERVER_PLUGIN_KOA,
   SERVER_PLUGIN_SERVER,
   SERVER_PLUGIN_POLYFILL,
-  INTERNAL_SERVER_PLUGINS,
 } from '../universal/constants';
+
+export const JS_EXTENSIONS = ['.js', '.ts', '.jsx', '.tsx'];
 
 /**
  * server side bundles directory, which relative to dist.
@@ -51,6 +52,11 @@ export const CONFIG_FILE_EXTENSIONS = ['.js', '.ts', '.mjs'];
 export const OUTPUT_CONFIG_FILE = 'modern.config.json';
 
 /**
+ * Default runtime config filename
+ */
+export const DEFAULT_RUNTIME_CONFIG = 'modern.runtime';
+
+/**
  * Default server config basename
  */
 export const DEFAULT_SERVER_CONFIG = 'modern.server-runtime.config';
@@ -78,7 +84,6 @@ export const INTERNAL_APP_TOOLS_PLUGINS: InternalPlugins = {
   '@modern-js/plugin-proxy': '@modern-js/plugin-proxy/cli',
   '@modern-js/plugin-ssg': '@modern-js/plugin-ssg/cli',
   '@modern-js/plugin-bff': '@modern-js/plugin-bff/cli',
-  '@modern-js/plugin-testing': '@modern-js/plugin-testing/cli',
   '@modern-js/plugin-storybook': '@modern-js/plugin-storybook/cli',
   '@modern-js/plugin-express': '@modern-js/plugin-express/cli',
   '@modern-js/plugin-koa': '@modern-js/plugin-koa/cli',
@@ -100,7 +105,6 @@ export const INTERNAL_APP_TOOLS_RUNTIME_PLUGINS: InternalPlugins = {
 export const INTERNAL_MODULE_TOOLS_PLUGINS: InternalPlugins = {
   '@modern-js/module-tools': '@modern-js/module-tools',
   '@modern-js/runtime': '@modern-js/runtime/cli',
-  '@modern-js/plugin-testing': '@modern-js/plugin-testing/cli',
   '@modern-js/plugin-storybook': '@modern-js/plugin-storybook/cli',
   '@modern-js/plugin-tailwindcss': '@modern-js/plugin-tailwindcss/cli',
   // legacy router (inner react-router-dom v5)
@@ -112,7 +116,6 @@ export const INTERNAL_MODULE_TOOLS_PLUGINS: InternalPlugins = {
  */
 export const INTERNAL_MONOREPO_TOOLS_PLUGINS: InternalPlugins = {
   '@modern-js/monorepo-tools': '@modern-js/monorepo-tools/cli',
-  '@modern-js/plugin-testing': '@modern-js/plugin-testing/cli',
 };
 
 /**
@@ -121,7 +124,6 @@ export const INTERNAL_MONOREPO_TOOLS_PLUGINS: InternalPlugins = {
 export const INTERNAL_DOC_TOOLS_PLUGINS: InternalPlugins = {
   '@modern-js/doc-tools': '@modern-js/doc-tools',
   '@modern-js/runtime': '@modern-js/runtime/cli',
-  '@modern-js/plugin-testing': '@modern-js/plugin-testing/cli',
 };
 
 /**
@@ -136,7 +138,6 @@ export const INTERNAL_CLI_PLUGINS: InternalPlugins = {
   '@modern-js/plugin-proxy': '@modern-js/plugin-proxy/cli',
   '@modern-js/plugin-ssg': '@modern-js/plugin-ssg/cli',
   '@modern-js/plugin-bff': '@modern-js/plugin-bff/cli',
-  '@modern-js/plugin-testing': '@modern-js/plugin-testing/cli',
   '@modern-js/plugin-storybook': '@modern-js/plugin-storybook/cli',
   '@modern-js/plugin-express': '@modern-js/plugin-express/cli',
   '@modern-js/plugin-koa': '@modern-js/plugin-koa/cli',

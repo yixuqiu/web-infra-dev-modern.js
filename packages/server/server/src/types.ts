@@ -1,12 +1,17 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { Socket } from 'net';
 import type {
   DevServerOptions,
   DevServerHttpsOptions,
   NextFunction,
 } from '@modern-js/types';
-import type { RsbuildInstance, RsbuildDevServer } from '@rsbuild/shared';
+import type { RsbuildInstance } from '@rsbuild/core';
 
-import { ServerBase, ServerBaseOptions } from '@modern-js/server-core/base';
+import {
+  NodeServer,
+  ServerBase,
+  ServerBaseOptions,
+} from '@modern-js/server-core';
 
 export type { DevServerOptions, DevServerHttpsOptions };
 
@@ -53,18 +58,32 @@ export type ExtraOptions = {
   dev: Pick<DevServerOptions, 'watch' | 'https'> & {
     writeToDisk?: boolean | ((filename: string) => boolean);
   };
+
+  /** compat, the default value is modern.server-runtime.config.ts  */
+  serverConfigFile?: string;
+
+  serverConfigPath?: string;
+
   useSSRWorker?: boolean;
+
   rsbuild: RsbuildInstance;
-  getMiddlewares?: () => Pick<
-    RsbuildDevServer,
-    'middlewares' | 'onHTTPUpgrade' | 'close'
-  >;
+  getMiddlewares?: () => {
+    middlewares: (
+      req: IncomingMessage,
+      res: ServerResponse,
+      next: NextFunction,
+    ) => void;
+    onHTTPUpgrade: (req: IncomingMessage, socket: Socket, head: any) => void;
+    close: () => Promise<void>;
+  };
 };
 
 export type ModernDevServerOptions<
   O extends ServerBaseOptions = ServerBaseOptions,
 > = O & ExtraOptions;
 
-export type InitProdMiddlewares<
-  O extends ServerBaseOptions = ServerBaseOptions,
-> = (server: ServerBase, options: O) => Promise<ServerBase>;
+export type ApplyPlugins<O extends ServerBaseOptions = ServerBaseOptions> = (
+  server: ServerBase,
+  options: O,
+  nodeServer?: NodeServer,
+) => Promise<void>;

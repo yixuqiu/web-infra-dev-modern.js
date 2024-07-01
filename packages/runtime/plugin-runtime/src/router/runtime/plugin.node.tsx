@@ -7,17 +7,19 @@ import {
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import { createRoutesFromElements } from '@modern-js/runtime-utils/router';
 import {
-  createRequestContext,
   reporterCtx,
+  createRequestContext,
 } from '@modern-js/runtime-utils/node';
 import { time } from '@modern-js/runtime-utils/time';
 import { LOADER_REPORTER_NAME } from '@modern-js/utils/universal/constants';
+import { JSX_SHELL_STREAM_END_MARK } from '../../common';
 import { RuntimeReactContext } from '../../core';
 import type { Plugin } from '../../core';
 import { SSRServerContext } from '../../ssr/serverRender/types';
 import type { RouteManifest, RouterConfig } from './types';
 import { renderRoutes, urlJoin } from './utils';
 import { modifyRoutes as modifyRoutesHook } from './hooks';
+import DeferredDataScripts from './DeferredDataScripts.node';
 
 // TODO: polish
 function createFetchRequest(req: SSRServerContext['request']): Request {
@@ -28,19 +30,11 @@ function createFetchRequest(req: SSRServerContext['request']): Request {
 
   const controller = new AbortController();
 
-  // req.on('close', () => {
-  //   controller.abort();
-  // });
-
   const init = {
     method: req.method,
     headers: createFetchHeaders(req.headers),
     signal: controller.signal,
   };
-
-  // if (req.method !== 'GET' && req.method !== 'HEAD') {
-  //   init.body = req.body;
-  // }
 
   return new Request(url.href, init);
 }
@@ -85,12 +79,19 @@ export const routerPlugin = ({
             return next({ context });
           }
 
-          const { request, mode: ssrMode, nonce } = context.ssrContext!;
+          const {
+            request,
+            mode: ssrMode,
+            nonce,
+            loaderFailureMode = 'errorBoundary',
+          } = context.ssrContext!;
           const baseUrl = originalBaseUrl || (request.baseUrl as string);
           const _basename =
             baseUrl === '/' ? urlJoin(baseUrl, basename) : baseUrl;
           const { reporter, serverTiming } = context.ssrContext!;
-          const requestContext = createRequestContext();
+          const requestContext = createRequestContext(
+            context.ssrContext?.loaderContext,
+          );
           requestContext.set(reporterCtx, reporter);
 
           let routes = createRoutes
@@ -126,7 +127,16 @@ export const routerPlugin = ({
           if (routerContext instanceof Response) {
             // React Router would return a Response when redirects occur in loader.
             // Throw the Response to bail out and let the server handle it with an HTTP redirect
-            return routerContext;
+            return routerContext as any;
+          }
+
+          if (
+            routerContext.statusCode >= 500 &&
+            routerContext.statusCode < 600 &&
+            loaderFailureMode === 'clientRender'
+          ) {
+            routerContext.statusCode = 200;
+            throw (routerContext.errors as Error[])[0];
           }
 
           const router = createStaticRouter(routes, routerContext);
@@ -139,17 +149,19 @@ export const routerPlugin = ({
 
           return next({ context });
         },
-        hoc: ({ App }, next) => {
+        hoc: ({ App, config }, next) => {
           // can not get routes config, skip wrapping React Router.
           // e.g. App.tsx as the entrypoint
           if (!routesConfig) {
-            return next({ App });
+            return next({ App, config });
           }
 
           const getRouteApp = () => {
             return (props => {
-              const { remixRouter, routerContext } =
+              const { remixRouter, routerContext, ssrContext } =
                 useContext(RuntimeReactContext);
+
+              const { nonce, mode } = ssrContext!;
               return (
                 <App {...props}>
                   <StaticRouterProvider
@@ -157,6 +169,8 @@ export const routerPlugin = ({
                     context={routerContext!}
                     hydrate={false}
                   />
+                  <DeferredDataScripts nonce={nonce} context={routerContext!} />
+                  {mode === 'stream' && JSX_SHELL_STREAM_END_MARK}
                 </App>
               );
             }) as React.FC<any>;
@@ -167,11 +181,13 @@ export const routerPlugin = ({
           if (routesConfig?.globalApp) {
             return next({
               App: hoistNonReactStatics(RouteApp, routesConfig.globalApp),
+              config,
             });
           }
 
           return next({
             App: RouteApp,
+            config,
           });
         },
         pickContext: ({ context, pickedContext }, next) => {

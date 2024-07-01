@@ -1,5 +1,99 @@
 # @modern-js/main-doc
 
+## 2.54.5
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.54.5
+- @modern-js/sandpack-react@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- 66fd09f: feat: add deprecat function doc
+
+  feat: 添加下线功能文档
+
+  - @modern-js/builder-doc@2.54.4
+  - @modern-js/sandpack-react@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.54.3
+- @modern-js/sandpack-react@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.54.2
+- @modern-js/sandpack-react@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- 44ef03f: fix: remove test command doc
+
+  fix: 移除 test 命令相关文档
+
+  - @modern-js/sandpack-react@2.54.1
+  - @modern-js/builder-doc@2.54.1
+
+## 2.54.0
+
+### Patch Changes
+
+- 38537fc: optimize the doc content
+- Updated dependencies [38537fc]
+  - @modern-js/builder-doc@2.54.0
+  - @modern-js/sandpack-react@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @modern-js/sandpack-react@2.53.0
+- @modern-js/builder-doc@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.52.0
+- @modern-js/sandpack-react@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.51.0
+- @modern-js/sandpack-react@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @modern-js/sandpack-react@2.50.0
+- @modern-js/builder-doc@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.49.4
+- @modern-js/sandpack-react@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- @modern-js/builder-doc@2.49.3
+- @modern-js/sandpack-react@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

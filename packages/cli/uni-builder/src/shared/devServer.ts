@@ -1,21 +1,19 @@
 import {
   StartDevServerOptions as RsbuildStartDevServerOptions,
-  getAddressUrls,
-  debug,
-  StartServerResult,
-  RsbuildInstance,
   deepmerge,
   DevConfig,
   ServerConfig,
-  mergeChainedOptions,
   isProd,
 } from '@rsbuild/shared';
+import { applyOptionsChain } from '@modern-js/utils';
+
+import { type RsbuildInstance, logger } from '@rsbuild/core';
 
 import type { ModernDevServerOptions } from '@modern-js/server';
 import type { Server } from 'node:http';
 import {
-  initProdMiddlewares,
-  type InitProdMiddlewares,
+  applyPlugins,
+  type ApplyPlugins,
   type ProdServerOptions as ModernServerOptions,
 } from '@modern-js/prod-server';
 import type {
@@ -47,6 +45,8 @@ const getServerOptions = (
     server: {},
     runtime: {},
     bff: {},
+    dev: {},
+    security: {},
   };
 };
 
@@ -59,8 +59,8 @@ export const transformToRsbuildServerOptions = (
 } => {
   const { port = 8080, host, https, ...devConfig } = dev;
 
-  const newDevServerConfig = mergeChainedOptions({
-    defaults: {
+  const newDevServerConfig = applyOptionsChain(
+    {
       devMiddleware: {
         writeToDisk: (file: string) => !file.includes('.hot-update.'),
       },
@@ -72,9 +72,10 @@ export const transformToRsbuildServerOptions = (
         ...(devConfig.client || {}),
       },
     },
-    options: devServer,
-    mergeFn: deepmerge,
-  });
+    devServer,
+    {},
+    deepmerge,
+  );
 
   const rsbuildDev: DevConfig = {
     ...devConfig,
@@ -145,11 +146,12 @@ const getDevServerOptions = async ({
 export type StartDevServerOptions = RsbuildStartDevServerOptions & {
   apiOnly?: boolean;
   serverOptions?: ServerOptions;
-  initProdMiddlewares?: InitProdMiddlewares;
+  applyPlugins?: ApplyPlugins;
 };
 
-export type UniBuilderStartServerResult = Omit<StartServerResult, 'server'> & {
+export type UniBuilderStartServerResult = {
   server: Server;
+  port: number;
 };
 
 export async function startDevServer(
@@ -157,10 +159,10 @@ export async function startDevServer(
   options: StartDevServerOptions = {},
   builderConfig: UniBuilderConfig,
 ) {
-  debug('create dev server');
+  logger.debug('create dev server');
 
-  if (!options.initProdMiddlewares) {
-    options.initProdMiddlewares = initProdMiddlewares;
+  if (!options.applyPlugins) {
+    options.applyPlugins = applyPlugins;
   }
 
   const { createDevServer } = await import('@modern-js/server');
@@ -205,13 +207,10 @@ export async function startDevServer(
       },
       config,
     },
-    options.initProdMiddlewares,
+    options.applyPlugins,
   );
 
-  const protocol = https ? 'https' : 'http';
-  const urls = getAddressUrls({ protocol, port, host });
-
-  debug('listen dev server');
+  logger.debug('listen dev server');
 
   return new Promise<UniBuilderStartServerResult>(resolve => {
     server.listen(
@@ -224,13 +223,12 @@ export async function startDevServer(
           throw err;
         }
 
-        debug('listen dev server done');
+        logger.debug('listen dev server done');
 
         await rsbuildServer.afterListen();
 
         resolve({
           port,
-          urls: urls.map(item => item.url),
           server,
         });
       },

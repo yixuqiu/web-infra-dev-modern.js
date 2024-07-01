@@ -8,17 +8,10 @@ import {
 } from 'react-icons/hi2';
 import { parseURL } from 'ufo';
 import { useSnapshot } from 'valtio';
-import {
-  $builder,
-  $definition,
-  $dependencies,
-  $framework,
-  $perf,
-  VERSION,
-} from '../state';
-import '@/components/Card/Indicate.module.scss';
+import '@/components/Card/Card.module.scss';
 import styles from './page.module.scss';
-import { IndicateCard } from '@/components/Card';
+import { useGlobals } from '@/entries/client/globals';
+import { Card, CardColumn } from '@/components/Card';
 
 const BUNDLER_PACKAGE_NAMES = {
   webpack: 'webpack',
@@ -26,27 +19,29 @@ const BUNDLER_PACKAGE_NAMES = {
 } as const;
 
 const Page: React.FC = () => {
-  const framework = useSnapshot($framework);
-  const def = useSnapshot($definition);
-  const dependencies = useSnapshot($dependencies);
-  const builder = useSnapshot($builder);
-  const perf = useSnapshot($perf);
+  const $globals = useGlobals();
+  const { version } = useSnapshot($globals);
+  const frameworkContext = useSnapshot($globals.framework).context;
+  const { def } = useSnapshot($globals).context;
+  const dependencies = useSnapshot($globals.dependencies);
+  const builderContext = useSnapshot($globals.builder).context;
+  const { compileDuration } = useSnapshot($globals).performance;
   const isMacOS = window.navigator.userAgent.includes('Mac OS');
-  const { toolsType } = framework.context;
+  const { toolsType } = frameworkContext;
   if (toolsType !== 'app-tools') {
     throw Error();
   }
   const toolsPackage = def.packages.appTools;
   const toolsPackageVer = dependencies[toolsPackage]!;
 
-  const { bundlerType } = builder.context;
+  const { bundlerType } = builderContext;
   const bundlerPackage = BUNDLER_PACKAGE_NAMES[bundlerType];
   const bundlerPackageVer = dependencies[bundlerPackage];
 
   // const numFrameworkPlugin = store.framework.config.transformed.plugins.length;
 
   return (
-    <Flex direction="column" align="center" p="4">
+    <Flex direction="column" align="center">
       <Flex
         wrap="wrap"
         gap="4"
@@ -54,22 +49,22 @@ const Page: React.FC = () => {
         justify="center"
         className={styles.container}
       >
-        <IndicateCard className={styles.primaryCard}>
+        <Card variant="indicate" className={styles.primaryCard}>
           <Theme appearance="dark" hasBackground={false} asChild>
-            <IndicateCard.Column>
+            <CardColumn>
               <Heading as="h1" className={styles.heading}>
                 DevTools
               </Heading>
               <Flex gap="2">
-                <button type="button">v{VERSION}</button>
+                <button type="button">v{version}</button>
               </Flex>
               <Text as="p" size="1">
                 Powered by {toolsPackage}@{toolsPackageVer}
               </Text>
-            </IndicateCard.Column>
+            </CardColumn>
           </Theme>
-        </IndicateCard>
-        <IndicateCard className={styles.infoCard}>
+        </Card>
+        <Card variant="indicate" className={styles.infoCard}>
           <Flex justify="between" gap="3" align="center" height="100%">
             <Box>
               <Text color="gray">Visit our website</Text>
@@ -84,12 +79,10 @@ const Page: React.FC = () => {
                 </Link>
               </Flex>
             </Box>
-            <Box color="gray" asChild>
-              <HiOutlineDocumentText size="50" color="var(--gray-6)" />
-            </Box>
+            <HiOutlineDocumentText size="50" color="var(--gray-6)" />
           </Flex>
-        </IndicateCard>
-        <IndicateCard className={styles.pluginCard}>
+        </Card>
+        <Card variant="indicate" className={styles.pluginCard}>
           <Flex align="center" justify="between" height="100%" gap="6">
             <Box>
               <Text
@@ -99,7 +92,7 @@ const Page: React.FC = () => {
                 style={{ color: 'var(--gray-11)' }}
                 mb="2"
               >
-                {framework.context.plugins.length}
+                {frameworkContext.plugins.length}
               </Text>
               <Text as="p" size="1" color="gray">
                 Framework Plugins
@@ -107,8 +100,8 @@ const Page: React.FC = () => {
             </Box>
             <HiOutlinePuzzlePiece size="50" color="var(--gray-6)" />
           </Flex>
-        </IndicateCard>
-        <IndicateCard className={styles.compileTimeCard}>
+        </Card>
+        <Card variant="indicate" className={styles.compileTimeCard}>
           <Flex align="center" justify="between" height="100%" gap="6">
             <Box>
               <Text
@@ -117,7 +110,7 @@ const Page: React.FC = () => {
                 weight="bold"
                 style={{ color: 'var(--gray-11)' }}
               >
-                {(perf.compileDuration / 1000).toFixed(2)}s
+                {(compileDuration / 1000).toFixed(2)}s
               </Text>
               <Text as="p" size="1" color="gray">
                 Compiled in {bundlerPackage}@{bundlerPackageVer}
@@ -125,7 +118,7 @@ const Page: React.FC = () => {
             </Box>
             <HiOutlineClock size="50" color="var(--gray-6)" />
           </Flex>
-        </IndicateCard>
+        </Card>
       </Flex>
       <Flex align="center" className={styles.bottomTip}>
         <Text color="gray" size="2">

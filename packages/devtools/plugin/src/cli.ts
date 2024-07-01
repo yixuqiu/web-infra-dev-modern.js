@@ -1,14 +1,27 @@
-import http from 'http';
-import path from 'path';
-import assert from 'assert';
-import { ProxyDetail } from '@modern-js/types';
-import { getPort, logger } from '@modern-js/utils';
-import createServeMiddleware from 'serve-static';
-import type { AppTools, CliPlugin } from '@modern-js/app-tools';
-import { ClientDefinition, ROUTE_BASENAME } from '@modern-js/devtools-kit/node';
-import { DevtoolsPluginOptions, resolveContext } from './config';
-import { setupClientConnection } from './rpc';
-import { SocketServer } from './utils/socket';
+import {
+  mergeConfig,
+  type AppTools,
+  type CliPlugin,
+  type UserConfig,
+} from '@modern-js/app-tools';
+import { ClientDefinition } from '@modern-js/devtools-kit/node';
+import { logger } from '@modern-js/utils';
+import createDeferred from 'p-defer';
+import { createHooks } from 'hookable';
+import type { RsbuildPlugin, RsbuildPluginAPI } from '@rsbuild/core';
+import { proxy } from 'valtio';
+import { DevtoolsPluginOptions, resolveContext } from './options';
+import { CliPluginAPI, Plugin, PluginApi } from './types';
+import { pluginDebug } from './plugins/debug';
+import { pluginHttp } from './plugins/http';
+import { pluginState } from './plugins/state';
+import { pluginWatcher } from './plugins/watcher';
+import { pluginServiceWorker } from './plugins/service-worker';
+import { pluginHtml } from './plugins/html';
+import { pluginRpc } from './plugins/rpc';
+import { pluginCleanup } from './plugins/cleanup';
+import { pluginSettleState } from './plugins/settle';
+import { pluginManifest } from './plugins/manifest';
 
 export type { DevtoolsPluginOptions };
 
@@ -16,115 +29,153 @@ export type DevtoolsPlugin = CliPlugin<AppTools> & {
   setClientDefinition: (def: ClientDefinition) => void;
 };
 
+export const BUILTIN_PLUGINS: Plugin[] = [
+  pluginDebug,
+  pluginWatcher,
+  pluginServiceWorker,
+  pluginHtml,
+  // --- //
+  pluginState,
+  pluginHttp,
+  pluginRpc,
+  pluginSettleState,
+  pluginManifest,
+  // --- //
+  pluginCleanup,
+];
+
 export const devtoolsPlugin = (
   inlineOptions: DevtoolsPluginOptions = {},
 ): DevtoolsPlugin => {
-  const ctx = resolveContext(inlineOptions);
+  const ctx = proxy(resolveContext(inlineOptions));
+  const setupBuilder = createDeferred<RsbuildPluginAPI>();
+  const setupFramework = createDeferred<CliPluginAPI>();
+  const _sharedVars: Record<string, unknown> = {};
+  const api: PluginApi = {
+    builderHooks: createHooks(),
+    frameworkHooks: createHooks(),
+    hooks: createHooks(),
+    setupBuilder: () => setupBuilder.promise,
+    setupFramework: () => setupFramework.promise,
+    get context() {
+      return ctx;
+    },
+    get vars() {
+      return _sharedVars as any;
+    },
+  };
+
+  api.hooks.hook('cleanup', () => {
+    setupBuilder.reject(new Error('Devtools Plugin is disabled'));
+    setupFramework.reject(new Error('Devtools Plugin is disabled'));
+    // api.builderHooks.removeAllHooks();
+    // api.frameworkHooks.removeAllHooks();
+    // api.hooks.removeAllHooks();
+  });
+
+  for (const plugin of BUILTIN_PLUGINS) {
+    plugin.setup(api);
+  }
+
   return {
     name: '@modern-js/plugin-devtools',
     usePlugins: [],
     setClientDefinition(def) {
       Object.assign(ctx.def, def);
     },
-    async setup(api) {
+    async setup(frameworkApi) {
       if (!ctx.enable) return {};
-
-      const httpServer = await setupHttpServer();
-      const socketServer = new SocketServer({
-        server: httpServer.instance,
-        path: '/rpc',
-      });
-      const rpc = await setupClientConnection({
-        api,
-        server: socketServer,
-        def: ctx.def,
-      });
+      setupFramework.resolve(frameworkApi);
 
       return {
-        prepare: rpc.hooks.prepare,
-        modifyFileSystemRoutes: rpc.hooks.modifyFileSystemRoutes,
-        beforeRestart() {
-          return new Promise((resolve, reject) =>
-            httpServer.instance.close(err => (err ? reject(err) : resolve())),
+        async prepare() {
+          await api.frameworkHooks.callHook('prepare');
+        },
+        async modifyFileSystemRoutes(params) {
+          await api.frameworkHooks.callHook('modifyFileSystemRoutes', params);
+          return params;
+        },
+        async afterCreateCompiler(params) {
+          await api.frameworkHooks.callHook('afterCreateCompiler', params);
+        },
+        async modifyServerRoutes(params) {
+          await api.frameworkHooks.callHook('modifyServerRoutes', params);
+          return params;
+        },
+        async beforeRestart() {
+          await api.frameworkHooks.callHook('beforeRestart');
+        },
+        beforeExit() {
+          api.frameworkHooks.callHookWith(
+            hooks => hooks.forEach(hook => hook()),
+            'beforeExit',
           );
         },
-        modifyServerRoutes({ routes }) {
-          routes.push({
-            urlPath: '/sw-proxy.js',
-            isSPA: true,
-            isSSR: false,
-            entryPath: 'public/sw-proxy.js',
-          });
-          return { routes };
+        async afterDev(params) {
+          await api.frameworkHooks.callHook('afterDev', params);
         },
-        config() {
-          const config = api.useConfigContext().devtools ?? {};
-          Object.assign(ctx, resolveContext(ctx, config));
+        async afterBuild(params) {
+          api.frameworkHooks.callHook('afterBuild', params);
+        },
+        async config() {
           logger.info(`${ctx.def.name.formalName} DevTools is enabled`);
+          const configs: UserConfig<AppTools>[] =
+            await api.frameworkHooks.callHookParallel('config');
 
-          const swProxyEntry = require.resolve(
-            '@modern-js/devtools-client/sw-proxy',
-          );
+          const builderPlugin: RsbuildPlugin = {
+            name: 'builder-plugin-devtools',
+            setup(builderApi) {
+              setupBuilder.resolve(builderApi);
 
-          // Inject options to client.
-          const serializedOptions = JSON.stringify(ctx);
-          const tags: AppTools['normalizedConfig']['html']['tags'] = [
-            {
-              tag: 'script',
-              children: `window.__MODERN_JS_DEVTOOLS_OPTIONS__ = ${serializedOptions};`,
-              head: true,
-              append: false,
-            },
-          ];
-
-          const styles: string[] = [];
-          const manifest = require('@modern-js/devtools-client/manifest');
-          // Inject JavaScript chunks to client.
-          for (const src of manifest.routeAssets.mount.assets) {
-            assert(typeof src === 'string');
-            if (src.endsWith('.js')) {
-              tags.push({
-                tag: 'script',
-                attrs: { src },
-                head: true,
-                append: false,
+              builderApi.modifyBundlerChain(async (options, utils) => {
+                await api.builderHooks.callHook(
+                  'modifyBundlerChain',
+                  options,
+                  utils,
+                );
               });
-            } else if (src.endsWith('.css')) {
-              styles.push(src);
-            }
-          }
-          // Inject CSS chunks to client inside of template to avoid polluting global.
-          tags.push({
-            tag: 'template',
-            attrs: { id: '_modern_js_devtools_styles' },
-            append: true,
-            head: false,
-            children: styles
-              .map(src => `<link rel="stylesheet" href="${src}">`)
-              .join(''),
-          });
-
-          return {
-            builderPlugins: [rpc.builderPlugin],
-            source: {},
-            output: {
-              copy: [{ from: swProxyEntry, to: 'public' }],
-            },
-            html: { tags },
-            tools: {
-              devServer: {
-                proxy: {
-                  [ROUTE_BASENAME]: {
-                    target: `http://localhost:${httpServer.port}`,
-                    pathRewrite: {
-                      [`^${ROUTE_BASENAME}`]: '',
-                    },
-                    ws: true,
-                  },
-                } as Record<string, ProxyDetail>,
-              },
+              builderApi.modifyWebpackConfig(async (config, utils) => {
+                await api.builderHooks.callHook(
+                  'modifyWebpackConfig',
+                  config,
+                  utils,
+                );
+              });
+              builderApi.modifyRspackConfig(async (config, utils) => {
+                await api.builderHooks.callHook(
+                  'modifyRspackConfig',
+                  config,
+                  utils,
+                );
+              });
+              builderApi.onBeforeCreateCompiler(async params => {
+                await api.builderHooks.callHook(
+                  'onBeforeCreateCompiler',
+                  params,
+                );
+              });
+              builderApi.onAfterCreateCompiler(async params => {
+                await api.builderHooks.callHook(
+                  'onAfterCreateCompiler',
+                  params,
+                );
+              });
+              builderApi.onDevCompileDone(async params => {
+                await api.builderHooks.callHook('onDevCompileDone', params);
+              });
+              builderApi.onAfterBuild(async params => {
+                await api.builderHooks.callHook('onAfterBuild', params);
+              });
+              builderApi.onExit(() => {
+                api.builderHooks.callHookWith(
+                  hooks => hooks.forEach(hook => hook()),
+                  'onExit',
+                );
+              });
             },
           };
+          configs.push({ builderPlugins: [builderPlugin] });
+          return mergeConfig(configs) as unknown as UserConfig<AppTools>;
         },
       };
     },
@@ -132,29 +183,3 @@ export const devtoolsPlugin = (
 };
 
 export default devtoolsPlugin;
-
-const setupHttpServer = async () => {
-  const port = await getPort(8782, { slient: true });
-  const clientServeDir = path.resolve(
-    require.resolve('@modern-js/devtools-client/package.json'),
-    '../dist',
-  );
-  const serveMiddleware = createServeMiddleware(clientServeDir);
-  const instance = http.createServer((req, res) => {
-    const usePageNotFound = () => {
-      res.write('404');
-      res.statusCode = 404;
-      res.end();
-    };
-    const useMainRoute = () => {
-      req.url = '/html/client/index.html';
-      serveMiddleware(req, res, usePageNotFound);
-    };
-    serveMiddleware(req, res, useMainRoute);
-  });
-  instance.listen(port);
-  return {
-    instance,
-    port,
-  };
-};

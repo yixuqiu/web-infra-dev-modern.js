@@ -6,9 +6,8 @@ import {
   createBridge,
   createStore,
 } from 'react-devtools-inline/frontend';
-import { $mountPoint } from '../../state';
 import { wallAgent } from '../state';
-import { useThrowable } from '@/utils';
+import { useGlobals } from '@/entries/client/globals';
 
 const Page: React.FC = () => {
   const params = useParams();
@@ -17,7 +16,8 @@ const Page: React.FC = () => {
   const navigate = useNavigate();
   const browserTheme = ctx.appearance === 'light' ? 'light' : 'dark';
 
-  const mountPoint = useThrowable($mountPoint);
+  const { mountPoint } = useGlobals();
+
   useEffect(() => {
     mountPoint.remote.activateReactDevtools();
   }, []);
@@ -45,15 +45,7 @@ const Page: React.FC = () => {
   }, []);
 
   return (
-    <Box
-      style={{
-        position: 'fixed',
-        left: 'var(--navigator-width)',
-        top: 'var(--breadcrumb-height)',
-        bottom: 0,
-        right: 0,
-      }}
-    >
+    <Box width="100%" height="100%" pt="5">
       {InnerView && (
         <InnerView
           browserTheme={browserTheme}

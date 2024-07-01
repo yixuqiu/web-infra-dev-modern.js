@@ -1,11 +1,10 @@
 import {
   CHAIN_ID,
-  type BundlerChain,
+  type RspackChain,
   type RsbuildPlugin,
   type NormalizedConfig,
-  parseMinifyOptions,
-  mergeChainedOptions,
 } from '@rsbuild/shared';
+import { applyOptionsChain } from '@modern-js/utils';
 import { TerserPluginOptions, ToolsTerserConfig } from '../../types';
 
 function applyRemoveConsole(
@@ -35,7 +34,7 @@ function applyRemoveConsole(
 }
 
 async function applyJSMinimizer(
-  chain: BundlerChain,
+  chain: RspackChain,
   config: NormalizedConfig,
   userTerserConfig?: ToolsTerserConfig,
 ) {
@@ -69,10 +68,7 @@ async function applyJSMinimizer(
       break;
   }
 
-  const mergedOptions = mergeChainedOptions({
-    defaults: DEFAULT_OPTIONS,
-    options: userTerserConfig,
-  });
+  const mergedOptions = applyOptionsChain(DEFAULT_OPTIONS, userTerserConfig);
 
   chain.optimization
     .minimizer(CHAIN_ID.MINIMIZER.JS)
@@ -92,8 +88,13 @@ export const pluginMinimize = (
   setup(api) {
     api.modifyBundlerChain(async (chain, { isProd }) => {
       const config = api.getNormalizedConfig();
+      const { minify } = config.output;
 
-      if (parseMinifyOptions(config, isProd).minifyJs) {
+      if (minify === false || !isProd) {
+        return;
+      }
+
+      if (minify === true || minify?.js !== false) {
         await applyJSMinimizer(chain, config, userTerserConfig);
       }
     });

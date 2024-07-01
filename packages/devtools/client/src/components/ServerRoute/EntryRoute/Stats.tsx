@@ -1,18 +1,18 @@
 import React from 'react';
 import _ from 'lodash';
-import { useSnapshot } from 'valtio';
 import type { ServerRoute } from '@modern-js/types';
 import { Box, Flex, Strong, Text } from '@radix-ui/themes';
+import { useSnapshot } from 'valtio';
 import styles from './Stats.module.scss';
-import { $framework } from '@/entries/client/routes/state';
+import { useGlobals } from '@/entries/client/globals';
 
 export interface EntryStatsProps {
   route: ServerRoute;
 }
 
 export const EntryStats: React.FC<EntryStatsProps> = ({ route }) => {
-  const framework = useSnapshot($framework);
-  const { entrypoints } = framework.context;
+  const $globals = useGlobals();
+  const { entrypoints } = useSnapshot($globals.framework).context;
   const entrypoint =
     route.entryName && _.find(entrypoints, { entryName: route.entryName });
 

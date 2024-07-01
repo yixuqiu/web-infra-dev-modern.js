@@ -10,7 +10,7 @@ export default defineConfig({
   },
   source: {
     mainEntryName: 'main',
-    preEntry: ['./src/prelude.css'],
+    // preEntry: ['./src/prelude.css'],
   },
   output: {
     // disable polyfill and ts checker to make test faster
@@ -23,7 +23,17 @@ export default defineConfig({
   tools: {
     devServer: {},
     rspack(config, { appendPlugins }) {
-      appendPlugins(new RsdoctorRspackPlugin({ disableClientServer }));
+      appendPlugins(
+        new RsdoctorRspackPlugin({
+          disableClientServer,
+          linter: {
+            rules: {
+              'ecma-version-check': 'off',
+              'duplicate-package': 'off',
+            },
+          },
+        }),
+      );
     },
   },
   plugins: [appTools({ bundler: 'experimental-rspack' }), devtoolsPlugin()],

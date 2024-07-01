@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { isHtmlDisabled, RsbuildPlugin, BundlerChain } from '@rsbuild/shared';
+import { isHtmlDisabled, RsbuildPlugin, RspackChain } from '@rsbuild/shared';
 import { mergeRsbuildConfig } from '@rsbuild/core';
 import { fs, isUseSSRBundle } from '@modern-js/utils';
 import type { HtmlWebpackPlugin } from '@modern-js/uni-builder';
@@ -11,7 +11,7 @@ import type {
 } from '../../../types';
 import { HtmlAsyncChunkPlugin, RouterPlugin } from '../bundlerPlugins';
 import type { BuilderOptions } from '../types';
-import { getServerCombinedModueFile } from '../../../analyze/utils';
+import { getServerCombinedModueFile } from '../../../plugins/analyze/utils';
 
 export const builderPluginAdapterSSR = <B extends Bundler>(
   options: BuilderOptions<B>,
@@ -44,7 +44,12 @@ export const builderPluginAdapterSSR = <B extends Bundler>(
         const builderConfig = api.getNormalizedConfig();
         const { normalizedConfig } = options;
 
-        applyRouterPlugin(chain, 'route-plugin', options, HtmlBundlerPlugin);
+        applyRouterPlugin(
+          chain,
+          'route-plugin',
+          options,
+          HtmlBundlerPlugin as unknown as typeof HtmlWebpackPlugin,
+        );
         if (isUseSSRBundle(normalizedConfig)) {
           await applySSRLoaderEntry(chain, options, isServer);
           applySSRDataLoader(chain, options);
@@ -112,7 +117,7 @@ function applyAsyncChunkHtmlPlugin({
   modernConfig,
   HtmlBundlerPlugin,
 }: {
-  chain: BundlerChain;
+  chain: RspackChain;
   modernConfig: AppNormalizedConfig<'shared'>;
   HtmlBundlerPlugin: any;
 }) {
@@ -124,7 +129,7 @@ function applyAsyncChunkHtmlPlugin({
 }
 
 function applyRouterPlugin<B extends Bundler>(
-  chain: BundlerChain,
+  chain: RspackChain,
   pluginName: string,
   options: Readonly<BuilderOptions<B>>,
   HtmlBundlerPlugin: typeof HtmlWebpackPlugin,
@@ -165,7 +170,7 @@ function applyFilterEntriesBySSRConfig({
   appNormalizedConfig,
 }: {
   isProd: boolean;
-  chain: BundlerChain;
+  chain: RspackChain;
   appNormalizedConfig: AppNormalizedConfig<'shared'>;
 }) {
   const { server: serverConfig, output: outputConfig } = appNormalizedConfig;
@@ -208,6 +213,7 @@ function applyFilterEntriesBySSRConfig({
   entryNames.forEach(name => {
     if (
       !ssgEntries.includes(name) &&
+      !name.includes('server-loaders') &&
       ((ssr && ssrByEntries?.[name] === false) ||
         (!ssr && !ssrByEntries?.[name]))
     ) {
@@ -217,7 +223,7 @@ function applyFilterEntriesBySSRConfig({
 }
 
 async function applySSRLoaderEntry<B extends Bundler>(
-  chain: BundlerChain,
+  chain: RspackChain,
   optinos: BuilderOptions<B>,
   isServer: boolean,
 ) {
@@ -256,7 +262,7 @@ async function applySSRLoaderEntry<B extends Bundler>(
 }
 
 function applySSRDataLoader<B extends Bundler>(
-  chain: BundlerChain,
+  chain: RspackChain,
   options: BuilderOptions<B>,
 ) {
   const { normalizedConfig, appContext } = options;

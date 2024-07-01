@@ -1,5 +1,90 @@
 # @modern-js/module-generator
 
+## 3.4.6
+
+### Patch Changes
+
+- @modern-js/utils@2.54.5
+
+## 3.4.5
+
+### Patch Changes
+
+- @modern-js/utils@2.54.4
+
+## 3.4.4
+
+### Patch Changes
+
+- @modern-js/utils@2.54.3
+
+## 3.4.3
+
+### Patch Changes
+
+- @modern-js/utils@2.54.2
+
+## 3.4.2
+
+### Patch Changes
+
+- 44ef03f: fix: remove test command doc
+
+  fix: 移除 test 命令相关文档
+
+  - @modern-js/utils@2.54.1
+
+## 3.4.1
+
+### Patch Changes
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+
+## 3.4.0
+
+### Minor Changes
+
+- f0aa3d3: feat: @modern-js/create not support create Monorepo Project
+
+  feat: @modern-js/create 移除创建 Monorepo 项目
+
+### Patch Changes
+
+- @modern-js/utils@2.53.0
+
+## 3.3.25
+
+### Patch Changes
+
+- @modern-js/utils@2.52.0
+
+## 3.3.24
+
+### Patch Changes
+
+- @modern-js/utils@2.51.0
+
+## 3.3.23
+
+### Patch Changes
+
+- @modern-js/utils@2.50.0
+
+## 3.3.22
+
+### Patch Changes
+
+- @modern-js/utils@2.49.4
+
+## 3.3.21
+
+### Patch Changes
+
+- @modern-js/utils@2.49.3
+
 ## 3.3.20
 
 ### Patch Changes

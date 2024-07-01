@@ -14,7 +14,7 @@ Modern.js 中提供了开箱即用的数据获取能力，开发者可以通过�
 Modern.js 推荐使用约定式路由做路由的管理，通过 Modern.js 的[约定式（嵌套）路由](/guides/basic-features/routes#约定式路由)，每个路由组件(`layout.ts` 或 `page.ts`)可以有一个同名的 `data` 文件，该 `data` 文件可以导出一个 `loader` 函数，函数会在组件渲染之前执行，为路由组件提供数据。
 
 :::info
-Modern.js v1 支持通过 [useLoader](#useloader（旧版）) 获取数据，这已经不是我们推荐的用法，除迁移过程外，不推荐两者混用。
+Modern.js v1 支持通过 [useLoader](#useloader（旧版）) 获取数据，这已经不是我们推荐的用法。除迁移过程外，不推荐两者混用。
 
 :::
 
@@ -155,6 +155,8 @@ export async function loader() {
 
 ### 错误处理
 
+#### 基本用法
+
 在 `loader` 函数中，可以通过 `throw error` 或者 `throw response` 的方式处理错误，当 `loader` 函数中有错误被抛出时，Modern.js 会停止执行当前 `loader` 中的代码，并将前端 UI 切换到定义的 [`ErrorBoundary`](/guides/basic-features/routes#错误处理) 组件：
 
 ```tsx
@@ -177,6 +179,31 @@ const ErrorBoundary = () => {
       <h2>{error.statusText}</h2>
     </div>
   );
+};
+
+export default ErrorBoundary;
+```
+
+#### 实践
+
+在 SSR 项目中你可以通过在 data loader 中 `throw response` 的方式，控制页面的状态码，展示对应的 UI，如以下示例，整条路由路线中有一个 loader
+throw response，页面的状态码将与这个 `response` 保持一致，页面的 UI 也会切换为 `ErrorBoundary`:
+
+```ts
+// routes/user/profile/page.data.ts
+export async function loader() {
+  const user = await fetchUser();
+  if(!user){
+    throw new Response('The user was not found', { status: 404 });
+  }
+  return user;
+}
+
+// routes/error.tsx
+import { useRouteError } from '@modern-js/runtime/router';
+const ErrorBoundary = () => {
+  const error = useRouteError() as { data: string };
+  return <div className="error">{error.data}</div>;
 };
 
 export default ErrorBoundary;
@@ -352,7 +379,7 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 1. 在 SSR 降级时，不希望框架向 SSR 服务发送请求获取数据，希望能直接请求后端服务。
 2. 在客户端有一些缓存，不希望请求 SSR 服务获取数据。
 
-这些场景下，我们可以使用 Client Loader， 添加 Client Loader 后，在以下的场景，会调用 Client Loader 中的代码，而不再像 SSR 服务发送请求：
+这些场景下，我们可以使用 Client Loader。添加 Client Loader 后，会调用 Client Loader 中的代码，而不再像 SSR 服务发送请求：
 
 1. SSR 降级为 CSR 后，在客户端获取数据时，会执行 Client Loader 代替框架发送请求到 Data Loader（Server） 获取数据。
 2. SSR 项目进行 SPA 跳转时，获取数据，会执行 Clinet Loader。
@@ -383,8 +410,6 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 // xxx.data.client.ts
 export const loader = () => {}
 ```
-
-
 
 
 ### 错误用法

@@ -7,14 +7,19 @@ import {
   RuntimeReactContext,
   RuntimeContext,
   TRuntimeContext,
-} from '../runtimeContext';
-import { Plugin, runtime } from './plugin';
+} from './context/runtime';
+import { Plugin, registerPlugin, runtime } from './plugin';
 import { createLoaderManager } from './loader/loaderManager';
+import { getGlobalRunner } from './plugin/runner';
 
 const IS_REACT18 = process.env.IS_REACT18 === 'true';
 
 export type CreateAppOptions = {
   plugins: Plugin[];
+  /**
+   * In the test cases, we need to execute multiple createApp instances simultaneously, and they must not share the runtime.
+   */
+  runtime?: typeof runtime;
   props?: any;
 };
 
@@ -29,8 +34,6 @@ function isClientArgs(
 
 type PluginRunner = ReturnType<typeof runtime.init>;
 
-const runnerMap = new WeakMap<React.ComponentType<any>, PluginRunner>();
-
 const getInitialContext = (runner: PluginRunner) => ({
   loaderManager: createLoaderManager({}),
   runner,
@@ -41,32 +44,26 @@ const getInitialContext = (runner: PluginRunner) => ({
 
 export const createApp = ({
   plugins,
+  runtime,
   props: globalProps,
 }: CreateAppOptions) => {
-  const appRuntime = runtime.clone();
-  appRuntime.usePlugin(...plugins);
+  const runner = registerPlugin(plugins, { plugins: [] }, runtime);
 
   return (App?: React.ComponentType<any>) => {
-    const runner = appRuntime.init();
-
     const WrapperComponent: React.ComponentType<any> = props => {
-      const element = React.createElement(
+      return React.createElement(
         App || React.Fragment,
         App ? { ...props } : null,
         App
           ? props.children
-          : React.cloneElement(props.children, {
-              ...props.children?.props,
-              ...props,
-            }),
-      );
-      const context = useContext(RuntimeReactContext);
-
-      return runner.provide(
-        { element, props: { ...props }, context },
-        {
-          onLast: ({ element }) => element,
-        },
+          : React.Children.map(props.children, child =>
+              React.isValidElement(child)
+                ? React.cloneElement(child, {
+                    ...(child.props as object),
+                    ...props,
+                  })
+                : child,
+            ),
       );
     };
 
@@ -75,7 +72,7 @@ export const createApp = ({
     }
 
     const HOCApp = runner.hoc(
-      { App: WrapperComponent },
+      { App: WrapperComponent, config: globalProps || {} },
       {
         onLast: ({ App }: any) => {
           const WrapComponent = ({ context, ...props }: any) => {
@@ -107,8 +104,6 @@ export const createApp = ({
       },
     );
 
-    runnerMap.set(HOCApp, runner);
-
     return HOCApp;
   };
 };
@@ -139,24 +134,18 @@ export const bootstrap: BootStrap = async (
   ReactDOM,
   // eslint-disable-next-line consistent-return
 ) => {
-  let App = BootApp;
-  let runner = runnerMap.get(App);
-
-  // ensure Component used is created by `createApp`
-  if (!runner) {
-    App = createApp({ plugins: [] })(App);
-    runner = runnerMap.get(App)!;
-  }
+  const App = BootApp;
+  const runner = getGlobalRunner();
 
   const context: RuntimeContext = getInitialContext(runner);
 
   const runInit = (_context: RuntimeContext) =>
-    runner!.init(
+    runner.init(
       { context: _context },
       {
         onLast: ({ context: context1 }) => (App as any)?.init?.(context1),
       },
-    ) as any;
+    );
 
   // don't mount the App, let user in charge of it.
   if (!id) {
@@ -307,6 +296,13 @@ export const bootstrap: BootStrap = async (
     const initialData = await runInit(context);
     if (!isRedirectResponse(initialData)) {
       context.initialData = initialData;
+      // Support data loader to return status code
+      if (
+        context.routerContext?.statusCode &&
+        context.routerContext?.statusCode !== 200
+      ) {
+        context.ssrContext?.response.status(context.routerContext?.statusCode);
+      }
       return runner.server({
         App,
         context,

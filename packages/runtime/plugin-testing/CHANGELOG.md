@@ -1,5 +1,176 @@
 # @modern-js/plugin-testing
 
+## 2.54.5
+
+### Patch Changes
+
+- Updated dependencies [5525a23]
+- Updated dependencies [5510104]
+  - @modern-js/prod-server@2.54.5
+  - @modern-js/runtime@2.54.5
+  - @modern-js/bff-core@2.54.5
+  - @modern-js/babel-compiler@2.54.5
+  - @modern-js/plugin@2.54.5
+  - @modern-js/types@2.54.5
+  - @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/runtime@2.54.4
+- @modern-js/bff-core@2.54.4
+- @modern-js/prod-server@2.54.4
+- @modern-js/babel-compiler@2.54.4
+- @modern-js/plugin@2.54.4
+- @modern-js/types@2.54.4
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- Updated dependencies [b50d7ec]
+- Updated dependencies [c5644c9]
+  - @modern-js/prod-server@2.54.3
+  - @modern-js/runtime@2.54.3
+  - @modern-js/bff-core@2.54.3
+  - @modern-js/babel-compiler@2.54.3
+  - @modern-js/plugin@2.54.3
+  - @modern-js/types@2.54.3
+  - @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- Updated dependencies [8c71964]
+  - @modern-js/runtime@2.54.2
+  - @modern-js/bff-core@2.54.2
+  - @modern-js/prod-server@2.54.2
+  - @modern-js/babel-compiler@2.54.2
+  - @modern-js/plugin@2.54.2
+  - @modern-js/types@2.54.2
+  - @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- f8ba62c: fix: filter server plugin by metaName
+  fix: 用 metaName 来过滤 server plugin
+  - @modern-js/runtime@2.54.1
+  - @modern-js/prod-server@2.54.1
+  - @modern-js/bff-core@2.54.1
+  - @modern-js/babel-compiler@2.54.1
+  - @modern-js/plugin@2.54.1
+  - @modern-js/types@2.54.1
+  - @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- a8d8f0c: feat: support new server plugin & discard server plugin some hooks
+  feat: 支持新 server plugin & 减少 server plugin 钩子
+
+### Patch Changes
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [413b27f]
+- Updated dependencies [09798ac]
+- Updated dependencies [9da873c]
+  - @modern-js/runtime@2.54.0
+  - @modern-js/utils@2.54.0
+  - @modern-js/prod-server@2.54.0
+  - @modern-js/types@2.54.0
+  - @modern-js/bff-core@2.54.0
+  - @modern-js/babel-compiler@2.54.0
+  - @modern-js/plugin@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @modern-js/runtime@2.53.0
+- @modern-js/prod-server@2.53.0
+- @modern-js/bff-core@2.53.0
+- @modern-js/babel-compiler@2.53.0
+- @modern-js/plugin@2.53.0
+- @modern-js/types@2.53.0
+- @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- Updated dependencies [85ac453]
+  - @modern-js/runtime@2.52.0
+  - @modern-js/prod-server@2.52.0
+  - @modern-js/bff-core@2.52.0
+  - @modern-js/babel-compiler@2.52.0
+  - @modern-js/plugin@2.52.0
+  - @modern-js/types@2.52.0
+  - @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- Updated dependencies [4c09d57]
+- Updated dependencies [08d9466]
+- Updated dependencies [7834d4b]
+  - @modern-js/runtime@2.51.0
+  - @modern-js/prod-server@2.51.0
+  - @modern-js/bff-core@2.51.0
+  - @modern-js/babel-compiler@2.51.0
+  - @modern-js/plugin@2.51.0
+  - @modern-js/types@2.51.0
+  - @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- Updated dependencies [4a9c0c7]
+  - @modern-js/runtime@2.50.0
+  - @modern-js/prod-server@2.50.0
+  - @modern-js/bff-core@2.50.0
+  - @modern-js/babel-compiler@2.50.0
+  - @modern-js/plugin@2.50.0
+  - @modern-js/types@2.50.0
+  - @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- Updated dependencies [a5fdc8d]
+- Updated dependencies [6e12e9f]
+  - @modern-js/runtime@2.49.4
+  - @modern-js/prod-server@2.49.4
+  - @modern-js/bff-core@2.49.4
+  - @modern-js/babel-compiler@2.49.4
+  - @modern-js/plugin@2.49.4
+  - @modern-js/types@2.49.4
+  - @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- Updated dependencies [644a226]
+- Updated dependencies [6d980e4]
+- Updated dependencies [b57ca76]
+  - @modern-js/runtime@2.49.3
+  - @modern-js/prod-server@2.49.3
+  - @modern-js/bff-core@2.49.3
+  - @modern-js/babel-compiler@2.49.3
+  - @modern-js/plugin@2.49.3
+  - @modern-js/types@2.49.3
+  - @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

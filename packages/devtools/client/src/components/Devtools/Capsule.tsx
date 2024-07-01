@@ -1,9 +1,7 @@
-import { SetupClientParams } from '@modern-js/devtools-kit/runtime';
 import { Flex, Theme } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 import { useAsync, useEvent, useToggle } from 'react-use';
 import { HiMiniCursorArrowRipple } from 'react-icons/hi2';
-import { withQuery } from 'ufo';
 import Visible from '../Visible';
 import styles from './Capsule.module.scss';
 import { FrameBox } from './FrameBox';
@@ -12,6 +10,7 @@ import { useStickyDraggable } from '@/utils/draggable';
 import { $client, wallAgent } from '@/entries/mount/state';
 import { pTimeout } from '@/utils/promise';
 import { ReactDevtoolsWallListener } from '@/utils/react-devtools';
+import { useThemeAppearance } from '@/utils/theme';
 
 const parseDeepLink = (url = window.location) => {
   // Expected: #/__devtools/doctor
@@ -24,27 +23,19 @@ const parseDeepLink = (url = window.location) => {
   return pathname;
 };
 
-export const DevtoolsCapsule: React.FC<SetupClientParams> = props => {
-  const logoSrc = props.def.assets.logo;
+export interface DevtoolsCapsuleProps {
+  src: string;
+  logo: string;
+}
+
+export const DevtoolsCapsule: React.FC<DevtoolsCapsuleProps> = props => {
   const deepLink = parseDeepLink();
   const [showDevtools, toggleDevtools] = useToggle(Boolean(deepLink));
   const [loadDevtools, setLoadDevtools] = useState(false);
 
-  const src = withQuery(props.endpoint, { src: props.dataSource });
-
   const draggable = useStickyDraggable({ clamp: true });
 
-  const [appearance, setAppearance] = useState<'light' | 'dark'>(() => {
-    const ret =
-      localStorage.getItem('__modern_js_devtools_appearance') ?? 'light';
-    localStorage.setItem('__modern_js_devtools_appearance', ret);
-    return ret as any;
-  });
-  useEvent('storage', (e: StorageEvent) => {
-    if (e.key === '__modern_js_devtools_appearance') {
-      setAppearance((e.newValue as any) || undefined);
-    }
-  });
+  const [appearance] = useThemeAppearance();
 
   useEvent('keydown', (e: KeyboardEvent) => {
     e.shiftKey && e.altKey && e.code === 'KeyD' && toggleDevtools();
@@ -90,11 +81,16 @@ export const DevtoolsCapsule: React.FC<SetupClientParams> = props => {
   }, []);
 
   return (
-    <Theme appearance={appearance} className={appearance}>
+    <Theme
+      appearance={appearance}
+      className={appearance}
+      hasBackground={false}
+      style={{ height: 0, width: 0, minHeight: 0, minWidth: 0 }}
+    >
       <Visible when={showDevtools} keepAlive={true} load={loadDevtools}>
         <div className={styles.container}>
           <FrameBox
-            src={src}
+            src={props.src}
             onClose={() => toggleDevtools(false)}
             style={{ pointerEvents: draggable.isDragging ? 'none' : 'auto' }}
           />
@@ -102,7 +98,7 @@ export const DevtoolsCapsule: React.FC<SetupClientParams> = props => {
       </Visible>
       <Flex className={styles.fab} {...draggable.props} align="center">
         <DevtoolsCapsuleButton type="primary" onClick={toggleDevtools}>
-          <img className={styles.logo} src={logoSrc}></img>
+          <img className={styles.logo} src={props.logo} />
         </DevtoolsCapsuleButton>
         <DevtoolsCapsuleButton onClick={handleClickInspect}>
           <HiMiniCursorArrowRipple />
