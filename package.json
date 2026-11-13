@@ -13,91 +13,85 @@
     "modern.js"
   ],
   "scripts": {
-    "new": "modern new",
     "setup": "npm run reset && pnpm install",
     "reset": "npx rimraf --glob ./**/node_modules",
-    "test": "npm run test:ut",
-    "test:rspack": "cd tests && pnpm run test:rspack",
-    "test:jest": "cd tests && pnpm run test:ut",
-    "test:vitest": "node scripts/vitest-config/vitestRunAll.js",
-    "test:ut": "pnpm run test:jest && pnpm run test:vitest",
-    "test:ut:update": "pnpm run test:jest -u && pnpm run test:vitest -u",
-    "test:e2e": "cd tests && npm run test",
-    "fast-lint": "sh -x ./scripts/fast-lint.sh",
+    "test:framework": "cd tests && pnpm run test:framework",
+    "test:builder": "cd tests && pnpm run test:builder",
+    "test:ut": "rstest",
+    "test:ut:update": "rstest -u",
     "lint:package-json": "cd ./scripts/lint-package-json && pnpm start",
-    "prepare-build": "cross-env NX_DAEMON=false NX_REJECT_UNKNOWN_LOCAL_CACHE=0 nx run-many -t build -p @modern-js/* --maxParallel=100",
-    "prepare": "npm run prepare-build && husky install",
-    "build:required": "cross-env NX_DAEMON=false nx run-many -t build -p @modern-js/uni-builder",
-    "lint": "npm run fast-lint",
-    "change": "modern change",
-    "clear": "modern clear",
-    "deploy": "modern deploy",
-    "bump": "modern bump",
-    "pre": "modern pre",
-    "change-status": "modern change-status",
-    "gen-release-note": "modern gen-release-note",
-    "release": "modern release --ignore-scripts",
+    "prepare-build": "cross-env NX_DAEMON=false NX_REJECT_UNKNOWN_LOCAL_CACHE=0 nx run-many -t build -p @modern-js/* --exclude=@modern-js/main-doc,@modern-js/module-tools-docs --maxParallel=4",
+    "prepare": "npm run prepare-build && rs hooks",
+    "prepare-build-continue": "cross-env NX_DAEMON=false NX_REJECT_UNKNOWN_LOCAL_CACHE=0 nx run-many -t build -p @modern-js/* --exclude=@modern-js/main-doc,@modern-js/module-tools-docs --nxBail=false --maxParallel=4 || echo 'Build completed with some failures, continuing...'",
+    "build:required": "cross-env NX_DAEMON=false nx run-many -t build -p @modern-js/builder @modern-js/bff-core @modern-js/utils @modern-js/i18n-utils @modern-js/runtime-utils",
+    "check": "rs check",
+    "lint": "rs lint",
+    "format": "rs fmt",
+    "change": "changeset add",
+    "bump": "pnpm --filter @scripts/check-changeset bump",
+    "pre:enter": "changeset pre enter",
+    "pre:exit": "changeset pre exit",
+    "change-status": "changeset status",
+    "gen-release-note": "cd ./scripts/release-note && pnpm start",
+    "get-release-version": "cd ./scripts/release-version && pnpm start",
+    "release": "npm run check-doc-bundle && pnpm publish --filter ./packages/** --report-summary --ignore-scripts",
     "fix:lockfile": "pnpm install --fix-lockfile",
     "update:lockfile": "pnpm install --lockfile-only",
     "check-changeset": "cd ./scripts/check-changeset && pnpm start",
-    "check-dependencies": "check-dependency-version-consistency .",
-    "update-codesmith": "cd ./scripts/update-codesmith && pnpm start",
-    "update-rspress": "cd ./scripts/update-rspress && pnpm start",
-    "update-rsbuild": "cd ./scripts/update-rsbuild && pnpm start"
+    "check-dependencies": "node ./scripts/check-dependencies.js",
+    "update-rspress": "npx taze major --include /rspress/ -w -r -l",
+    "update-rsbuild": "npx taze major --include /rsbuild/ -w -r -l",
+    "gen:docs": "rm -rf doc_output && mkdir doc_output && cp -r ./packages/document/doc_build/* ./doc_output",
+    "docs:v2-link": "echo '/v2/*  https://modernjs-v2.netlify.app/:splat  200' >> doc_output/_redirects",
+    "build:docs": "pnpm --filter @modern-js/main-doc... build && npm run gen:docs && npm run docs:v2-link",
+    "check-doc-bundle": "cd ./scripts/check-doc-bundle && pnpm start"
   },
   "engines": {
-    "node": ">=14.17.6",
-    "pnpm": ">=8.7.0 <9"
+    "node": "^22.18.0 || >=24.3.0",
+    "pnpm": ">=10.0.0"
   },
-  "packageManager": "pnpm@8.9.0",
+  "packageManager": "pnpm@10.13.1",
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": [
-      "node --max_old_space_size=8192 ./node_modules/eslint/bin/eslint.js --fix --color --cache --quiet"
-    ]
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@modern-js"
-    ]
-  },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
-    "@babel/plugin-transform-modules-commonjs": "^7.22.15",
-    "@commitlint/cli": "^17.6.3",
-    "@commitlint/config-conventional": "^17.6.3",
-    "@modern-js-app/eslint-config": "workspace:*",
-    "@modern-js/eslint-config": "workspace:*",
-    "@modern-js/monorepo-tools": "workspace:*",
-    "@modern-js/plugin-lint": "workspace:*",
+    "@babel/core": "^7.29.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.29.7",
+    "@changesets/cli": "^2.31.1",
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
     "@modern-js/tsconfig": "workspace:*",
+    "@rstest/core": "0.12.3",
     "@scripts/build": "workspace:*",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@vitest/ui": "^0.33.0",
-    "antd": "^5",
-    "check-dependency-version-consistency": "4.1.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "check-dependency-version-consistency": "6.0.0",
     "cross-env": "^7.0.3",
-    "esbuild": "0.17.19",
-    "eslint": "^8.28.0",
-    "husky": "^8.0.0",
-    "lint-staged": "~13.1.0",
-    "nx": "^17.0.1",
-    "vitest": "0.33.0"
+    "nx": "^22.7.12",
+    "rimraf": "^6.1.3",
+    "rstack": "0.8.6"
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "^18",
-      "@types/react-dom": "^18"
+      "micromatch": "^4.0.8",
+      "read-yaml-file>js-yaml": "3.15.2",
+      "@remix-run/router": ">=1.23.2",
+      "h3": ">=1.15.11",
+      "tar": ">=7.5.22",
+      "diff": ">=4.0.4",
+      "debug": ">=4.4.3",
+      "cross-spawn": ">=6.0.6",
+      "lodash-es": ">=4.18.1",
+      "esbuild": ">=0.25.0",
+      "tmp": ">=0.2.7",
+      "@isaacs/brace-expansion": ">=5.0.1",
+      "dts-packer>resolve": "1.22.13"
     },
     "peerDependencyRules": {
       "allowedVersions": {
-        "@mdx-js/react@^1.6.22>react": "18"
+        "react-side-effect@2.1.2>react": "19"
       }
     },
     "allowedDeprecatedVersions": {

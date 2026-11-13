@@ -1,4 +1,4 @@
-import minimatch from 'minimatch';
+import { match } from 'minimatch';
 
 export const defaultIgnores = [
   '**/coverage/**',
@@ -70,7 +70,7 @@ export class DependencyTree {
         }
       }
 
-      children.forEach(child => {
+      children?.forEach(child => {
         if (!this.shouldIgnore(child.filename)) {
           const childTreeNode = this.tree.get(child.filename)!;
           if (childTreeNode) {
@@ -88,7 +88,7 @@ export class DependencyTree {
       Boolean(
         this.ignore.find(
           rule =>
-            minimatch.match([path], rule, {
+            match([path], rule, {
               dot: true,
             }).length > 0,
         ),

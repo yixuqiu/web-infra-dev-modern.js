@@ -1,0 +1,60 @@
+---
+title: lazyCompilation
+---
+
+# dev.lazyCompilation
+
+- **类型：**
+
+```ts
+type LazyCompilationOptions =
+  | boolean
+  | {
+      /**
+       * 为 entries 启用 lazy compilation
+       */
+      entries?: boolean;
+      /**
+       * 为 dynamic imports 启用 lazy compilation
+       */
+      imports?: boolean;
+      /**
+       * 指定哪些导入的模块应该被延迟编译
+       */
+      test?: RegExp | ((m: Module) => boolean);
+      /**
+       * 指定一个自定义的运行时代码路径，用于覆盖默认的 lazy compilation client
+       */
+      client?: string;
+      /**
+       * 指定 client 需要请求的 server URL
+       */
+      serverUrl?: string;
+    };
+```
+
+- **默认值：** 取决于应用的渲染方式：
+  - 纯 CSR 与流式 SSR 应用：`{ imports: true, entries: false }`，即对动态导入按需编译；
+  - 使用 string SSR（包括 `server.ssrByEntries` 中任一入口为 string SSR）、RSC 或 SSG 的应用：`false`。
+
+用于开启 lazy compilation（即按需编译），基于 Rspack 的 [lazy compilation](https://rspack.rs/zh/guide/features/lazy-compilation) 特性实现。
+
+该配置仅在开发环境（dev server）下生效，不影响生产构建产物。流式 SSR 应用开启时，路由组件仍会提前编译，以保证首屏 JS/CSS 注入正确。
+
+显式配置的 `dev.lazyCompilation` 始终优先于默认值，如需关闭可配置：
+
+```ts
+import { defineConfig } from '@modern-js/app-tools';
+
+export default defineConfig({
+  dev: {
+    lazyCompilation: false,
+  },
+});
+```
+
+import RsbuildLink from '@site/src/components/RsbuildLink';
+
+:::info
+该配置项的使用方式与 Rsbuild 完全一致，详细信息可参考 <RsbuildLink configName="dev.lazyCompilation"/>。
+:::

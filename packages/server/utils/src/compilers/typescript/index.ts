@@ -1,10 +1,18 @@
 import path from 'path';
-import { logger, getAliasConfig, fs } from '@modern-js/utils';
-import type { Program, ParseConfigFileHost } from 'typescript';
+import {
+  fs,
+  getAliasConfig,
+  logger,
+  readTsConfigByFile as readRawTsConfigByFile,
+} from '@modern-js/utils';
+import type { ParseConfigFileHost, Program } from 'typescript';
 import type ts from 'typescript';
 import type { CompileFunc } from '../../common';
+import {
+  tsconfigPathsAfterDeclarationsHookFactory,
+  tsconfigPathsBeforeHookFactory,
+} from './tsconfigPathsPlugin';
 import { TypescriptLoader } from './typescriptLoader';
-import { tsconfigPathsBeforeHookFactory } from './tsconfigPathsPlugin';
 
 const readTsConfigByFile = (tsConfigFile: string, tsInstance: typeof ts) => {
   const parsedCmd = tsInstance.getParsedCommandLineOfConfigFile(
@@ -16,18 +24,14 @@ const readTsConfigByFile = (tsConfigFile: string, tsInstance: typeof ts) => {
   return { options, fileNames, projectReferences };
 };
 
-const copyFiles = async (
-  from: string,
-  to: string,
-  appDirectory: string,
-  tsconfigPath: string,
-) => {
+const copyFiles = async (from: string, to: string, appDirectory: string) => {
   if (await fs.pathExists(from)) {
     const relativePath = path.relative(appDirectory, from);
     const targetDir = path.join(to, relativePath);
     await fs.copy(from, targetDir, {
       filter: src =>
-        !['.ts', '.js'].includes(path.extname(src)) && src !== tsconfigPath,
+        !['.ts', '.tsx', '.js', '.jsx'].includes(path.extname(src)) &&
+        !src.endsWith('tsconfig.json'),
     });
   }
 };
@@ -43,8 +47,10 @@ export const compileByTs: CompileFunc = async (
     return;
   }
 
+  const tsConfig = readRawTsConfigByFile(tsconfigPath);
   const ts = new TypescriptLoader({
     appDirectory,
+    compiler: tsConfig['ts-node']?.compiler,
   }).load();
 
   const createProgram = ts.createIncrementalProgram || ts.createProgram;
@@ -77,9 +83,16 @@ export const compileByTs: CompileFunc = async (
     rootNames,
     projectReferences,
     options: {
+      ...options,
       rootDir: appDirectory,
       outDir: distDir,
-      ...options,
+      // `jsx: preserve` emits `.jsx` files, which Node cannot execute and which
+      // the emitted specifiers (always `.js`) would not point at. Server output
+      // has to run in Node directly, so JSX must be transformed here.
+      jsx:
+        options.jsx === undefined || options.jsx === ts.JsxEmit.Preserve
+          ? ts.JsxEmit.ReactJSX
+          : options.jsx,
     },
   });
 
@@ -87,10 +100,24 @@ export const compileByTs: CompileFunc = async (
     ts,
     absoluteBaseUrl,
     paths,
+    compileOptions.moduleType,
   );
 
+  // tsc keeps path aliases verbatim in `.d.ts` output, so the same rewrite has
+  // to run on declaration emit or aliased specifiers leak to consumers.
+  const tsconfigPathsDeclarationPlugin =
+    tsconfigPathsAfterDeclarationsHookFactory(
+      ts,
+      absoluteBaseUrl,
+      paths,
+      compileOptions.moduleType,
+    );
+
   const emitResult = program.emit(undefined, undefined, undefined, undefined, {
-    before: [tsconfigPathsPlugin!],
+    before: tsconfigPathsPlugin ? [tsconfigPathsPlugin] : [],
+    afterDeclarations: tsconfigPathsDeclarationPlugin
+      ? [tsconfigPathsDeclarationPlugin]
+      : [],
   });
 
   const allDiagnostics = ts
@@ -107,13 +134,16 @@ export const compileByTs: CompileFunc = async (
       ),
     );
     if (typeof noEmitOnError === 'undefined' || noEmitOnError === true) {
-      // eslint-disable-next-line no-process-exit
-      process.exit(1);
+      if (compileOptions.throwErrorInsteadOfExit) {
+        logger.error('TypeScript compilation failed');
+      } else {
+        process.exit(1);
+      }
     }
   }
 
   for (const source of sourceDirs) {
-    await copyFiles(source, distDir, appDirectory, tsconfigPath);
+    await copyFiles(source, distDir, appDirectory);
   }
 
   logger.info(`Ts compile succeed`);

@@ -1,12 +1,16 @@
-import {
+import type {
+  Server as HttpServer,
+  IncomingHttpHeaders,
   IncomingMessage,
   ServerResponse,
-  IncomingHttpHeaders,
-  Server as HttpServer,
 } from 'http';
-import qs from 'querystring';
+import type qs from 'querystring';
 import type { SSRMode } from 'common';
-import { Metrics, Logger, Reporter, ServerTiming } from './utils';
+import type { Logger, Metrics, Reporter, ServerTiming } from './utils';
+
+export interface RequestPayload {
+  [key: string]: unknown;
+}
 
 export interface ModernServerContext {
   req: IncomingMessage;
@@ -65,59 +69,34 @@ export interface BaseResponseLike {
 }
 
 export type BaseSSRServerContext<T extends 'node' | 'worker' = 'node'> = {
+  baseUrl: string;
   request: {
     params: Record<string, string>;
     pathname: string;
     query: Record<string, string>;
     headers: IncomingHttpHeaders;
     host: string;
-    [propsName: string]: any;
+    url: string;
+    referer?: string;
+    userAgent?: string;
+    cookie?: string;
+    cookieMap?: Record<string, string>;
   };
   response: BaseResponseLike;
-  redirection: { url?: string; status?: number };
   loadableStats: Record<string, any>;
   routeManifest?: Record<string, any>;
   template: string;
   entryName: string;
+  loaderContext: Map<string, unknown>;
   logger: Logger;
   serverTiming: ServerTiming;
   reporter?: Reporter;
   metrics?: Metrics;
-
-  // TODO: remove it
-  /** @deprecated */
-  cacheConfig?: any;
-
-  enableUnsafeCtx?: boolean;
-
   nonce?: string;
-
-  /** @deprecated source req */
-  req?: T extends 'worker' ? Request : ModernServerContext['req'];
-
-  /** @deprecated source res */
-  res?: T extends 'worker' ? BaseResponseLike : ModernServerContext['res'];
-
   /** SSR type  */
   mode?: SSRMode;
-
-  /** Check if it's spider request */
-  isSpider?: boolean;
 };
 
 export interface ServerInitHookContext {
   app?: HttpServer;
-}
-
-export interface ISAppContext {
-  appDirectory: string;
-  apiDirectory?: string;
-  lambdaDirectory?: string;
-  distDirectory: string;
-  sharedDirectory: string;
-  plugins: {
-    server?: any;
-    serverPkg?: any;
-  }[];
-  [key: string]: unknown;
 }

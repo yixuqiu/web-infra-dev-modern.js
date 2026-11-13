@@ -1,14 +1,16 @@
 {
   "private": true,
   "name": "integration-asset-prefix",
-  "version": "2.9.0",
+  "version": "2.66.0",
+  "scripts": {
+    "dev": "modern dev"
+  },
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^29",
-    "@types/node": "^14",
-    "@modern-js/app-tools": "workspace:*"
+    "@modern-js/app-tools": "workspace:*",
+    "@types/node": "^20"
   }
 }

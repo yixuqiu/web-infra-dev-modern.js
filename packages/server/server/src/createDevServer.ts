@@ -1,105 +1,205 @@
-import { Server as NodeServer } from 'node:http';
 import path from 'node:path';
+import type { Rspack } from '@modern-js/builder';
+import { type ServerBase, createServerBase } from '@modern-js/server-core';
 import {
-  ServerBaseOptions,
-  createServerBase,
-} from '@modern-js/server-core/base';
-import {
-  registerMockHandlers,
   createNodeServer,
-  connectMid2HonoMid,
-} from '@modern-js/server-core/base/node';
-import { API_DIR, SHARED_DIR } from '@modern-js/utils';
-import { InitProdMiddlewares, ModernDevServerOptions } from './types';
+  loadServerRuntimeConfig,
+} from '@modern-js/server-core/node';
+import { logger } from '@modern-js/utils';
+import { devRuntimeMiddlewarePlugin, setupDevInfra } from './dev';
 import {
-  startWatcher,
-  onRepack,
-  getDevOptions,
-  initFileReader,
-} from './helpers';
+  type ReloadableHandle,
+  createReloadManager,
+} from './dev-tools/reloadManager';
+import { createRuntimeServerOptions } from './dev-tools/runtimeOptions';
+import { getDevAssetPrefix, getDevOptions } from './helpers';
+import type { ApplyPlugins, ModernDevServerOptions } from './types';
 
-export type { ModernDevServerOptions, InitProdMiddlewares } from './types';
+export async function createDevServer(
+  options: ModernDevServerOptions,
+  applyPlugins: ApplyPlugins,
+) {
+  const { config, pwd, serverConfigPath, builder } = options;
+  const dev = getDevOptions(options.dev);
 
-export const createDevServer = async <O extends ServerBaseOptions>(
-  options: ModernDevServerOptions<O>,
-  initProdMiddlewares: InitProdMiddlewares<O>,
-): Promise<NodeServer> => {
-  const {
-    config,
-    pwd,
-    routes = [],
-    getMiddlewares,
-    rsbuild,
-    appContext,
-  } = options;
-  const dev = getDevOptions(options);
+  const distDir = path.resolve(pwd, config.output.distPath?.root || 'dist');
 
-  const distDir = path.resolve(pwd, config.output.path || 'dist');
-  const apiDir = appContext?.apiDirectory || API_DIR;
-  const sharedDir = appContext?.sharedDirectory || SHARED_DIR;
+  const serverConfig = (await loadServerRuntimeConfig(serverConfigPath)) || {};
 
   const prodServerOptions = {
     ...options,
     pwd: distDir, // server base pwd must distDir,
+    serverConfig: {
+      ...serverConfig,
+      ...options.serverConfig,
+    },
+    /**
+     * 1. server plugins from modern.server.ts
+     * 2. server plugins register by cli use _internalServerPlugins
+     * Merge plugins, the plugins from modern.server.ts will run first
+     */
+    plugins: [...(serverConfig.plugins || []), ...(options.plugins || [])],
   };
 
-  const server = createServerBase(prodServerOptions);
+  /**
+   * Process-level resources, created EXACTLY ONCE. A runtime hot reload never
+   * recreates or tears these down: the Rspack compiler reference, the builder
+   * dev server (with its HMR / websocket / dev middleware), and the Node server
+   * itself (set up further below).
+   */
+  let compiler: Rspack.Compiler | Rspack.MultiCompiler | null = null;
 
-  const closeCb: Array<(...args: []) => any> = [];
-
-  // https://github.com/web-infra-dev/rsbuild/blob/32fbb85e22158d5c4655505ce75e3452ce22dbb1/packages/shared/src/types/server.ts#L112
-  const {
-    middlewares: rsbuildMiddlewares,
-    close,
-    onHTTPUpgrade,
-  } = getMiddlewares?.() || {};
-
-  close && closeCb.push(close);
-
-  rsbuildMiddlewares && server.all('*', connectMid2HonoMid(rsbuildMiddlewares));
-
-  await registerMockHandlers({
-    pwd,
-    server,
+  builder?.onAfterCreateCompiler(context => {
+    compiler = context.compiler;
   });
 
-  server.use('*', initFileReader());
-  await server.init();
-  const nodeServer = createNodeServer(server.handle.bind(server));
+  const assetPrefixPromise = getDevAssetPrefix(builder);
 
-  rsbuild?.onDevCompileDone(({ stats }) => {
-    if (stats.toJson({ all: false }).name !== 'server') {
-      onRepack(distDir, server.runner, routes);
-    }
+  const builderDevServer = await builder?.createDevServer({
+    runCompile: options.runCompile,
   });
 
-  onHTTPUpgrade && nodeServer.on('upgrade', onHTTPUpgrade);
+  // Resolved once from the builder (the compiler exists after createDevServer).
+  // Woven into every per-build fresh config by `createRuntimeServerOptions`,
+  // never mutated onto the shared `prodServerOptions.config`.
+  const assetPrefix = await assetPrefixPromise;
 
-  await server.runner.beforeServerInit({
-    app: nodeServer,
+  /**
+   * The currently-active runtime ServerBase. Process-level infra (the file
+   * watcher / SSR-cache reset) reaches the live hooks through this mutable ref
+   * instead of closing over a single runtime instance.
+   */
+  let currentRuntimeServer: ServerBase | undefined;
+
+  let nodeServer: Awaited<ReturnType<typeof createNodeServer>> | undefined;
+
+  /**
+   * Build a brand-new runtime ServerBase and return its request handle.
+   *
+   * Used for the initial boot AND every hot reload, so there is exactly one
+   * definition of "what a runtime server contains". It creates NO process-level
+   * resource — the watcher / websocket / builderDevServer / close callbacks are
+   * owned by `setupDevInfra` and survive reloads untouched.
+   *
+   * Every build gets a fully fresh options object (fresh config / serverConfig
+   * / plugins, see `createRuntimeServerOptions`) and that same object is handed
+   * to both `createServerBase` and `applyPlugins`, so a stray append in one
+   * runtime can never leak into the next reload.
+   */
+  const buildRuntimeServer = async (): Promise<ReloadableHandle> => {
+    // Re-load modern.server.ts on every build so its plugins / middlewares /
+    // onError changes are picked up on reload. The watcher has already busted
+    // the require cache for changed files; an unchanged config just returns the
+    // cached module, so this is cheap when nothing relevant changed.
+    const freshServerConfig =
+      (await loadServerRuntimeConfig(serverConfigPath)) || {};
+    const runtimeOptions = createRuntimeServerOptions(
+      {
+        ...prodServerOptions,
+        serverConfig: { ...freshServerConfig, ...options.serverConfig },
+        plugins: [
+          ...(freshServerConfig.plugins || []),
+          ...(options.plugins || []),
+        ],
+      },
+      assetPrefix,
+    );
+    const runtimeServer = createServerBase(runtimeOptions);
+    runtimeServer.addPlugins([
+      devRuntimeMiddlewarePlugin(
+        { ...options, builderDevServer },
+        compiler,
+        runtimeServer,
+      ),
+    ]);
+    await applyPlugins(runtimeServer, runtimeOptions, nodeServer);
+    await runtimeServer.init();
+    currentRuntimeServer = runtimeServer;
+    return runtimeServer.handle;
+  };
+
+  // Files changed since the last completed reload. The debounced reload
+  // coalesces several changes into one rebuild, so we collect them here and
+  // report them in a single success log (a bundler-free reload — e.g. a
+  // config/mock or modern.server.ts change — otherwise prints nothing).
+  const pendingReloadFiles = new Set<string>();
+
+  const reloadManager = createReloadManager({
+    build: buildRuntimeServer,
+    onReload: () => {
+      const files = Array.from(pendingReloadFiles);
+      pendingReloadFiles.clear();
+      logger.info(
+        files.length > 0
+          ? `Server runtime reloaded (${files.join(', ')})`
+          : 'Server runtime reloaded',
+      );
+    },
   });
 
-  await initProdMiddlewares(server, prodServerOptions);
-
-  if (dev.watch) {
-    const { watchOptions } = config.server;
-    const watcher = startWatcher({
-      pwd,
-      distDir,
-      apiDir,
-      sharedDir,
-      watchOptions,
-      server,
-    });
-    closeCb.push(watcher.close.bind(watcher));
+  /**
+   * Node server / HTTPS / WebSocket layer: created once. Every request is
+   * forwarded through the ReloadManager to the latest runtime handle, so a
+   * runtime reload can atomically swap the whole runtime without recreating
+   * the Node server.
+   */
+  const devHttpsOption = typeof dev === 'object' && dev.https;
+  const isHttp2 = !!devHttpsOption;
+  if (devHttpsOption) {
+    const { genHttpsOptions } = await import('./dev-tools/https');
+    const httpsOptions = await genHttpsOptions(devHttpsOption, pwd);
+    nodeServer = await createNodeServer(
+      reloadManager.handle,
+      httpsOptions,
+      isHttp2,
+    );
+  } else {
+    nodeServer = await createNodeServer(reloadManager.handle);
   }
 
-  closeCb.length > 0 &&
-    nodeServer.on('close', () => {
-      closeCb.forEach(cb => {
-        cb();
-      });
-    });
+  /**
+   * Initial runtime build. Done explicitly (not through the ReloadManager) so a
+   * boot failure propagates instead of being swallowed as "keep the previous
+   * handle". The resulting handle seeds the ReloadManager.
+   */
+  reloadManager.setHandle(await buildRuntimeServer());
 
-  return nodeServer;
-};
+  /**
+   * Process-level dev infra, created once. The file watcher triggers a unified
+   * runtime reload via `onFileChange`; the builder-recompile SSR-cache reset
+   * (onRepack) still reaches the live runtime via `getRuntimeServer` (a mutable
+   * ref). BFF no longer has its own onReset-based local rebuild — it joins the
+   * unified runtime reload.
+   */
+  setupDevInfra({
+    config,
+    pwd,
+    distDir,
+    apiDir: options.appContext?.apiDirectory,
+    sharedDir: options.appContext?.sharedDirectory,
+    builder,
+    builderDevServer,
+    compiler,
+    nodeServer,
+    getRuntimeServer: () => currentRuntimeServer,
+    // A watched user server file changed -> schedule a unified runtime reload.
+    // (debounced + serial + last-write-wins; a failed build keeps the old
+    // handle serving, so a syntax error never takes the dev server down.)
+    onFileChange: (filepath: string) => {
+      pendingReloadFiles.add(path.relative(pwd, filepath));
+      reloadManager.schedule();
+    },
+    // On dev server close, stop the scheduler so a pending debounced reload
+    // can't rebuild a runtime after the watcher / builder dev server are gone.
+    onClose: () => reloadManager.close(),
+  });
+
+  const afterListen = async () => {
+    await builderDevServer?.afterListen();
+  };
+
+  return {
+    server: nodeServer,
+    afterListen,
+  };
+}

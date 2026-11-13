@@ -1,7 +1,7 @@
-import { generateClient, GenClientOptions } from '@modern-js/bff-core';
+import { type GenClientOptions, generateClient } from '@modern-js/bff-core';
 import type { HttpMethodDecider } from '@modern-js/types';
-import type { LoaderContext } from 'webpack';
 import { logger } from '@modern-js/utils';
+import type { Rspack } from '@rsbuild/core';
 
 export type APILoaderOptions = {
   prefix: string;
@@ -16,7 +16,10 @@ export type APILoaderOptions = {
   httpMethodDecider?: HttpMethodDecider;
 };
 
-async function loader(this: LoaderContext<APILoaderOptions>, source: string) {
+async function loader(
+  this: Rspack.LoaderContext<APILoaderOptions>,
+  source: string,
+) {
   this.cacheable();
 
   const { resourcePath } = this;
@@ -27,7 +30,7 @@ async function loader(this: LoaderContext<APILoaderOptions>, source: string) {
 
   const draftOptions = this.getOptions();
 
-  const warning = `The file ${resourcePath} is not allowd to be imported in src directory, only API definition files are allowed.`;
+  const warning = `The file ${resourcePath} is not allowed to be imported in src directory, only API definition files are allowed.`;
 
   if (!draftOptions.existLambda) {
     logger.warn(warning);

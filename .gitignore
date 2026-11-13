@@ -2,8 +2,6 @@
 
 .pnp
 .pnp.js
-.env.local
-.env.*.local
 .history
 *.log*
 
@@ -13,6 +11,7 @@ node_modules/
 .eslintcache
 
 dist/
+dist-ssg/
 doc_build/
 !**/compiled/**/dist
 coverage/
@@ -47,5 +46,15 @@ website/**/.temp
 .nx/
 playground/
 
-# Local Netlify folder
-.netlify
+
+.output/
+.vercel/
+.netlify/
+
+.swc/
+
+.swe
+.cursor
+.claude/settings.local.json
+.agents/runs/
+.specify/

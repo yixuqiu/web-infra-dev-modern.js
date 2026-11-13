@@ -1,25 +1,61 @@
 export const EN_LOCALE = {
-  command: {
-    description: 'create Modern.js solution project',
-    mwa: 'create mwa application using default config',
-    module: 'create module application using default config',
-    monorepo: 'create monorepo application using default config',
-    config: 'set default project config(json string)',
-    packages: 'set project specific dependency version information',
-    distTag: `use specified tag version for it's generator`,
-    registry: 'set npm registry url to run npm command',
-    debug: 'using debug mode to log something',
-    generator: 'run custom generator',
-    plugin:
-      'use generator plugin to create new solution or customize Modern.js solution',
-    noNeedInstall: 'not run install command',
-    version: 'show create tools version',
-    lang: 'set create tools language(en or zh)',
-    cleanCache: 'clean locale generator cache',
+  prompt: {
+    projectName: 'Please enter project name: ',
   },
-  tooltip: {
-    dir_entry: `you can execute 'cd {dirName}' to entry the project directory`,
-    dir_exists: `directory '{dirName}' already exists`,
-    clean_cache_success: 'Clean generator cache success!',
+  error: {
+    projectNameEmpty: 'Error: Project name cannot be empty',
+    directoryExists:
+      'Error: Directory "{projectName}" already exists and is not empty',
+    createFailed: 'Error creating project:',
+    agentsMdOnlyConflict:
+      'Error: --agents-md-only only updates the current project and cannot be combined with a project name or --no-agents-md',
+  },
+  message: {
+    welcome: '🚀 Welcome to Modern.js',
+    success: '✨ Created successfully!',
+    agentsMd:
+      '✔ AGENTS.md generated — AI coding agents will read it automatically. (--no-agents-md to skip)',
+    nextSteps: '📋 Next steps:',
+    step1: 'cd {projectName}',
+    step2: 'pnpm install',
+    step3: 'pnpm dev',
+  },
+  agentsCmd: {
+    created: '✔ Created {file}',
+    updatedBlock: '✔ Updated the modernjs-agent-rules block in {file}',
+    addedBlock: '✔ Added the modernjs-agent-rules block to the top of {file}',
+    unchanged: '• {file} is already up to date',
+    done: '✨ Done — AI coding agents will read {location}.',
+    targetNotFound: 'Error: target directory "{dir}" does not exist',
+    notAProject: 'Error: not a Modern.js project — run this in a project root',
+    unsupportedVersion:
+      '• @modern-js/app-tools@{version} does not ship bundled docs; nothing was changed. Add https://modernjs.dev/llms.txt to AGENTS.md so AI tools can reach the framework docs, or upgrade to {since} or later and re-run this command',
+  },
+  help: {
+    title: '🚀 Modern.js Project Creator',
+    description: 'Create a new Modern.js project with ease',
+    usage: '📖 Usage:',
+    usageExample: '  create [project-name] [options]',
+    options: '⚙️  Options:',
+    optionHelp: '  -h, --help     Display this help message',
+    optionVersion: '  -v, --version  Display version information',
+    optionLang: '  -l, --lang     Set the language (zh or en)',
+    optionTemplate:
+      '  --template <name>  app (default) or mcp-apps (MCP Apps with UI)',
+    optionSub: '  -s, --sub       Mark as a subproject (package in monorepo)',
+    optionNoAgentsMd:
+      '  --no-agents-md  Skip generating AGENTS.md for AI coding agents',
+    optionAgentsMdOnly:
+      '  --agents-md-only  Only add/refresh AGENTS.md in the current project (no scaffolding)',
+    examples: '💡 Examples:',
+    example1: '  create my-app',
+    example2: '  create my-app --lang zh',
+    example3: '  create my-app --sub',
+    example4:
+      '  create --agents-md-only   (add/refresh AGENTS.md in an existing project)',
+    moreInfo: '📚 Learn more: https://modernjs.dev',
+  },
+  version: {
+    message: '@modern-js/create version: {version}',
   },
 };

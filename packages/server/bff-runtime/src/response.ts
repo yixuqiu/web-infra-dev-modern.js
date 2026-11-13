@@ -3,7 +3,6 @@ export type HandleSuccess<T> = {
   value: T;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const HandleSuccess = <T>(output: T): HandleSuccess<T> => ({
   type: 'HandleSuccess',
   value: output,
@@ -14,7 +13,6 @@ export type InputValidationError = {
   message: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InputValidationError = (
   message: string,
 ): InputValidationError => ({
@@ -27,7 +25,6 @@ export type OutputValidationError = {
   message: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OutputValidationError = (
   message: string,
 ): OutputValidationError => ({
@@ -36,6 +33,4 @@ export const OutputValidationError = (
 });
 
 export type HandleResult<T> =
-  | HandleSuccess<T>
-  | InputValidationError
-  | OutputValidationError;
+  HandleSuccess<T> | InputValidationError | OutputValidationError;

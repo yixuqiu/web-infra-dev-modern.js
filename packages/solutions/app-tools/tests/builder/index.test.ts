@@ -1,14 +1,9 @@
 import path from 'path';
-import type { RsbuildTarget } from '@rsbuild/shared';
-import { initSnapshotSerializer } from '@scripts/jest-config/utils';
 import { createBuilderProviderConfig } from '../../src/builder/generator/createBuilderProviderConfig';
-import { createBuilderOptions } from '../../src/builder/generator/createBuilderOptions';
-
-initSnapshotSerializer({ cwd: path.resolve(__dirname, '../..') });
+import { getBuilderEnvironments } from '../../src/builder/generator/getBuilderEnvironments';
 
 describe('create builder Options', () => {
-  it('test create builder Options', () => {
-    const targets: RsbuildTarget[] = ['node', 'web'];
+  it('test create builder environments config', () => {
     const appContext = {
       entrypoints: [
         {
@@ -30,16 +25,50 @@ describe('create builder Options', () => {
       ],
       checkedEntries: ['main', 'next'],
       configFile: 'modern.config.ts',
+      appDirectory: 'appDirectory',
     };
-    const options = createBuilderOptions(targets, appContext as any);
-    expect(options).toEqual({
-      target: targets,
-      frameworkConfigPath: 'modern.config.ts',
-      entry: {
-        main: ['./src/index.ts', './src/main.ts'],
-        next: ['./src/next.ts'],
-      },
-    });
+
+    expect(
+      getBuilderEnvironments({} as any, appContext as any, {} as any),
+    ).toMatchSnapshot();
+
+    expect(
+      getBuilderEnvironments(
+        {
+          server: {
+            ssr: true,
+          },
+        } as any,
+        appContext as any,
+        {} as any,
+      ),
+    ).toMatchSnapshot();
+
+    expect(
+      getBuilderEnvironments(
+        {
+          output: {
+            ssg: true,
+          },
+          deploy: {
+            worker: {
+              ssr: true,
+            },
+          },
+        } as any,
+        appContext as any,
+        {
+          output: {
+            copy: [
+              {
+                from: '**/*',
+                to: 'upload',
+              },
+            ],
+          },
+        } as any,
+      ),
+    ).toMatchSnapshot();
   });
 });
 
@@ -87,5 +116,52 @@ describe('create builder provider config', () => {
     );
 
     expect(builderConfig.dev?.startUrl).toEqual('/xxx');
+  });
+
+  it('should not pass dev.mockDir to Builder', () => {
+    const config = {
+      source: {},
+      output: {},
+      dev: {
+        mockDir: './mocks',
+      },
+    };
+    const appContext = {
+      appDirectory: `/fixtures`,
+      configDir: './icons',
+    };
+
+    const builderConfig = createBuilderProviderConfig(
+      config as any,
+      appContext as any,
+    );
+
+    expect(builderConfig.dev?.mockDir).toBeUndefined();
+    expect(config.dev.mockDir).toBe('./mocks');
+  });
+
+  it('should not mutate source.preEntry when removing it from builder config', () => {
+    const config = {
+      source: {
+        enableAsyncEntry: true,
+        enableAsyncPreEntry: true,
+        preEntry: ['./src/pre.ts'],
+      },
+      output: {},
+      dev: {},
+      html: {},
+    };
+    const appContext = {
+      appDirectory: `/fixtrues`,
+      configDir: './icons',
+    };
+
+    const builderConfig = createBuilderProviderConfig(
+      config as any,
+      appContext as any,
+    );
+
+    expect(builderConfig.source?.preEntry).toBeUndefined();
+    expect(config.source.preEntry).toEqual(['./src/pre.ts']);
   });
 });

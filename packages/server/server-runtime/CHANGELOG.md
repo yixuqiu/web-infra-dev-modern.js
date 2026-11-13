@@ -1,0 +1,448 @@
+# @modern-js/server-runtime
+
+## 3.11.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.11.3
+- @modern-js/runtime-utils@3.11.3
+- @modern-js/types@3.11.3
+
+## 3.11.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.11.2
+- @modern-js/runtime-utils@3.11.2
+- @modern-js/types@3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- Updated dependencies [b11c3cd]
+  - @modern-js/server-core@3.11.1
+  - @modern-js/types@3.11.1
+  - @modern-js/runtime-utils@3.11.1
+
+## 3.11.0
+
+### Patch Changes
+
+- Updated dependencies [6a50ea0]
+  - @modern-js/runtime-utils@3.11.0
+  - @modern-js/server-core@3.11.0
+  - @modern-js/types@3.11.0
+
+## 3.10.4
+
+### Patch Changes
+
+- @modern-js/server-core@3.10.4
+- @modern-js/runtime-utils@3.10.4
+- @modern-js/types@3.10.4
+
+## 3.10.3
+
+### Patch Changes
+
+- Updated dependencies [52b4a4e]
+  - @modern-js/server-core@3.10.3
+  - @modern-js/runtime-utils@3.10.3
+  - @modern-js/types@3.10.3
+
+## 3.10.2
+
+### Patch Changes
+
+- Updated dependencies [76c675d]
+- Updated dependencies [2f314e5]
+- Updated dependencies [b1c1018]
+- Updated dependencies [23587d0]
+- Updated dependencies [3b42ce4]
+- Updated dependencies [6a891f0]
+  - @modern-js/runtime-utils@3.10.2
+  - @modern-js/server-core@3.10.2
+  - @modern-js/types@3.10.2
+
+## 3.10.1
+
+### Patch Changes
+
+- Updated dependencies [e046a11]
+  - @modern-js/server-core@3.10.1
+  - @modern-js/runtime-utils@3.10.1
+  - @modern-js/types@3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- Updated dependencies [b5f56d5]
+- Updated dependencies [14c23d0]
+- Updated dependencies [9a766ec]
+- Updated dependencies [9a766ec]
+- Updated dependencies [1d7a38e]
+  - @modern-js/server-core@3.10.0
+  - @modern-js/types@3.10.0
+  - @modern-js/runtime-utils@3.10.0
+
+## 3.9.3
+
+### Patch Changes
+
+- Updated dependencies [1dcb43c]
+- Updated dependencies [283dc5a]
+- Updated dependencies [a9c110f]
+  - @modern-js/server-core@3.9.3
+  - @modern-js/runtime-utils@3.9.3
+  - @modern-js/types@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.9.2
+- @modern-js/runtime-utils@3.9.2
+- @modern-js/types@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- Updated dependencies [2e6d853]
+  - @modern-js/runtime-utils@3.9.1
+  - @modern-js/server-core@3.9.1
+  - @modern-js/types@3.9.1
+
+## 3.9.0
+
+### Patch Changes
+
+- Updated dependencies [2f4d9c4]
+  - @modern-js/server-core@3.9.0
+  - @modern-js/runtime-utils@3.9.0
+  - @modern-js/types@3.9.0
+
+## 3.8.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.8.3
+- @modern-js/runtime-utils@3.8.3
+- @modern-js/types@3.8.3
+
+## 3.8.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.8.2
+- @modern-js/runtime-utils@3.8.2
+- @modern-js/types@3.8.2
+
+## 3.8.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.8.1
+- @modern-js/runtime-utils@3.8.1
+- @modern-js/types@3.8.1
+
+## 3.8.0
+
+### Patch Changes
+
+- Updated dependencies [13b960f]
+- Updated dependencies [3b0eacf]
+- Updated dependencies [3981b6b]
+  - @modern-js/server-core@3.8.0
+  - @modern-js/runtime-utils@3.8.0
+  - @modern-js/types@3.8.0
+
+## 3.7.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.7.0
+- @modern-js/runtime-utils@3.7.0
+- @modern-js/types@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- Updated dependencies [c69486b]
+- Updated dependencies [c34b53d]
+  - @modern-js/server-core@3.6.0
+  - @modern-js/runtime-utils@3.6.0
+  - @modern-js/types@3.6.0
+
+## 3.5.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.5.0
+- @modern-js/runtime-utils@3.5.0
+- @modern-js/types@3.5.0
+
+## 3.4.0
+
+### Patch Changes
+
+- Updated dependencies [a46bd4e]
+  - @modern-js/server-core@3.4.0
+  - @modern-js/runtime-utils@3.4.0
+  - @modern-js/types@3.4.0
+
+## 3.3.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.3.0
+- @modern-js/runtime-utils@3.3.0
+- @modern-js/types@3.3.0
+
+## 3.2.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.2.2
+- @modern-js/runtime-utils@3.2.2
+- @modern-js/types@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.2.1
+- @modern-js/runtime-utils@3.2.1
+- @modern-js/types@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.2.0
+- @modern-js/runtime-utils@3.2.0
+- @modern-js/types@3.2.0
+
+## 3.1.5
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.5
+- @modern-js/runtime-utils@3.1.5
+- @modern-js/types@3.1.5
+
+## 3.1.4
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.4
+- @modern-js/runtime-utils@3.1.4
+- @modern-js/types@3.1.4
+
+## 3.1.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.3
+- @modern-js/runtime-utils@3.1.3
+- @modern-js/types@3.1.3
+
+## 3.1.2
+
+### Patch Changes
+
+- Updated dependencies [fa4cde0]
+- Updated dependencies [ddd55fa]
+  - @modern-js/server-core@3.1.2
+  - @modern-js/runtime-utils@3.1.2
+  - @modern-js/types@3.1.2
+
+## 3.1.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.1
+- @modern-js/runtime-utils@3.1.1
+- @modern-js/types@3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.0
+- @modern-js/runtime-utils@3.1.0
+- @modern-js/types@3.1.0
+
+## 3.0.5
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.5
+- @modern-js/runtime-utils@3.0.5
+- @modern-js/types@3.0.5
+
+## 3.0.4
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.4
+- @modern-js/runtime-utils@3.0.4
+- @modern-js/types@3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.3
+- @modern-js/runtime-utils@3.0.3
+- @modern-js/types@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.2
+- @modern-js/runtime-utils@3.0.2
+- @modern-js/types@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.1
+- @modern-js/runtime-utils@3.0.1
+- @modern-js/types@3.0.1
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [96b5424]
+- Updated dependencies [eecb927]
+- Updated dependencies [ecd247c]
+- Updated dependencies [952f6fe]
+- Updated dependencies [79f0efd]
+  - @modern-js/server-core@3.0.0
+  - @modern-js/runtime-utils@3.0.0
+  - @modern-js/types@3.0.0
+
+## 3.0.0-alpha.2
+
+### Patch Changes
+
+- Updated dependencies [96b5424]
+- Updated dependencies [eecb927]
+- Updated dependencies [ecd247c]
+- Updated dependencies [952f6fe]
+- Updated dependencies [79f0efd]
+  - @modern-js/server-core@3.0.0-alpha.2
+  - @modern-js/runtime-utils@3.0.0-alpha.2
+  - @modern-js/types@3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- Updated dependencies [eecb927]
+- Updated dependencies [952f6fe]
+- Updated dependencies [79f0efd]
+  - @modern-js/server-core@3.0.0-alpha.1
+  - @modern-js/types@3.0.0-alpha.1
+  - @modern-js/runtime-utils@3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- Updated dependencies [eecb927]
+- Updated dependencies [952f6fe]
+  - @modern-js/server-core@3.0.0-alpha.0
+  - @modern-js/types@3.0.0-alpha.0
+  - @modern-js/runtime-utils@3.0.0-alpha.0
+
+## 2.68.1
+
+### Patch Changes
+
+- Updated dependencies [0d98723]
+- Updated dependencies [0d98723]
+  - @modern-js/server-core@2.68.1
+  - @modern-js/runtime-utils@2.68.1
+
+## 2.68.0
+
+### Patch Changes
+
+- @modern-js/server-core@2.68.0
+- @modern-js/runtime-utils@2.68.0
+
+## 2.67.11
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.11
+- @modern-js/runtime-utils@2.67.11
+
+## 2.67.10
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.10
+- @modern-js/runtime-utils@2.67.10
+
+## 2.67.9
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.9
+- @modern-js/runtime-utils@2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.8
+- @modern-js/runtime-utils@2.67.8
+
+## 2.67.7
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.7
+- @modern-js/runtime-utils@2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- Updated dependencies [67a21da]
+- Updated dependencies [e67b6d0]
+  - @modern-js/server-core@2.67.6
+  - @modern-js/runtime-utils@2.67.6
+
+## 2.67.5
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.5
+- @modern-js/runtime-utils@2.67.5
+
+## 2.67.4
+
+### Patch Changes
+
+- 35e9786: feat: modern.server supports extended server
+  feat: modern.server 支持扩展 modern.js 服务
+- Updated dependencies [35e9786]
+- Updated dependencies [3a66335]
+- Updated dependencies [03cf233]
+- Updated dependencies [446939a]
+- Updated dependencies [2b65e0c]
+- Updated dependencies [446939a]
+- Updated dependencies [b00922e]
+- Updated dependencies [446939a]
+  - @modern-js/server-core@2.67.4
+  - @modern-js/runtime-utils@2.67.4

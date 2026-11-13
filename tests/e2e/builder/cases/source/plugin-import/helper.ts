@@ -1,8 +1,8 @@
 import path from 'path';
+import { expect, test } from '@playwright/test';
+import type { RsbuildConfig, SourceConfig } from '@rsbuild/core';
 import { build } from '@scripts/shared';
-import { expect, test } from '@modern-js/e2e/playwright';
-import { ensureDirSync, copySync } from 'fs-extra';
-import { RsbuildConfig, SourceConfig } from '@rsbuild/shared';
+import { copySync, ensureDirSync } from 'fs-extra';
 
 export const cases: Parameters<typeof shareTest>[] = [
   [
@@ -79,11 +79,7 @@ export function shareTest(
     source: {
       transformImport,
     },
-    performance: {
-      chunkSplit: {
-        strategy: 'all-in-one',
-      },
-    },
+    splitChunks: false,
   };
 
   test(msg, async () => {

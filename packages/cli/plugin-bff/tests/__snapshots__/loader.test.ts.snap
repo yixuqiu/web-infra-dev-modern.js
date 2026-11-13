@@ -1,8 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`bff loader should works well 1`] = `
-"import { createRequest } from '/packages/cli/plugin-bff/tests/fixtures/requestCreator/client';
-
-export var get = createRequest('/api/hello', 'GET', 80, 'functionName' );
-      "
-`;

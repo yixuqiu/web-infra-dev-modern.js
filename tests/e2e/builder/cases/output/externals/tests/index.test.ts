@@ -1,5 +1,5 @@
 import { join, resolve } from 'path';
-import { expect, test } from '@modern-js/e2e/playwright';
+import { expect, test } from '@playwright/test';
 import { build, getHrefByEntryName } from '@scripts/shared';
 
 const fixtures = resolve(__dirname, '../');
@@ -39,13 +39,13 @@ test('externals', async ({ page }) => {
   builder.close();
 });
 
-test('should not external dependencies when target is web worker', async () => {
+test('should preserve externals when target is web worker', async () => {
   const builder = await build({
     cwd: fixtures,
-    target: 'web-worker',
     entry: { index: resolve(fixtures, './src/index.js') },
     builderConfig: {
       output: {
+        target: 'web-worker',
         externals: {
           react: 'MyReact',
         },
@@ -55,7 +55,7 @@ test('should not external dependencies when target is web worker', async () => {
   const files = await builder.unwrapOutputJSON();
 
   const content = files[Object.keys(files).find(file => file.endsWith('.js'))!];
-  expect(content.includes('MyReact')).toBeFalsy();
+  expect(content).toContain('MyReact');
 
   builder.clean();
 });

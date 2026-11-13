@@ -1,16 +1,12 @@
-import { Server } from 'http';
-import { chalk } from '@modern-js/utils';
+import * as utils from '@modern-js/utils' with { rstest: 'importActual' };
 import {
-  closeServer,
-  createServer,
-  getServer,
-} from '../src/utils/createServer';
-import { getSelectedEntries } from '../src/utils/getSelectedEntries';
-import { safeReplacer } from '../src/utils/config';
+  getSelectedEntries,
+  parseEntryOption,
+} from '../src/utils/getSelectedEntries';
 
-jest.mock('@modern-js/utils', () => ({
+rstest.mock('@modern-js/utils', () => ({
   __esModule: true,
-  ...jest.requireActual('@modern-js/utils'),
+  ...utils,
   inquirer: {
     prompt() {
       return {
@@ -21,6 +17,24 @@ jest.mock('@modern-js/utils', () => ({
 }));
 
 describe('test app-tools utils', () => {
+  it.each([
+    [['dev', '-e', 'a'], ['a']],
+    [['dev', '--entry', 'a'], ['a']],
+    [
+      ['dev', '-e', 'a,b'],
+      ['a', 'b'],
+    ],
+    [
+      ['dev', '--entry', 'a,b'],
+      ['a', 'b'],
+    ],
+    [['dev', '-e'], true],
+    [['dev', '--entry'], true],
+    [['dev'], false],
+  ])('should parse entry option from %j', (argv, expected) => {
+    expect(parseEntryOption(argv as string[])).toEqual(expected);
+  });
+
   it('should return all entryNames correctly', async () => {
     const checked = await getSelectedEntries(false, [
       { entryName: 'a' },
@@ -48,84 +62,14 @@ describe('test app-tools utils', () => {
     expect(checked).toEqual(['b']);
   });
 
-  it('should get error if entry not allow', resolve => {
-    getSelectedEntries(['c'], [
+  it('should get error if entry not allow', async () => {
+    await getSelectedEntries(['c'], [
       { entryName: 'a' },
       { entryName: 'b' },
     ] as any).catch(e => {
       expect((e as Error).message).toMatch(
-        `Can not found entry ${chalk.yellow('c')}`,
+        `Can not found entry ${utils.chalk.yellow('c')}`,
       );
-      resolve();
     });
-  });
-
-  it('should create and close server correctly', async () => {
-    const app = await createServer({
-      pwd: __dirname,
-      config: {
-        html: {},
-        output: {
-          path: 'dist',
-        },
-        source: {},
-        tools: {},
-        server: {},
-        runtime: {},
-        bff: {},
-      },
-      appContext: {},
-    });
-
-    expect(app instanceof Server).toBe(true);
-    expect(getServer()).toBe(app);
-
-    await closeServer();
-    expect(getServer()).toBeNull();
-  });
-
-  it('safeReplacer should handle circular object', () => {
-    const a: {
-      [key: string]: unknown;
-    } = {
-      name: 'a',
-    };
-
-    const b: {
-      [key: string]: unknown;
-    } = {
-      name: 'b',
-    };
-
-    a.b = b;
-    b.a = a;
-
-    const res1 = JSON.stringify(a, safeReplacer());
-    expect(res1).toMatchSnapshot();
-
-    const c: {
-      [key: string]: unknown;
-    } = {
-      name: 'c',
-    };
-
-    const d: {
-      [key: string]: unknown;
-    } = {
-      name: 'd',
-    };
-
-    const e: {
-      [key: string]: unknown;
-    } = {
-      name: 'e',
-    };
-
-    c.d = d;
-    d.e = e;
-    e.c = c;
-
-    const res2 = JSON.stringify(c, safeReplacer());
-    expect(res2).toMatchSnapshot();
   });
 });

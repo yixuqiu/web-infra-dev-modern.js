@@ -1,5 +1,828 @@
 # @modern-js/create-request
 
+## 3.11.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.11.3
+- @modern-js/utils@3.11.3
+
+## 3.11.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.11.2
+- @modern-js/utils@3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.11.1
+- @modern-js/utils@3.11.1
+
+## 3.11.0
+
+### Patch Changes
+
+- Updated dependencies [6a50ea0]
+  - @modern-js/runtime-utils@3.11.0
+  - @modern-js/utils@3.11.0
+
+## 3.10.4
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.10.4
+- @modern-js/utils@3.10.4
+
+## 3.10.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.10.3
+- @modern-js/utils@3.10.3
+
+## 3.10.2
+
+### Patch Changes
+
+- Updated dependencies [76c675d]
+- Updated dependencies [b1c1018]
+  - @modern-js/runtime-utils@3.10.2
+  - @modern-js/utils@3.10.2
+
+## 3.10.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.10.1
+- @modern-js/utils@3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- Updated dependencies [9a766ec]
+  - @modern-js/runtime-utils@3.10.0
+  - @modern-js/utils@3.10.0
+
+## 3.9.3
+
+### Patch Changes
+
+- Updated dependencies [a9c110f]
+  - @modern-js/runtime-utils@3.9.3
+  - @modern-js/utils@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.9.2
+- @modern-js/utils@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- Updated dependencies [2e6d853]
+  - @modern-js/runtime-utils@3.9.1
+  - @modern-js/utils@3.9.1
+
+## 3.9.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.9.0
+- @modern-js/utils@3.9.0
+
+## 3.8.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.8.3
+- @modern-js/utils@3.8.3
+
+## 3.8.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.8.2
+- @modern-js/utils@3.8.2
+
+## 3.8.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.8.1
+- @modern-js/utils@3.8.1
+
+## 3.8.0
+
+### Patch Changes
+
+- Updated dependencies [b3a0709]
+  - @modern-js/utils@3.8.0
+  - @modern-js/runtime-utils@3.8.0
+
+## 3.7.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.7.0
+- @modern-js/utils@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- Updated dependencies [c34b53d]
+  - @modern-js/runtime-utils@3.6.0
+  - @modern-js/utils@3.6.0
+
+## 3.5.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.5.0
+- @modern-js/utils@3.5.0
+
+## 3.4.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.4.0
+- @modern-js/utils@3.4.0
+
+## 3.3.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.3.0
+- @modern-js/utils@3.3.0
+
+## 3.2.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.2.2
+- @modern-js/utils@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [2aa5253]
+  - @modern-js/utils@3.2.1
+  - @modern-js/runtime-utils@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.2.0
+- @modern-js/utils@3.2.0
+
+## 3.1.5
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.1.5
+- @modern-js/utils@3.1.5
+
+## 3.1.4
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.1.4
+- @modern-js/utils@3.1.4
+
+## 3.1.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.1.3
+- @modern-js/utils@3.1.3
+
+## 3.1.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.1.2
+- @modern-js/utils@3.1.2
+
+## 3.1.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.1.1
+- @modern-js/utils@3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [65a06b3]
+- Updated dependencies [0fc8c26]
+  - @modern-js/utils@3.1.0
+  - @modern-js/runtime-utils@3.1.0
+
+## 3.0.5
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.5
+- @modern-js/utils@3.0.5
+
+## 3.0.4
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.4
+- @modern-js/utils@3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.3
+- @modern-js/utils@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.2
+- @modern-js/utils@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.1
+- @modern-js/utils@3.0.1
+
+## 3.0.0
+
+### Minor Changes
+
+- e21ac60: feat: use node native fetch
+
+### Patch Changes
+
+- Updated dependencies [ecd247c]
+  - @modern-js/runtime-utils@3.0.0
+  - @modern-js/utils@3.0.0
+
+## 3.0.0-alpha.2
+
+### Minor Changes
+
+- e21ac60: feat: use node native fetch
+
+### Patch Changes
+
+- Updated dependencies [ecd247c]
+  - @modern-js/runtime-utils@3.0.0-alpha.2
+  - @modern-js/utils@3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.0-alpha.1
+- @modern-js/utils@3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@3.0.0-alpha.0
+- @modern-js/utils@3.0.0-alpha.0
+
+## 2.68.1
+
+### Patch Changes
+
+- e64d5f9: feat: hono bff supports return custom res
+  feat: hono bff 支持返回自定义响应
+  - @modern-js/runtime-utils@2.68.1
+  - @modern-js/utils@2.68.1
+
+## 2.68.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.68.0
+- @modern-js/utils@2.68.0
+
+## 2.67.11
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.11
+- @modern-js/utils@2.67.11
+
+## 2.67.10
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.10
+- @modern-js/utils@2.67.10
+
+## 2.67.9
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.9
+- @modern-js/utils@2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- Updated dependencies [23c8201]
+  - @modern-js/utils@2.67.8
+  - @modern-js/runtime-utils@2.67.8
+
+## 2.67.7
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.7
+- @modern-js/utils@2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.6
+- @modern-js/utils@2.67.6
+
+## 2.67.5
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.5
+- @modern-js/utils@2.67.5
+
+## 2.67.4
+
+### Patch Changes
+
+- Updated dependencies [3a66335]
+- Updated dependencies [03cf233]
+- Updated dependencies [446939a]
+- Updated dependencies [446939a]
+- Updated dependencies [b00922e]
+- Updated dependencies [446939a]
+  - @modern-js/runtime-utils@2.67.4
+  - @modern-js/utils@2.67.4
+
+## 2.67.3
+
+### Patch Changes
+
+- f6b81dd: feat: bff supports hono runtime framework
+  feat: bff 支持 hono 运行时框架
+  - @modern-js/runtime-utils@2.67.3
+  - @modern-js/utils@2.67.3
+
+## 2.67.2
+
+### Patch Changes
+
+- 6a5f36c: feat(bff): support params and headers for Upload
+  feat(bff): 为 Upload 操作符支持 params 和 headers
+- Updated dependencies [8f97aae]
+  - @modern-js/runtime-utils@2.67.2
+  - @modern-js/utils@2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- Updated dependencies [1d96265]
+  - @modern-js/utils@2.67.1
+  - @modern-js/runtime-utils@2.67.1
+
+## 2.67.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.67.0
+- @modern-js/utils@2.67.0
+
+## 2.66.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.66.0
+- @modern-js/utils@2.66.0
+
+## 2.65.5
+
+### Patch Changes
+
+- Updated dependencies [90a3c1c]
+- Updated dependencies [58a1afd]
+  - @modern-js/runtime-utils@2.65.5
+  - @modern-js/utils@2.65.5
+
+## 2.65.4
+
+### Patch Changes
+
+- Updated dependencies [0d47cb8]
+- Updated dependencies [f1cd095]
+  - @modern-js/utils@2.65.4
+  - @modern-js/runtime-utils@2.65.4
+
+## 2.65.3
+
+### Patch Changes
+
+- Updated dependencies [087ae7c]
+  - @modern-js/runtime-utils@2.65.3
+  - @modern-js/utils@2.65.3
+
+## 2.65.2
+
+### Patch Changes
+
+- 793be44: feat: support get monitors in Data Loader and Component
+  feat: 在 Data Loader 和组件中支持获取 monitors
+- Updated dependencies [793be44]
+- Updated dependencies [1fe923c]
+- Updated dependencies [8837b85]
+- Updated dependencies [1f83d96]
+  - @modern-js/runtime-utils@2.65.2
+  - @modern-js/utils@2.65.2
+
+## 2.65.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.65.1
+- @modern-js/utils@2.65.1
+
+## 2.65.0
+
+### Patch Changes
+
+- b43988e: feat: BFF 跨项目调用支持配置域名，补充文档
+  feat: BFF cross-project-invocation supports configuration of domain, add doc
+  - @modern-js/runtime-utils@2.65.0
+  - @modern-js/utils@2.65.0
+
+## 2.64.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.64.3
+- @modern-js/utils@2.64.3
+
+## 2.64.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.64.2
+- @modern-js/utils@2.64.2
+
+## 2.64.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.64.1
+- @modern-js/utils@2.64.1
+
+## 2.64.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.64.0
+- @modern-js/utils@2.64.0
+
+## 2.63.7
+
+### Patch Changes
+
+- fdcb0ee: feat: bff support independent project
+
+  feat: bff 支持跨项目调用
+
+  - @modern-js/runtime-utils@2.63.7
+  - @modern-js/utils@2.63.7
+
+## 2.63.6
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.63.6
+- @modern-js/utils@2.63.6
+
+## 2.63.5
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.63.5
+- @modern-js/utils@2.63.5
+
+## 2.63.4
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.63.4
+- @modern-js/utils@2.63.4
+
+## 2.63.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.63.3
+- @modern-js/utils@2.63.3
+
+## 2.63.2
+
+### Patch Changes
+
+- Updated dependencies [5fc95f7]
+- Updated dependencies [53e3ae0]
+  - @modern-js/utils@2.63.2
+  - @modern-js/runtime-utils@2.63.2
+
+## 2.63.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.63.1
+- @modern-js/utils@2.63.1
+
+## 2.63.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.63.0
+- @modern-js/utils@2.63.0
+
+## 2.62.1
+
+### Patch Changes
+
+- Updated dependencies [86213ae]
+  - @modern-js/runtime-utils@2.62.1
+  - @modern-js/utils@2.62.1
+
+## 2.62.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.62.0
+- @modern-js/utils@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- Updated dependencies [45230e2]
+  - @modern-js/utils@2.61.0
+  - @modern-js/runtime-utils@2.61.0
+
+## 2.60.6
+
+### Patch Changes
+
+- 2beacbb: feat(bff): integrated file upload call
+  feat(bff): 支持文件上传一体化调用
+- Updated dependencies [c4894e6]
+  - @modern-js/runtime-utils@2.60.6
+  - @modern-js/utils@2.60.6
+
+## 2.60.5
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.60.5
+- @modern-js/utils@2.60.5
+
+## 2.60.4
+
+### Patch Changes
+
+- Updated dependencies [c87813e]
+  - @modern-js/runtime-utils@2.60.4
+  - @modern-js/utils@2.60.4
+
+## 2.60.3
+
+### Patch Changes
+
+- Updated dependencies [303331c]
+  - @modern-js/utils@2.60.3
+  - @modern-js/runtime-utils@2.60.3
+
+## 2.60.2
+
+### Patch Changes
+
+- Updated dependencies [8a709bc]
+  - @modern-js/utils@2.60.2
+  - @modern-js/runtime-utils@2.60.2
+
+## 2.60.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.60.1
+- @modern-js/utils@2.60.1
+
+## 2.60.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.60.0
+- @modern-js/utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.59.0
+- @modern-js/utils@2.59.0
+
+## 2.58.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.58.3
+- @modern-js/utils@2.58.3
+
+## 2.58.2
+
+### Patch Changes
+
+- Updated dependencies [7715b6d]
+- Updated dependencies [44c1bc4]
+- Updated dependencies [a1a9373]
+  - @modern-js/runtime-utils@2.58.2
+  - @modern-js/utils@2.58.2
+
+## 2.58.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.58.1
+- @modern-js/utils@2.58.1
+
+## 2.58.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.58.0
+- @modern-js/utils@2.58.0
+
+## 2.57.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.57.1
+- @modern-js/utils@2.57.1
+
+## 2.57.0
+
+### Patch Changes
+
+- Updated dependencies [2515b00]
+- Updated dependencies [916559a]
+- Updated dependencies [dc736ef]
+  - @modern-js/utils@2.57.0
+  - @modern-js/runtime-utils@2.57.0
+
+## 2.56.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.56.2
+- @modern-js/utils@2.56.2
+
+## 2.56.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.56.1
+- @modern-js/utils@2.56.1
+
+## 2.56.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.56.0
+- @modern-js/utils@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- Updated dependencies [bbcf55a]
+  - @modern-js/utils@2.55.0
+  - @modern-js/runtime-utils@2.55.0
+
+## 2.54.6
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.54.6
+- @modern-js/utils@2.54.6
+
+## 2.54.5
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.54.5
+- @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.54.4
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.54.3
+- @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.54.2
+- @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.54.1
+- @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Patch Changes
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+  - @modern-js/runtime-utils@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.53.0
+- @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- Updated dependencies [85ac453]
+  - @modern-js/runtime-utils@2.52.0
+  - @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.51.0
+- @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.50.0
+- @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.49.4
+- @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- @modern-js/runtime-utils@2.49.3
+- @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

@@ -1,32 +1,86 @@
-import { createUniBuilder, UniBuilderInstance } from '@modern-js/uni-builder';
-import { BundlerType } from '@rsbuild/shared';
-import { BuilderOptions } from '../shared';
-import { Bundler } from '../../types';
+import {
+  type BuilderInstance,
+  type BundlerType,
+  createBuilder,
+} from '@modern-js/builder';
+import { type EnvironmentConfig, mergeRsbuildConfig } from '@rsbuild/core';
+import type { BuilderOptions } from '../shared';
+import {
+  builderPluginAdapterBasic,
+  builderPluginAdapterHooks,
+  builderPluginAdapterHtml,
+  builderPluginAdapterSSR,
+} from '../shared/builderPlugins';
+import { builderPluginAdapterCopy } from './adapterCopy';
 import { createBuilderProviderConfig } from './createBuilderProviderConfig';
-import { getBuilderTargets } from './getBuilderTargets';
-import { createBuilderOptions } from './createBuilderOptions';
+import { getBuilderEnvironments } from './getBuilderEnvironments';
 
 /**
  * @param options BuilderOptions
  * @param bundlerType BundlerType
  * @returns BuilderInstance
  */
-export async function generateBuilder<B extends Bundler>(
-  options: BuilderOptions<B>,
+export async function generateBuilder(
+  options: BuilderOptions,
   bundlerType: BundlerType,
 ) {
   const { normalizedConfig, appContext } = options;
 
   // create provider
-  const builderConfig = createBuilderProviderConfig<B>(
+  const tempBuilderConfig = createBuilderProviderConfig(
     normalizedConfig,
     appContext,
   );
 
-  const target = getBuilderTargets(normalizedConfig);
-  const builderOptions = createBuilderOptions(target, appContext);
-  const builder = await createUniBuilder({
-    ...builderOptions,
+  const { environments, builderConfig } = getBuilderEnvironments(
+    normalizedConfig,
+    appContext,
+    tempBuilderConfig,
+  );
+
+  if (builderConfig.environments) {
+    const mergedEnvironments: Record<string, EnvironmentConfig> = {
+      ...environments,
+    };
+
+    for (const name in builderConfig.environments) {
+      if (environments[name]) {
+        mergedEnvironments[name] = mergeRsbuildConfig(
+          environments[name],
+          builderConfig.environments[name],
+        );
+      } else {
+        mergedEnvironments[name] = builderConfig.environments[name];
+      }
+    }
+
+    builderConfig.environments = mergedEnvironments;
+  } else {
+    builderConfig.environments = environments;
+  }
+
+  // Allow plugins to transform the fully-merged builder environments map after
+  // the static framework env-merge and before the builder is created. Mirrors
+  // `modifyEntrypoints`: a transform-object hook whose non-undefined return
+  // replaces `environments`; with no taps the map is left untouched (identity).
+  const hooks = appContext._internalContext.pluginAPI?.getHooks();
+  if (hooks?.modifyBuilderEnvironments) {
+    const { environments: modifiedEnvironments } =
+      await hooks.modifyBuilderEnvironments.call({
+        environments: builderConfig.environments as Record<
+          string,
+          EnvironmentConfig
+        >,
+      });
+    builderConfig.environments = modifiedEnvironments;
+  }
+
+  const builder = await createBuilder({
+    cwd: appContext.appDirectory,
+    rscClientRuntimePath: `@${appContext.metaName}/runtime/rsc/client`,
+    rscServerRuntimePath: `@${appContext.metaName}/runtime/rsc/server`,
+    internalDirectory: appContext.internalDirectory,
+    frameworkConfigPath: appContext.configFile || undefined,
     bundlerType,
     config: builderConfig,
   });
@@ -36,30 +90,20 @@ export async function generateBuilder<B extends Bundler>(
   return builder;
 }
 
-async function applyBuilderPlugins<B extends Bundler>(
-  builder: UniBuilderInstance,
-  options: BuilderOptions<B>,
+async function applyBuilderPlugins(
+  builder: BuilderInstance,
+  options: BuilderOptions,
 ) {
-  const {
-    builderPluginAdapterBasic,
-    builderPluginAdapterHtml,
-    builderPluginAdapterSSR,
-    builderPluginAdapterWorker,
-  } = await import('../shared/builderPlugins');
-
   builder.addPlugins([
-    builderPluginAdapterBasic(),
+    builderPluginAdapterBasic(options),
     builderPluginAdapterSSR(options),
     builderPluginAdapterHtml(options),
-    builderPluginAdapterWorker(),
+    builderPluginAdapterHooks(options),
   ]);
 
-  const { normalizedConfig } = options;
-  if (!normalizedConfig.output.disableNodePolyfill) {
-    const { pluginNodePolyfill } = await import(
-      '@rsbuild/plugin-node-polyfill'
-    );
+  builder.addPlugins([builderPluginAdapterCopy(options)], {
+    environment: 'client',
+  });
 
-    builder.addPlugins([pluginNodePolyfill()]);
-  }
+  const { normalizedConfig } = options;
 }

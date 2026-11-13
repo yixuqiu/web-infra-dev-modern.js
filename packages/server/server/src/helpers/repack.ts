@@ -1,35 +1,24 @@
-import path from 'path';
-import { ServerRoute } from '@modern-js/types';
-import { LOADABLE_STATS_FILE } from '@modern-js/utils';
-import { fileReader } from '@modern-js/runtime-utils/fileReader';
-import { ServerHookRunner } from '@modern-js/server-core';
+import type { FileReader } from '@modern-js/runtime-utils/fileReader';
+import type { ServerPluginHooks } from '@modern-js/server-core';
 
-const getBundles = (routes: ServerRoute[]) => {
-  return routes.filter(route => route.isSSR).map(route => route.bundle);
-};
-
-const cleanSSRCache = (distDir: string, routes: ServerRoute[]) => {
-  const bundles = getBundles(routes);
-
-  bundles.forEach(bundle => {
-    const filepath = path.join(distDir, bundle as string);
-    if (require.cache[filepath]) {
-      delete require.cache[filepath];
+const cleanSSRCache = (distDir: string) => {
+  Object.keys(require.cache).forEach(key => {
+    if (key.startsWith(distDir)) {
+      delete require.cache[key];
     }
   });
-
-  const loadable = path.join(distDir, LOADABLE_STATS_FILE);
-  if (require.cache[loadable]) {
-    delete require.cache[loadable];
-  }
 };
 
 export const onRepack = (
   distDir: string,
-  runner: ServerHookRunner,
-  routes: ServerRoute[],
+  hooks: ServerPluginHooks,
+  reader: FileReader,
 ) => {
-  cleanSSRCache(distDir, routes);
-  fileReader.reset();
-  runner.repack();
+  cleanSSRCache(distDir);
+  reader.reset();
+  hooks.onReset.call({
+    event: {
+      type: 'repack',
+    },
+  });
 };

@@ -1,28 +1,33 @@
+import type { NestedRoute } from '@modern-js/types';
+import { LOADER_REPORTER_NAME } from '@modern-js/utils/universal/constants';
 /**
  * runtime utils for nested routes generating
  */
-import React, { Suspense } from 'react';
-import type { NestedRoute, Reporter } from '@modern-js/types';
+import type React from 'react';
+import { type JSX, Suspense } from 'react';
 import {
-  createRoutesFromElements,
-  LoaderFunction,
-  LoaderFunctionArgs,
+  type LoaderFunction,
+  type LoaderFunctionArgs,
   Outlet,
   Route,
-  RouteProps,
-} from 'react-router-dom';
-import { LOADER_REPORTER_NAME } from '@modern-js/utils/universal/constants';
+  type RouteProps,
+  createRoutesFromElements,
+} from 'react-router';
 import { time } from '../time';
+import { getAsyncLocalStorage } from '../universal/async_storage';
+import {
+  DeferredData,
+  activeDeferreds as originalActiveDeferreds,
+} from './deferreds';
 
-export const transformNestedRoutes = (
-  routes: NestedRoute[],
-  reporter?: Reporter,
-) => {
+const privateDefer = (data: any) => {
+  return new DeferredData(data);
+};
+
+export const transformNestedRoutes = (routes: NestedRoute[]) => {
   const routeElements = [];
   for (const route of routes) {
-    const routeElement = renderNestedRoute(route, {
-      reporter,
-    });
+    const routeElement = renderNestedRoute(route);
     routeElements.push(routeElement);
   }
 
@@ -39,19 +44,18 @@ export const renderNestedRoute = (
     parent?: NestedRoute;
     DeferredDataComponent?: DeferredDataComponentType;
     props?: Record<string, any>;
-    reporter?: Reporter;
   } = {},
 ) => {
   const { children, index, id, component, isRoot, lazyImport, config, handle } =
     nestedRoute;
   const Component = component as unknown as React.ComponentType<any>;
-  const { parent, DeferredDataComponent, props = {}, reporter } = options;
+  const { parent, props = {} } = options;
 
   const routeProps: Omit<RouteProps, 'children' | 'lazy'> = {
     caseSensitive: nestedRoute.caseSensitive,
     path: nestedRoute.path,
     id: nestedRoute.id,
-    loader: createLoader(nestedRoute, reporter),
+    loader: createLoader(nestedRoute),
     action: nestedRoute.action,
     hasErrorBoundary: nestedRoute.hasErrorBoundary,
     shouldRevalidate: nestedRoute.shouldRevalidate,
@@ -86,14 +90,7 @@ export const renderNestedRoute = (
     } else if (isLoadableComponent(Component) && lazyImport) {
       element = <Component />;
     } else if (isRoot) {
-      element = (
-        <>
-          <Component {...props} />
-          {typeof document === 'undefined' && DeferredDataComponent && (
-            <DeferredDataComponent nonce={props?.nonce} />
-          )}
-        </>
-      );
+      element = <Component {...props} />;
     } else if (lazyImport) {
       element = (
         <Suspense fallback={null}>
@@ -116,10 +113,13 @@ export const renderNestedRoute = (
     routeProps.element = element;
   }
 
+  if (nestedRoute.loading) {
+    routeProps.hydrateFallbackElement = <nestedRoute.loading />;
+  }
+
   const childElements = children?.map(childRoute => {
     return renderNestedRoute(childRoute, {
       parent: nestedRoute,
-      reporter,
     });
   });
 
@@ -134,25 +134,59 @@ export const renderNestedRoute = (
   return routeElement;
 };
 
-function createLoader(route: NestedRoute, reporter?: Reporter): LoaderFunction {
+function isPlainObject(value: any): value is Record<string, any> {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype
+  );
+}
+
+// Loaders start downloading the route module early and do not wait for it.
+// A failure here must not surface as an unhandled rejection: the component's
+// own import retries the chunk and reports the real error to the route's
+// error boundary.
+function preloadRouteModule(lazyImport: () => Promise<unknown>) {
+  lazyImport().catch(() => {});
+}
+
+function createLoader(route: NestedRoute): LoaderFunction {
   const { loader } = route;
   if (loader) {
     return async (args: LoaderFunctionArgs) => {
       if (typeof route.lazyImport === 'function') {
-        route.lazyImport();
+        preloadRouteModule(route.lazyImport);
       }
       const end = time();
       const res = await loader(args);
+      let activeDeferreds = null;
+      if (typeof document === 'undefined') {
+        activeDeferreds = (await getAsyncLocalStorage())?.useContext()
+          ?.activeDeferreds as Map<string, DeferredData>;
+      } else {
+        activeDeferreds = originalActiveDeferreds;
+      }
+      if (isPlainObject(res)) {
+        const deferredData = privateDefer(res);
+        activeDeferreds.set(route.id!, deferredData);
+      }
+
       const cost = end();
-      if (typeof document === 'undefined' && reporter) {
-        reporter?.reportTiming(`${LOADER_REPORTER_NAME}-${route.id}`, cost);
+      if (typeof document === 'undefined') {
+        const storage = await getAsyncLocalStorage();
+        storage
+          ?.useContext()
+          .monitors?.timing(
+            `${LOADER_REPORTER_NAME}-${route.id?.replace(/\//g, '_')}`,
+            cost,
+          );
       }
       return res;
     };
   } else {
     return () => {
       if (typeof route.lazyImport === 'function') {
-        route.lazyImport();
+        preloadRouteModule(route.lazyImport);
       }
       return null;
     };

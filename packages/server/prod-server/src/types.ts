@@ -1,17 +1,19 @@
-import {
+import type {
+  CreateDefaultPluginsOptions,
   ServerBaseOptions,
-  BindRenderHandleOptions,
-} from '@modern-js/server-core/base';
-import { Reporter } from '@modern-js/types';
-import { Logger } from '@modern-js/utils';
+  ServerPlugin,
+} from '@modern-js/server-core';
+import type { Reporter } from '@modern-js/types';
+import type { Logger } from '@modern-js/utils';
 
-interface MonitorOptions {
-  logger?: Logger;
+interface ProdServerExtraOptions {
+  serverConfigPath: string;
+  plugins?: ServerPlugin[];
 }
 
 export type ProdServerOptions = ServerBaseOptions &
-  Omit<BindRenderHandleOptions, 'templates'> &
-  MonitorOptions;
+  ProdServerExtraOptions &
+  CreateDefaultPluginsOptions;
 
 export type BaseEnv = {
   Variables: {

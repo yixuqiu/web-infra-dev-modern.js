@@ -1,13 +1,52 @@
-import React, { ReactElement } from 'react';
+// biome-ignore lint/style/useImportType: <explanation>
+import React, { type ReactElement } from 'react';
 import { Body } from './Body';
 import { DocumentStructureContext } from './DocumentStructureContext';
 import { Head } from './Head';
+import { Links } from './Links';
+import { Root } from './Root';
+import { Scripts } from './Scripts';
 
 /**
- * get the directly son element
+ * get the directly son element by name
  */
-function findTargetChild(tag: string, children: ReactElement[]) {
+function findTargetChildByName(tag: string, children: ReactElement[]) {
   return children.find(item => getEleType(item) === tag);
+}
+
+/**
+ * get the directly son element by component reference
+ */
+function findTargetChildByComponent(
+  component: unknown,
+  children: ReactElement[],
+) {
+  return children.find(item => item?.type === component);
+}
+
+/**
+ * get the children(grandChild included) with target component reference
+ * @param component the component reference
+ * @param children son element
+ * @returns target element
+ */
+function findTargetElementByComponent(
+  component: unknown,
+  children: ReactElement<any>[],
+): ReactElement<{ children?: ReactElement<any> }> | null {
+  if (children.length === 0) {
+    return null;
+  }
+  let nextChildren: ReactElement<{ children: ReactElement<any> }>[] = [];
+  for (const item of children) {
+    if (item?.type === component) {
+      return item;
+    }
+    if (item?.props?.children) {
+      nextChildren = nextChildren.concat(item.props.children);
+    }
+  }
+  return findTargetElementByComponent(component, nextChildren);
 }
 
 /**
@@ -26,12 +65,12 @@ function getEleType(ele: ReactElement) {
  */
 function findTargetElement(
   tag: string,
-  children: ReactElement[],
-): ReactElement | null {
+  children: ReactElement<any>[],
+): ReactElement<{ children?: ReactElement<any> }> | null {
   if (children.length === 0) {
     return null;
   }
-  let nextChildren: ReactElement[] = [];
+  let nextChildren: ReactElement<{ children: ReactElement<any> }>[] = [];
   for (const item of children) {
     if (tag === getEleType(item)) {
       return item;
@@ -49,11 +88,26 @@ export function Html(
   const { children, ...rest } = props;
 
   // deal with the component with default
-  const hasSetHead = Boolean(findTargetChild('Head', children));
-  const hasSetScripts = Boolean(findTargetElement('Scripts', children));
-  const hasSetLinks = Boolean(findTargetElement('Links', children));
-  const hasSetBody = Boolean(findTargetChild('Body', children));
-  const hasSetRoot = Boolean(findTargetElement('Root', children));
+  const hasSetHead = Boolean(
+    findTargetChildByComponent(Head, children) ||
+    findTargetChildByName('Head', children),
+  );
+  const hasSetScripts = Boolean(
+    findTargetElementByComponent(Scripts, children) ||
+    findTargetChildByName('Scripts', children),
+  );
+  const hasSetLinks = Boolean(
+    findTargetElementByComponent(Links, children) ||
+    findTargetChildByName('Links', children),
+  );
+  const hasSetBody = Boolean(
+    findTargetElementByComponent(Body, children) ||
+    findTargetChildByName('Body', children),
+  );
+  const hasSetRoot = Boolean(
+    findTargetElementByComponent(Root, children) ||
+    findTargetChildByName('Root', children),
+  );
   const hasSetTitle = Boolean(findTargetElement('title', children));
   const notMissMustChild = [
     hasSetHead,

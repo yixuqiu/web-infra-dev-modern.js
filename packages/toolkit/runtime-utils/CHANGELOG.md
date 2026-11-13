@@ -1,5 +1,827 @@
 # @modern-js/runtime-utils
 
+## 3.11.3
+
+### Patch Changes
+
+- @modern-js/types@3.11.3
+- @modern-js/utils@3.11.3
+
+## 3.11.2
+
+### Patch Changes
+
+- @modern-js/types@3.11.2
+- @modern-js/utils@3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- Updated dependencies [b11c3cd]
+  - @modern-js/types@3.11.1
+  - @modern-js/utils@3.11.1
+
+## 3.11.0
+
+### Patch Changes
+
+- 6a50ea0: fix: keep "=" characters inside cookie values when parsing the SSR request cookie header
+
+  fix: 解析 SSR 请求的 Cookie 请求头时保留 Cookie 值中的 "=" 字符
+
+  - @modern-js/types@3.11.0
+  - @modern-js/utils@3.11.0
+
+## 3.10.4
+
+### Patch Changes
+
+- @modern-js/types@3.10.4
+- @modern-js/utils@3.10.4
+
+## 3.10.3
+
+### Patch Changes
+
+- @modern-js/types@3.10.3
+- @modern-js/utils@3.10.3
+
+## 3.10.2
+
+### Patch Changes
+
+- 76c675d: perf: reuse the static handler of data loader requests and match the entry without sorting the server routes on every request
+
+  perf: 数据加载请求复用 static handler，并且匹配入口时不再在每次请求时排序服务端路由
+
+- b1c1018: perf: calculate the size of Buffer and string values in the memory cache without `JSON.stringify`, binary files are now counted by their real size, so the default 256 MB cache can hold up to 256 MB of them instead of about 71 MB
+
+  perf: 内存缓存计算 Buffer 和字符串大小时不再使用 `JSON.stringify` 序列化，二进制文件按真实大小计算，默认 256 MB 缓存可以存放约 256 MB 的文件，而不是原来的约 71 MB
+
+  - @modern-js/types@3.10.2
+  - @modern-js/utils@3.10.2
+
+## 3.10.1
+
+### Patch Changes
+
+- @modern-js/types@3.10.1
+- @modern-js/utils@3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- 9a766ec: fix(runtime): keep the original error when a route module fails to load
+  fix(runtime): 路由模块加载失败时保留原始错误
+
+  Preserve module initialization errors across preloads and repeated imports in SSR server bundles, without changing browser bundle error handling.
+  SSR server bundle 在 preload 和重复 import 后仍保留模块初始化的原始 error，不改变 browser bundle 的错误处理。
+
+- Updated dependencies [14c23d0]
+  - @modern-js/types@3.10.0
+  - @modern-js/utils@3.10.0
+
+## 3.9.3
+
+### Patch Changes
+
+- a9c110f: fix: emit completion scripts for deferred fields serialized as pending during streaming SSR
+
+  fix: 流式 SSR 中，初始序列化为等待状态的 deferred 字段完成后发送通知
+
+  - @modern-js/types@3.9.3
+  - @modern-js/utils@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- @modern-js/types@3.9.2
+- @modern-js/utils@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- 2e6d853: fix: use conventional route loading components as hydration fallbacks while initial route data is loading
+
+  fix: 初始路由数据加载期间使用约定式路由的 loading 组件作为 hydration fallback
+
+  - @modern-js/types@3.9.1
+  - @modern-js/utils@3.9.1
+
+## 3.9.0
+
+### Patch Changes
+
+- @modern-js/types@3.9.0
+- @modern-js/utils@3.9.0
+
+## 3.8.3
+
+### Patch Changes
+
+- @modern-js/types@3.8.3
+- @modern-js/utils@3.8.3
+
+## 3.8.2
+
+### Patch Changes
+
+- @modern-js/types@3.8.2
+- @modern-js/utils@3.8.2
+
+## 3.8.1
+
+### Patch Changes
+
+- @modern-js/types@3.8.1
+- @modern-js/utils@3.8.1
+
+## 3.8.0
+
+### Patch Changes
+
+- Updated dependencies [b3a0709]
+  - @modern-js/utils@3.8.0
+  - @modern-js/types@3.8.0
+
+## 3.7.0
+
+### Patch Changes
+
+- @modern-js/types@3.7.0
+- @modern-js/utils@3.7.0
+
+## 3.6.0
+
+### Minor Changes
+
+- c34b53d: refactor: drop React 17 support and import react-dom/client statically in the browser runtime
+  refactor: 浏览器运行时移除 React 17 支持，并改为静态引入 react-dom/client
+
+### Patch Changes
+
+- @modern-js/types@3.6.0
+- @modern-js/utils@3.6.0
+
+## 3.5.0
+
+### Patch Changes
+
+- @modern-js/types@3.5.0
+- @modern-js/utils@3.5.0
+
+## 3.4.0
+
+### Patch Changes
+
+- @modern-js/types@3.4.0
+- @modern-js/utils@3.4.0
+
+## 3.3.0
+
+### Patch Changes
+
+- @modern-js/types@3.3.0
+- @modern-js/utils@3.3.0
+
+## 3.2.2
+
+### Patch Changes
+
+- @modern-js/types@3.2.2
+- @modern-js/utils@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [2aa5253]
+  - @modern-js/utils@3.2.1
+  - @modern-js/types@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- @modern-js/types@3.2.0
+- @modern-js/utils@3.2.0
+
+## 3.1.5
+
+### Patch Changes
+
+- @modern-js/utils@3.1.5
+- @modern-js/types@3.1.5
+
+## 3.1.4
+
+### Patch Changes
+
+- @modern-js/types@3.1.4
+- @modern-js/utils@3.1.4
+
+## 3.1.3
+
+### Patch Changes
+
+- @modern-js/types@3.1.3
+- @modern-js/utils@3.1.3
+
+## 3.1.2
+
+### Patch Changes
+
+- @modern-js/types@3.1.2
+- @modern-js/utils@3.1.2
+
+## 3.1.1
+
+### Patch Changes
+
+- @modern-js/types@3.1.1
+- @modern-js/utils@3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [65a06b3]
+- Updated dependencies [0fc8c26]
+  - @modern-js/utils@3.1.0
+  - @modern-js/types@3.1.0
+
+## 3.0.5
+
+### Patch Changes
+
+- @modern-js/types@3.0.5
+- @modern-js/utils@3.0.5
+
+## 3.0.4
+
+### Patch Changes
+
+- @modern-js/types@3.0.4
+- @modern-js/utils@3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- @modern-js/types@3.0.3
+- @modern-js/utils@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @modern-js/types@3.0.2
+- @modern-js/utils@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @modern-js/types@3.0.1
+- @modern-js/utils@3.0.1
+
+## 3.0.0
+
+### Minor Changes
+
+- ecd247c: feat: esm runtime
+
+### Patch Changes
+
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0
+  - @modern-js/utils@3.0.0
+
+## 3.0.0-alpha.2
+
+### Minor Changes
+
+- ecd247c: feat: esm runtime
+
+### Patch Changes
+
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0-alpha.2
+  - @modern-js/utils@3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0-alpha.1
+  - @modern-js/utils@3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0-alpha.0
+  - @modern-js/utils@3.0.0-alpha.0
+
+## 2.68.1
+
+### Patch Changes
+
+- @modern-js/types@2.68.1
+- @modern-js/utils@2.68.1
+
+## 2.68.0
+
+### Patch Changes
+
+- @modern-js/types@2.68.0
+- @modern-js/utils@2.68.0
+
+## 2.67.11
+
+### Patch Changes
+
+- @modern-js/types@2.67.11
+- @modern-js/utils@2.67.11
+
+## 2.67.10
+
+### Patch Changes
+
+- @modern-js/types@2.67.10
+- @modern-js/utils@2.67.10
+
+## 2.67.9
+
+### Patch Changes
+
+- @modern-js/types@2.67.9
+- @modern-js/utils@2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- Updated dependencies [23c8201]
+  - @modern-js/utils@2.67.8
+  - @modern-js/types@2.67.8
+
+## 2.67.7
+
+### Patch Changes
+
+- @modern-js/types@2.67.7
+- @modern-js/utils@2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- Updated dependencies [e67b6d0]
+  - @modern-js/types@2.67.6
+  - @modern-js/utils@2.67.6
+
+## 2.67.5
+
+### Patch Changes
+
+- @modern-js/types@2.67.5
+- @modern-js/utils@2.67.5
+
+## 2.67.4
+
+### Patch Changes
+
+- 3a66335: feat: support getKey for cache funtion
+  feat: 为 cahce 函数支持 getKey
+- 03cf233: fix(router): replace slashes in route ID for loader timing reporting
+  fix(router): 为 server timing 替换 route id 中的 "/"
+- 446939a: feat(cache): support customKey for cache
+  feat(cache): 为缓存支持 customKey 函数
+- 446939a: feat: support unstable_shouldDisable
+  feat: 支持 unstable_shouldDisable
+- b00922e: feat: support plugin-router-v7
+  feat: support plugin-router-v7
+- 446939a: feat: support cache statistics
+  feat: 支持缓存命中率统计
+  - @modern-js/types@2.67.4
+  - @modern-js/utils@2.67.4
+
+## 2.67.3
+
+### Patch Changes
+
+- Updated dependencies [f6b81dd]
+  - @modern-js/types@2.67.3
+  - @modern-js/utils@2.67.3
+
+## 2.67.2
+
+### Patch Changes
+
+- 8f97aae: fix(deploy): fix the deploy problem for netlify
+  fix(deploy): 修复部署 netlify 的问题
+  - @modern-js/types@2.67.2
+  - @modern-js/utils@2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- Updated dependencies [1d96265]
+  - @modern-js/types@2.67.1
+  - @modern-js/utils@2.67.1
+
+## 2.67.0
+
+### Patch Changes
+
+- @modern-js/types@2.67.0
+- @modern-js/utils@2.67.0
+
+## 2.66.0
+
+### Patch Changes
+
+- @modern-js/types@2.66.0
+- @modern-js/utils@2.66.0
+
+## 2.65.5
+
+### Patch Changes
+
+- 90a3c1c: fix(cache): handle different functions with same parameters for cache function
+  fix(cache): 正确处理使用 cache 函数时，不同函数，相同参数的 case
+- 58a1afd: feat: Add response APIs to support setting response headers, status codes, and redirects
+  feat: 添加一些响应的 API，可以设置响应头，状态码，及重定向
+  - @modern-js/types@2.65.5
+  - @modern-js/utils@2.65.5
+
+## 2.65.4
+
+### Patch Changes
+
+- f1cd095: feat: Modern.js server static middleware should always use system fs
+  feat: Modern.js 的静态中间件应该始终使用系统 fs
+- Updated dependencies [0d47cb8]
+  - @modern-js/utils@2.65.4
+  - @modern-js/types@2.65.4
+
+## 2.65.3
+
+### Patch Changes
+
+- 087ae7c: feat: Add response APIs to support setting response headers, status codes, and redirects
+  feat: 添加一些响应的 API，可以设置响应头，状态码，及重定向
+- Updated dependencies [b337977]
+  - @modern-js/types@2.65.3
+  - @modern-js/utils@2.65.3
+
+## 2.65.2
+
+### Patch Changes
+
+- 793be44: feat: support get monitors in Data Loader and Component
+  feat: 在 Data Loader 和组件中支持获取 monitors
+- 1fe923c: chore: use monitors instead of reporter to report Data Loader cost
+  chore: 使用 monitors 代替 reporter 来上报 Data Loader 耗时
+- 8837b85: feat(runtime): support cache function & getRequest function
+  feat(runtime): 支持 cache 函数 和 getRequest 函数
+- Updated dependencies [793be44]
+- Updated dependencies [1f83d96]
+  - @modern-js/types@2.65.2
+  - @modern-js/utils@2.65.2
+
+## 2.65.1
+
+### Patch Changes
+
+- @modern-js/utils@2.65.1
+
+## 2.65.0
+
+### Patch Changes
+
+- @modern-js/utils@2.65.0
+
+## 2.64.3
+
+### Patch Changes
+
+- @modern-js/utils@2.64.3
+
+## 2.64.2
+
+### Patch Changes
+
+- @modern-js/utils@2.64.2
+
+## 2.64.1
+
+### Patch Changes
+
+- @modern-js/utils@2.64.1
+
+## 2.64.0
+
+### Patch Changes
+
+- @modern-js/utils@2.64.0
+
+## 2.63.7
+
+### Patch Changes
+
+- @modern-js/utils@2.63.7
+
+## 2.63.6
+
+### Patch Changes
+
+- @modern-js/utils@2.63.6
+
+## 2.63.5
+
+### Patch Changes
+
+- @modern-js/utils@2.63.5
+
+## 2.63.4
+
+### Patch Changes
+
+- @modern-js/utils@2.63.4
+
+## 2.63.3
+
+### Patch Changes
+
+- @modern-js/utils@2.63.3
+
+## 2.63.2
+
+### Patch Changes
+
+- Updated dependencies [5fc95f7]
+- Updated dependencies [53e3ae0]
+  - @modern-js/utils@2.63.2
+
+## 2.63.1
+
+### Patch Changes
+
+- @modern-js/utils@2.63.1
+
+## 2.63.0
+
+### Patch Changes
+
+- @modern-js/utils@2.63.0
+
+## 2.62.1
+
+### Patch Changes
+
+- 86213ae: chore: add a server directory for universal server utils
+  chore: 添加一个 server 目录用于存放通用的服务端工具函数
+  - @modern-js/utils@2.62.1
+
+## 2.62.0
+
+### Patch Changes
+
+- @modern-js/utils@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- Updated dependencies [45230e2]
+  - @modern-js/utils@2.61.0
+
+## 2.60.6
+
+### Patch Changes
+
+- c4894e6: fix(runtime-utils): the normalizePathname should handles multiple slashes
+  fix(runtime-utils): normalizePathname 函数应该处理好多个 / 的情况
+  - @modern-js/utils@2.60.6
+
+## 2.60.5
+
+### Patch Changes
+
+- @modern-js/utils@2.60.5
+
+## 2.60.4
+
+### Patch Changes
+
+- c87813e: fix: upgrade react-router & log in debug mode only
+  fix: 更新 react-router 到最新版 & 只在 debug 模式下打印日志
+  - @modern-js/utils@2.60.4
+
+## 2.60.3
+
+### Patch Changes
+
+- Updated dependencies [303331c]
+  - @modern-js/utils@2.60.3
+
+## 2.60.2
+
+### Patch Changes
+
+- Updated dependencies [8a709bc]
+  - @modern-js/utils@2.60.2
+
+## 2.60.1
+
+### Patch Changes
+
+- @modern-js/utils@2.60.1
+
+## 2.60.0
+
+### Patch Changes
+
+- @modern-js/utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- @modern-js/utils@2.59.0
+
+## 2.58.3
+
+### Patch Changes
+
+- @modern-js/utils@2.58.3
+
+## 2.58.2
+
+### Patch Changes
+
+- 7715b6d: feat: update codesmith version
+
+  feat: 更新 codesmith 版本
+
+- 44c1bc4: feat(server): support esm
+  feat(server): support esm
+- Updated dependencies [a1a9373]
+  - @modern-js/utils@2.58.2
+
+## 2.58.1
+
+### Patch Changes
+
+- @modern-js/utils@2.58.1
+
+## 2.58.0
+
+### Patch Changes
+
+- @modern-js/utils@2.58.0
+
+## 2.57.1
+
+### Patch Changes
+
+- @modern-js/utils@2.57.1
+
+## 2.57.0
+
+### Patch Changes
+
+- 916559a: fix: mergeConfig function to return an object when the first configuration is not an object
+
+  fix: 修复 mergeConfig 函数，使其在第一个配置非对象时返回对象
+
+- dc736ef: feat: Support Runtime Plugin Communication
+
+  feat: 支持 Runtime 插件通信
+
+- Updated dependencies [2515b00]
+  - @modern-js/utils@2.57.0
+
+## 2.56.2
+
+### Patch Changes
+
+- @modern-js/utils@2.56.2
+
+## 2.56.1
+
+### Patch Changes
+
+- @modern-js/utils@2.56.1
+
+## 2.56.0
+
+### Patch Changes
+
+- @modern-js/utils@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- Updated dependencies [bbcf55a]
+  - @modern-js/utils@2.55.0
+
+## 2.54.6
+
+### Patch Changes
+
+- @modern-js/utils@2.54.6
+
+## 2.54.5
+
+### Patch Changes
+
+- @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Patch Changes
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 85ac453: feat: support control status code by data loader
+  feat: 支持通过 data loader 控制页面状态码
+
+### Patch Changes
+
+- @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

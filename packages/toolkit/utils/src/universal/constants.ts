@@ -1,5 +1,3 @@
-import { InternalPlugins } from '@modern-js/types';
-
 /**
  * Property mounted on window that describes route manifest
  */
@@ -9,11 +7,6 @@ export const ROUTE_MANIFEST = `_MODERNJS_ROUTE_MANIFEST`;
  * Property mounted on window that record all route modules
  */
 export const ROUTE_MODULES = `_routeModules`;
-
-/**
- * hmr socket connect path
- */
-export const HMR_SOCK_PATH = '/webpack-hmr';
 
 /**
  * html placeholder
@@ -41,6 +34,11 @@ export const NESTED_ROUTE_SPEC_FILE = 'nestedRoutes.json';
 export const MAIN_ENTRY_NAME = 'main';
 
 /**
+ * default entry name
+ */
+export const DEFAULT_ENTRY_NAME = 'index';
+
+/**
  * server side bundles directory, which relative to dist.
  */
 export const SERVER_BUNDLE_DIRECTORY = 'bundles';
@@ -51,16 +49,10 @@ export const SERVER_BUNDLE_DIRECTORY = 'bundles';
 export const SERVER_RENDER_FUNCTION_NAME = 'serverRender';
 
 export const SERVER_PLUGIN_BFF = '@modern-js/plugin-bff';
-export const SERVER_PLUGIN_EXPRESS = '@modern-js/plugin-express';
-export const SERVER_PLUGIN_KOA = '@modern-js/plugin-koa';
-export const SERVER_PLUGIN_SERVER = '@modern-js/plugin-server';
 export const SERVER_PLUGIN_POLYFILL = '@modern-js/plugin-polyfill';
 
-// Todo remove it.
-export const INTERNAL_SERVER_PLUGINS: InternalPlugins = {
-  [SERVER_PLUGIN_BFF]: '@modern-js/plugin-bff/server',
-  [SERVER_PLUGIN_EXPRESS]: '@modern-js/plugin-express/server',
-  [SERVER_PLUGIN_KOA]: '@modern-js/plugin-koa/server',
-  [SERVER_PLUGIN_SERVER]: '@modern-js/plugin-server/server',
-  [SERVER_PLUGIN_POLYFILL]: '@modern-js/plugin-polyfill/server',
-};
+/**
+ * React useId identifier prefix for SSR hydration consistency
+ * Ensures server and client generate the same ID prefixes
+ */
+export const SSR_HYDRATION_ID_PREFIX = 'modern-js-';

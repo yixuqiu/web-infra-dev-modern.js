@@ -1,0 +1,83 @@
+{
+  "name": "@modern-js/render",
+  "description": "A Progressive React Framework for modern web development.",
+  "homepage": "https://modernjs.dev",
+  "bugs": "https://github.com/web-infra-dev/modern.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web-infra-dev/modern.js",
+    "directory": "packages/runtime/render"
+  },
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "framework",
+    "modern",
+    "modern.js"
+  ],
+  "version": "3.11.3",
+  "files": [
+    "dist",
+    "hook.d.ts"
+  ],
+  "scripts": {
+    "prepublishOnly": "only-allow-pnpm",
+    "dev": "rs lib --watch",
+    "build": "rs lib",
+    "test": "rstest --passWithNoTests",
+    "test:build": "pnpm run build && node --test tests/build.test.mjs"
+  },
+  "dependencies": {
+    "@modern-js/types": "workspace:*",
+    "@modern-js/utils": "workspace:*",
+    "@swc/helpers": "^0.5.17"
+  },
+  "devDependencies": {
+    "@modern-js/rslib": "workspace:*",
+    "@modern-js/server-core": "workspace:*",
+    "@scripts/rstest-config": "workspace:*",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-server-dom-rspack": "0.1.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "react": ">=18.3.1",
+    "react-dom": ">=18.3.1",
+    "react-server-dom-rspack": "0.1.0"
+  },
+  "exports": {
+    "./ssr": {
+      "types": "./dist/types/server/ssr/index.d.ts",
+      "default": "./dist/esm/server/ssr/index.js"
+    },
+    "./rsc": {
+      "types": "./dist/types/server/rsc/index.d.ts",
+      "default": "./dist/esm/server/rsc/index.js"
+    },
+    "./client": {
+      "types": "./dist/types/client/index.d.ts",
+      "default": "./dist/esm/client/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "ssr": [
+        "./dist/types/server/ssr/index.d.ts"
+      ],
+      "rsc": [
+        "./dist/types/server/rsc/index.d.ts"
+      ],
+      "client": [
+        "./dist/types/client/index.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}

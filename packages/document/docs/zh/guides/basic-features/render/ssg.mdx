@@ -1,0 +1,226 @@
+---
+title: 静态站点生成（SSG）
+---
+
+# 静态站点生成（SSG）
+
+SSG（Static Site Generation）是一种基于数据与模板，在构建时渲染完整静态网页的技术解决方案。这意味着在生产环境中，页面默认就是有内容的，并且可以被 CDN 缓存。对于无需数据的页面，SSG 可以提供更好的性能和更高的安全性。
+
+## 启用 SSG
+
+import EnableSSG from '@site-docs/components/enable-ssg';
+
+<EnableSSG />
+
+## 开发环境调试
+
+SSG 也是在 Node.js 环境渲染页面，因此我们可以在**开发阶段开启 SSR**，提前暴露代码问题，验证 SSG 渲染效果：
+
+```ts title="modern.config.ts"
+export default defineConfig({
+  server: {
+    ssr: process.env.NODE_ENV === 'development',
+  }
+}
+```
+
+## 在约定式路由中使用
+
+**约定式路由**中，Modern.js 根据入口下的文件结构生成路由，因此框架能够收集完整的路由信息。
+
+### 基本用法
+
+例如，以下是一个使用约定式路由的项目目录结构：
+
+```bash
+.
+└── routes
+    ├── layout.tsx
+    ├── page.tsx
+    └── user
+        ├── layout.tsx
+        ├── page.tsx
+        └── profile
+            └── page.tsx
+```
+
+上述文件目录将会生成以下三条路由：
+
+- `/`
+- `/user`
+- `/user/profile`
+
+:::tip
+如果还不了解约定式路由的规则，可以先查看[路由方案](/guides/basic-features/routes/routes)。
+
+:::
+
+在 `src/routes/page.tsx` 中添加组件代码：
+
+```jsx title="src/routes/page.tsx"
+export default () => {
+  return <div>Index Page</div>;
+};
+```
+
+在项目根路径下执行 `pnpm run dev` 命令，查看 `dist/` 目录，此时只生成一个 HTML 文件 `main/index.html`。
+
+在项目根路径下执行 `pnpm run build` 命令，构建完成后，查看 `dist/` 目录，此时生成 `main/index.html`、`main/user/index.html` 和 `main/user/profile/index.html` 三个 HTML 文件，内容分别对应上述三条路由。
+
+**约定式路由**中的每一条路由，都会生成一个单独的 HTML 文件。查看 `main/index.html`，可以发现包含 `Index Page` 的文本内容，这正是 SSG 的效果。
+
+执行 `pnpm run serve` 启动项目后，访问页面，在浏览器我们工具的 Network 窗口，查看请求返回的文档，文档包含组件渲染后的完整页面内容。
+
+## 在自控式路由中使用
+
+**自控式路由**是通过组件代码定义路由，需要应用运行起来才能获取准确的路由信息。因此，无法开箱即用的使用 SSG 功能。开发者需要通过配置告知 Modern.js 框架，哪些路由需要开启 SSG 功能。
+
+例如有以下代码，包含多条路由，设置 `output.ssg` 为 `true` 时，默认只会渲染入口路由即 `/`：
+
+import SelfRouteExample from '@site-docs/components/self-route-example';
+
+<SelfRouteExample />
+
+如果我们希望同时开启 `/about` 的 SSG 功能，可以配置 `output.ssg`：
+
+```ts title="modern.config.ts"
+export default defineConfig({
+  output: {
+    ssg: {
+      routes: ['/', '/about'],
+    },
+  },
+});
+```
+
+执行 `pnpm run build` 后，可以看到 `dist/` 目录中，新增了一个 `main/about/index.html` 文件。
+
+执行 `pnpm run serve` 启动项目后，访问页面，在浏览器我们工具的 Network 窗口，查看请求返回的文档，文档包含组件渲染后的完整页面内容。
+
+:::info
+以上仅介绍了单入口的情况，更多相关内容可以查看 [API 文档](/configure/app/output/ssg)。
+:::
+
+## 添加动态路由
+
+在自控式路由或包含动态段的约定式路由（如 `/user/[id]`）中，直接在 `routes` 中写入具体路径。
+
+```js
+export default defineConfig({
+  output: {
+    ssg: {
+      routes: ['/', '/about', '/user/modernjs'],
+    },
+  },
+});
+```
+
+## 父子路由的 SSG 匹配
+
+以博客为例，`src/routes/blog/page.tsx` 是列表页，`src/routes/blog/[slug]/page.tsx` 是文章页。启用 SSG 后，可以同时预渲染列表页和指定的文章页：
+
+{/* prettier-ignore */}
+```ts title="modern.config.ts"
+export default defineConfig({
+  output: {
+    ssg: {
+      routes: ['/blog', '/blog/hello'],
+    },
+  },
+})
+```
+
+两条路径分别生成自己的静态 HTML。使用内置生产服务器访问时，SSG 页面按路径精确匹配：
+
+| 请求路径               | 处理方式                          |
+| ---------------------- | --------------------------------- |
+| `/blog`                | 返回博客列表页的静态 HTML         |
+| `/blog/hello`          | 返回文章页的静态 HTML             |
+| `/blog/does-not-exist` | 未命中 SSG 页面，交给可用入口处理 |
+
+访问 `/blog/` 这样的尾部斜杠形式时，服务器会通过 HTTP 308 重定向到 `/blog`，并保留查询参数。例如，`/blog/?preview=1` 会重定向到 `/blog?preview=1`。
+
+`/blog` 的 SSG 页面不会作为 `/blog/*` 的回退页面。即使应用定义了 `[slug]` 动态路由，也不会自动为所有 slug 生成静态 HTML，需要在 `routes` 中列出具体路径。
+
+上例没有启用 SSR，也没有预渲染根入口 `/`，因此未命中的路径会返回根入口的 CSR 页面壳，由浏览器中的路由继续处理。此时初始 HTML 响应通常为 HTTP 200，不会因为路径中包含未知 slug 就在服务端返回 404。
+
+如果存在匹配的 SSR 入口，则由 SSR 渲染决定响应内容和状态码。没有可用入口时，服务器返回 404。如果将根入口 `/` 也配置为 SSG，它同样只匹配自身，不再提供通配回退。
+
+## 处理预渲染时的 404
+
+继续上例，如果将 `/blog/scheduled` 加入 `output.ssg.routes`，但文章尚未发布，loader 可以在构建时抛出 404。以下示例中，`getPost` 是业务侧的文章查询函数，`publishedAt` 是以毫秒为单位的发布时间戳：
+
+{/* prettier-ignore */}
+```ts title="src/routes/blog/[slug]/page.data.ts"
+import { getPost } from '@/data/posts'
+
+export const loader = async ({ params }: { params: { slug: string } }) => {
+  const post = await getPost(params.slug)
+  if (!post || post.publishedAt > Date.now()) {
+    throw new Response('Not Found', { status: 404 })
+  }
+  return post
+}
+```
+
+预渲染收到 404 或其他非 2xx 响应时，会：
+
+- 输出包含路径和状态码的构建警告。
+- 跳过该页面的静态 HTML 文件和 SSG 路由注册。
+- 继续生成其他正常响应的页面。
+
+因此，错误页面不会被保存成之后以 HTTP 200 返回的静态页面。访问 `/blog/scheduled` 时，会按照上一节的入口回退规则处理，构建时的 404 不会被保存为该路径的运行时响应状态。
+
+SSG 只在构建时生成页面，文章到达发布时间后不会自动补生成静态 HTML。需要重新构建并部署，才能生成该文章的 SSG 页面。
+
+## 多入口
+
+多入口应用请通过 `output.ssgByEntries` 按入口分别配置：
+
+```js
+export default defineConfig({
+  output: {
+    ssgByEntries: {
+      home: {
+        routes: ['/', '/about', '/user/modernjs'],
+      },
+      admin: false,
+    },
+  },
+});
+```
+
+:::info
+详细配置请参考：[output.ssgByEntries](/configure/app/output/ssgByEntries)
+:::
+
+## 配置渲染请求头
+
+Modern.js 支持为具体入口或路由配置请求头，例如：
+
+```js
+export default defineConfig({
+  output: {
+    ssg: {
+      headers: {
+        'x-tt-env': 'ppe_modernjs',
+      },
+      routes: [
+        '/',
+        {
+          url: '/about',
+          headers: {
+            from: 'modern-website',
+          },
+        },
+      ],
+    },
+  },
+});
+```
+
+上述配置中，为所有路由设置了 `x-tt-env` 请求头，单独为 `/about` 路由设置了 `from` 请求头。
+
+:::tip
+路由中设置的 `headers` 会覆盖入口中设置的 `headers`。
+:::

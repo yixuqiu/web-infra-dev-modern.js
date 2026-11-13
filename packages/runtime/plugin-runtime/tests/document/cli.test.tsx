@@ -1,87 +1,128 @@
-import path from 'path';
 import { existsSync } from 'fs';
-import { CliPlugin, IAppContext, manager } from '@modern-js/core';
+import path from 'path';
+import {
+  type CLIPluginAPI,
+  type Plugin,
+  createPluginManager,
+} from '@modern-js/plugin';
+import { createContext, initPluginAPI } from '@modern-js/plugin/cli';
+import { rs } from '@rstest/core';
 
-import { getBundleEntry } from '../../../../solutions/app-tools/src/analyze/getBundleEntry';
-import { documentPlugin, getDocumenByEntryName } from '../../src/document/cli';
+import type { AppTools, AppToolsContext } from '@modern-js/app-tools';
+import { getBundleEntry } from '../../../../solutions/app-tools/src/plugins/analyze/getBundleEntry';
+import { documentPlugin, getDocumentByEntryName } from '../../src/document/cli';
 
 describe('plugin runtime cli', () => {
-  const main = manager.clone().usePlugin(documentPlugin as CliPlugin);
-  let runner: any;
-
+  let pluginAPI: CLIPluginAPI<AppTools>;
+  const setup = async ({ appDirectory }: { appDirectory: string }) => {
+    const pluginManager = createPluginManager();
+    pluginManager.addPlugins([documentPlugin() as Plugin]);
+    const plugins = pluginManager.getPlugins();
+    const context = await createContext<AppTools>({
+      appContext: {
+        appDirectory,
+        plugins,
+      } as any,
+      config: {},
+      normalizedConfig: { plugins: [] } as any,
+    });
+    pluginAPI = initPluginAPI<AppTools>({
+      context,
+      pluginManager,
+    });
+    context.pluginAPI = pluginAPI;
+    for (const plugin of plugins) {
+      await plugin?.setup?.(pluginAPI);
+    }
+  };
   beforeAll(async () => {
-    runner = await main.init();
+    await setup({ appDirectory: path.join(__dirname, './feature') });
   });
-
   it('plugin is defined', () => {
     expect(documentPlugin).toBeDefined();
   });
 
   it('plugin-document cli config is defined', async () => {
-    const config = await runner.config();
+    const hooks = pluginAPI.getHooks();
+    const config = await hooks.config.call();
     expect(config.find((item: any) => item.tools)).toBeTruthy();
     expect(config.find((item: any) => item.tools.htmlPlugin)).toBeTruthy();
   });
 
   it('plugin-document htmlPlugin can return the right', async () => {
-    const mockAPI = {
-      useAppContext: jest.fn((): any => ({
-        internalDirectory: path.join(__dirname, './feature'),
-        appDirectory: path.join(__dirname, './feature'),
-        entrypoints: [
-          {
-            entryName: 'main',
-            absoluteEntryDir: path.join(__dirname, './feature'),
-          },
-        ],
-      })),
-    };
-    const cloned = manager.clone(mockAPI);
-    cloned.usePlugin(documentPlugin as CliPlugin);
-    const runner2 = await cloned.init();
-    const config = await runner2.config();
+    pluginAPI.updateAppContext({
+      internalDirectory: path.join(__dirname, './feature'),
+      appDirectory: path.join(__dirname, './feature'),
+      entrypoints: [
+        {
+          entryName: 'main',
+          absoluteEntryDir: path.join(__dirname, './feature'),
+        },
+      ],
+    });
+    const hooks = pluginAPI.getHooks();
+    const config = await hooks.config.call();
+    const { htmlPlugin } = (
+      config.find((item: any) => item.tools.htmlPlugin)! as any
+    ).tools;
 
-    const { htmlPlugin } = config.find(
-      (item: any) => item.tools.htmlPlugin,
-    )!.tools;
-
+    const templateParameters = rs.fn(async () => {
+      return {
+        title: 'abc',
+      };
+    });
     const mockBuilderOptions = {
-      templateParameters: () => {
-        return {
-          title: 'abc',
-        };
-      },
+      templateParameters,
       k: 'k',
     };
     const result = htmlPlugin(mockBuilderOptions, { entryName: 'main' });
+
+    // mock renderer to bypass child-compiler output in unit test
+    let documentParams: any;
+    (global as any).__MODERN_DOC_RENDERERS__ = {
+      main: (params: any) => {
+        documentParams = params;
+        return '<html><head></head><body>mock</body></html>';
+      },
+    };
 
     expect(result.k).toEqual(mockBuilderOptions.k);
     expect(result.templateParameters).toEqual(
       mockBuilderOptions.templateParameters,
     );
+    expect(templateParameters).not.toHaveBeenCalled();
     expect(Object.keys(result).length > 2).toBeTruthy();
     const htmlPluginFn = result.templateContent;
 
+    const compilation: Record<string, unknown> = {};
+    compilation.self = compilation;
     const html = await htmlPluginFn({
-      htmlWebpackPlugin: {
+      compilation,
+      htmlPlugin: {
         tags: {
           headTags: [],
           bodyTags: '',
         },
       },
+      rspackConfig: { name: 'client' },
+      title: 'abc',
+      asyncValue: 'resolved',
     });
     expect(html.includes('<!DOCTYPE html>')).toBeTruthy();
-    // the html file should existed
-    expect(
-      existsSync(path.join(__dirname, './feature/document/_main.html.js')),
-    ).toBeTruthy();
+    expect(documentParams.templateParams).toEqual({
+      title: 'abc',
+      asyncValue: 'resolved',
+    });
+    expect(() => JSON.stringify(documentParams.templateParams)).not.toThrow();
   });
-  it('when user config set empty entries and disableDefaultEntries true, should get the ', () => {
-    const entries = getBundleEntry(
+  it('when user config set empty entries and disableDefaultEntries true, should get the ', async () => {
+    const hooks: any = pluginAPI.getHooks();
+    const entries = await getBundleEntry(
+      hooks,
       {
         internalDirectory: path.join(__dirname, './feature'),
         appDirectory: path.join(__dirname, './feature'),
-      } as IAppContext,
+      } as AppToolsContext,
       {
         source: {
           disableDefaultEntries: true,
@@ -90,7 +131,7 @@ describe('plugin runtime cli', () => {
     );
     // empty entries
     expect(entries.length).toEqual(0);
-    const documentFile = getDocumenByEntryName(
+    const documentFile = getDocumentByEntryName(
       [],
       'main',
       path.join(__dirname, './feature'),

@@ -1,17 +1,22 @@
 import { join } from 'path';
-import { expect, test } from '@modern-js/e2e/playwright';
+import { expect, test } from '@playwright/test';
 import { build, getHrefByEntryName } from '../scripts/shared';
 
 const fixtures = __dirname;
 
-test('tools.rspack', async ({ page }) => {
-  const builder = await build<'rspack'>({
+test('tools.rspack', async ({ page }, testInfo) => {
+  const builder = await build({
     cwd: join(fixtures, 'source/global-vars'),
     entry: {
       main: join(fixtures, 'source/global-vars/src/index.ts'),
     },
     runServer: true,
     builderConfig: {
+      output: {
+        distPath: {
+          root: testInfo.outputPath('dist'),
+        },
+      },
       source: {
         define: {
           ENABLE_TEST: JSON.stringify(true),

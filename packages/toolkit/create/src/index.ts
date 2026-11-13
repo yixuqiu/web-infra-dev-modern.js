@@ -1,46 +1,257 @@
-import { Command } from '@modern-js/utils/commander';
-import { getLocaleLanguage } from '@modern-js/plugin-i18n/language-detector';
-import { createAction } from './createAction';
+import fs from 'node:fs';
+import path from 'node:path';
+import readline from 'node:readline';
+import { fileURLToPath } from 'node:url';
+import { getLocaleLanguage } from '@modern-js/i18n-utils/language-detector';
+import { runAgentsMd } from './agents-md';
 import { i18n, localeKeys } from './locale';
-import { cleanCacheAction } from './cleanCacheAction';
+import { createProject, parseTemplate } from './template';
 
-export default function () {
-  // initial cli language
-  i18n.changeLanguage({ locale: getLocaleLanguage() });
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-  const program = new Command();
+const detectLanguage = (): 'zh' | 'en' => {
+  const langIndex = process.argv.findIndex(
+    arg => arg === '--lang' || arg === '-l',
+  );
+  if (langIndex !== -1 && process.argv[langIndex + 1]) {
+    const lang = process.argv[langIndex + 1];
+    return lang === 'zh' ? 'zh' : 'en';
+  }
 
-  program
-    .command('clean-cache')
-    .description(i18n.t(localeKeys.command.cleanCache))
-    .action(cleanCacheAction);
+  const detectedLang = getLocaleLanguage();
+  if (detectedLang === 'zh') {
+    return 'zh';
+  }
 
-  program
-    .usage('[projectDir]')
-    .description(i18n.t(localeKeys.command.description))
-    .argument('[projectDir]')
-    .option('--version', i18n.t(localeKeys.command.version))
-    .option('--lang <lang>', i18n.t(localeKeys.command.lang))
-    .option('-c, --config <config>', i18n.t(localeKeys.command.config), '{}')
-    .option('-d,--debug', i18n.t(localeKeys.command.debug), false)
-    .option('--mwa', i18n.t(localeKeys.command.mwa), false)
-    .option('--module', i18n.t(localeKeys.command.module), false)
-    .option('--monorepo', i18n.t(localeKeys.command.monorepo), false)
-    .option('--generator <generator>', i18n.t(localeKeys.command.generator))
-    .option(
-      '-p, --plugin <plugin>',
-      i18n.t(localeKeys.command.plugin),
-      (val: string, memo: string[]) => {
-        memo.push(val);
-        return memo;
-      },
-      [],
-    )
-    .option('--dist-tag <distTag>', i18n.t(localeKeys.command.distTag), '')
-    .option('--packages <packages>', i18n.t(localeKeys.command.packages), '{}')
-    .option('--registry <registry>', i18n.t(localeKeys.command.registry), '')
-    .option('--no-need-install', i18n.t(localeKeys.command.noNeedInstall))
-    .action(createAction);
+  return 'en';
+};
 
-  program.parse(process.argv);
+i18n.changeLanguage({ locale: detectLanguage() });
+
+function showVersion() {
+  const createPackageJson = path.resolve(__dirname, '..', 'package.json');
+  const createPackage = JSON.parse(fs.readFileSync(createPackageJson, 'utf-8'));
+  const version = createPackage.version || 'unknown';
+  console.log(i18n.t(localeKeys.version.message, { version }));
+  process.exit(0);
 }
+
+function showHelp() {
+  console.log(i18n.t(localeKeys.help.title));
+  console.log(i18n.t(localeKeys.help.description));
+  console.log('');
+  console.log(i18n.t(localeKeys.help.usage));
+  console.log(i18n.t(localeKeys.help.usageExample));
+  console.log('');
+  console.log(i18n.t(localeKeys.help.options));
+  console.log(i18n.t(localeKeys.help.optionHelp));
+  console.log(i18n.t(localeKeys.help.optionVersion));
+  console.log(i18n.t(localeKeys.help.optionLang));
+  console.log(i18n.t(localeKeys.help.optionSub));
+  console.log(i18n.t(localeKeys.help.optionNoAgentsMd));
+  console.log(i18n.t(localeKeys.help.optionAgentsMdOnly));
+  console.log(i18n.t(localeKeys.help.optionTemplate));
+  console.log(
+    '  --mf                 Enable Module Federation for --template mcp-apps',
+  );
+  console.log('');
+  console.log(i18n.t(localeKeys.help.examples));
+  console.log(i18n.t(localeKeys.help.example1));
+  console.log(i18n.t(localeKeys.help.example2));
+  console.log(i18n.t(localeKeys.help.example3));
+  if (localeKeys.help.example4) {
+    console.log(i18n.t(localeKeys.help.example4));
+  }
+  console.log('');
+  console.log(i18n.t(localeKeys.help.moreInfo));
+  console.log('');
+  process.exit(0);
+}
+
+function promptInput(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise(resolve => {
+    rl.question(question, answer => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
+
+// flags that consume the next argument as their value
+const VALUE_FLAGS = ['--lang', '-l', '--template'];
+// flags that stand alone
+const BOOLEAN_FLAGS = [
+  '--help',
+  '-h',
+  '--version',
+  '-v',
+  '--sub',
+  '-s',
+  '--no-sub',
+  '--mf',
+  '--no-agents-md',
+  '--agents-md-only',
+];
+
+function detectSubprojectFlag(): boolean | null {
+  const args = process.argv.slice(2);
+  if (args.includes('--sub') || args.includes('-s')) {
+    return true;
+  }
+  if (args.includes('--no-sub')) {
+    return false;
+  }
+  return null;
+}
+
+function detectNoAgentsMdFlag(): boolean {
+  return process.argv.slice(2).includes('--no-agents-md');
+}
+
+function isDirectoryEmpty(dirPath: string): boolean {
+  if (!fs.existsSync(dirPath)) {
+    return false;
+  }
+  try {
+    const files = fs.readdirSync(dirPath);
+    return files.length === 0;
+  } catch {
+    return false;
+  }
+}
+
+async function getProjectName(): Promise<{
+  name: string;
+  useCurrentDir: boolean;
+}> {
+  const args = process.argv.slice(2);
+  // a positional argument is anything that is not a flag itself and not
+  // the value of a value-consuming flag (only --lang/-l takes a value;
+  // boolean flags must not swallow the argument that follows them)
+  const projectNameArg = args.find(
+    (arg, index) =>
+      !VALUE_FLAGS.includes(arg) &&
+      !BOOLEAN_FLAGS.includes(arg) &&
+      !arg.startsWith('--template=') &&
+      !(index > 0 && VALUE_FLAGS.includes(args[index - 1])),
+  );
+
+  if (projectNameArg) {
+    return { name: projectNameArg, useCurrentDir: false };
+  }
+
+  // 如果当前目录为空，直接使用当前目录名作为项目名
+  const currentDir = process.cwd();
+  if (isDirectoryEmpty(currentDir)) {
+    return { name: path.basename(currentDir), useCurrentDir: true };
+  }
+
+  const projectName = await promptInput(i18n.t(localeKeys.prompt.projectName));
+
+  if (!projectName) {
+    console.error(i18n.t(localeKeys.error.projectNameEmpty));
+    process.exit(1);
+  }
+
+  return { name: projectName, useCurrentDir: false };
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+
+  if (args.includes('--help') || args.includes('-h')) {
+    showHelp();
+    return;
+  }
+
+  if (args.includes('--version') || args.includes('-v')) {
+    showVersion();
+    return;
+  }
+
+  const template = parseTemplate(args);
+  const mf = args.includes('--mf');
+  if (mf && template !== 'mcp-apps')
+    throw new Error('--mf requires --template mcp-apps');
+
+  // Mode for existing projects: add/refresh AGENTS.md in the
+  // current directory so agents pick up the bundled docs after an upgrade
+  // (idempotent). A flag rather than a positional, so it never collides with
+  // a project name; mutually exclusive with creating a project.
+  if (args.includes('--agents-md-only')) {
+    const hasProjectName = args.some(
+      (arg, index) =>
+        !arg.startsWith('-') && !VALUE_FLAGS.includes(args[index - 1]),
+    );
+    if (
+      hasProjectName ||
+      args.includes('--no-agents-md') ||
+      template !== 'app'
+    ) {
+      console.error(i18n.t(localeKeys.error.agentsMdOnlyConflict));
+      process.exit(1);
+    }
+    runAgentsMd(path.resolve(__dirname, '../template'), process.cwd());
+    return;
+  }
+
+  console.log(`\n${i18n.t(localeKeys.message.welcome)}\n`);
+  const { name: projectName, useCurrentDir } = await getProjectName();
+  const targetDir = useCurrentDir
+    ? process.cwd()
+    : path.isAbsolute(projectName)
+      ? projectName
+      : path.resolve(process.cwd(), projectName);
+
+  if (fs.existsSync(targetDir)) {
+    const files = fs.readdirSync(targetDir);
+    if (files.length > 0) {
+      console.error(i18n.t(localeKeys.error.directoryExists, { projectName }));
+      process.exit(1);
+    }
+  }
+
+  const createPackageJson = path.resolve(__dirname, '..', 'package.json');
+  const createPackage = JSON.parse(fs.readFileSync(createPackageJson, 'utf-8'));
+  const version = createPackage.version || 'latest';
+
+  const subprojectFlag = detectSubprojectFlag();
+  const isSubproject = subprojectFlag === true;
+  const noAgentsMd = detectNoAgentsMdFlag();
+
+  createProject(targetDir, {
+    packageName: projectName,
+    version,
+    isSubproject,
+    noAgentsMd,
+    template,
+    mf,
+  });
+
+  // ANSI escape codes: \x1b[2m = dim, \x1b[3m = italic, \x1b[0m = reset
+  const dim = '\x1b[2m\x1b[3m';
+  const reset = '\x1b[0m';
+
+  console.log(`${i18n.t(localeKeys.message.success)}\n`);
+  if (!noAgentsMd && !isSubproject) {
+    console.log(`${i18n.t(localeKeys.message.agentsMd)}\n`);
+  }
+  console.log(i18n.t(localeKeys.message.nextSteps));
+  if (!useCurrentDir) {
+    console.log(
+      `${dim}   ${i18n.t(localeKeys.message.step1, { projectName })}${reset}`,
+    );
+  }
+  console.log(`${dim}   ${i18n.t(localeKeys.message.step2)}${reset}`);
+  console.log(`${dim}   ${i18n.t(localeKeys.message.step3)}${reset}\n`);
+}
+
+main().catch(error => {
+  console.error(i18n.t(localeKeys.error.createFailed), error);
+  process.exit(1);
+});

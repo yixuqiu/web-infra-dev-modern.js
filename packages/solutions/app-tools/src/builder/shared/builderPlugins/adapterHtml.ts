@@ -1,38 +1,36 @@
-import {
-  isHtmlDisabled,
-  RsbuildPlugin,
-  BundlerChain,
-  createVirtualModule,
-  ChainIdentifier,
-  RsbuildPluginAPI,
-} from '@rsbuild/shared';
-import {
-  MAIN_ENTRY_NAME,
-  getEntryOptions,
-  removeTailSlash,
-} from '@modern-js/utils';
+import { isHtmlDisabled } from '@modern-js/builder';
+import { removeTailSlash } from '@modern-js/utils';
 import { template as lodashTemplate } from '@modern-js/utils/lodash';
-import { Bundler } from '../../../types';
-import { HtmlUserConfig } from '../../../types/config/html';
+import type {
+  ChainIdentifier,
+  RsbuildPlugin,
+  RspackChain,
+} from '@rsbuild/core';
 import { BottomTemplatePlugin } from '../bundlerPlugins';
 import type { BuilderOptions } from '../types';
 
-export const builderPluginAdapterHtml = <B extends Bundler>(
-  options: BuilderOptions<B>,
+const createVirtualModule = (content: string) =>
+  `data:text/javascript;charset=utf-8,${encodeURIComponent(content)}`;
+
+export const builderPluginAdapterHtml = (
+  options: BuilderOptions,
 ): RsbuildPlugin => ({
   name: 'builder-plugin-adapter-modern-html',
   setup(api) {
     api.modifyBundlerChain(
-      async (chain, { CHAIN_ID, target, HtmlPlugin: HtmlBundlerPlugin }) => {
-        const builderConfig = api.getNormalizedConfig();
+      async (
+        chain,
+        { CHAIN_ID, target, HtmlPlugin: HtmlBundlerPlugin, environment },
+      ) => {
+        const builderConfig = environment.config;
 
         if (!isHtmlDisabled(builderConfig, target)) {
           applyBottomHtmlPlugin({
-            api,
             options,
             chain,
             CHAIN_ID,
             HtmlBundlerPlugin,
+            htmlPaths: environment.htmlPaths,
           });
 
           await injectAssetPrefix({
@@ -44,10 +42,13 @@ export const builderPluginAdapterHtml = <B extends Bundler>(
   },
 });
 
-async function injectAssetPrefix({ chain }: { chain: BundlerChain }) {
+async function injectAssetPrefix({ chain }: { chain: RspackChain }) {
   const entries = chain.entryPoints.entries() || {};
   const entryNames = Object.keys(entries);
-  const assetPrefix = removeTailSlash(chain.output.get('publicPath') || '');
+  const publicPath = chain.output.get('publicPath');
+  const assetPrefix = removeTailSlash(
+    typeof publicPath === 'string' ? publicPath : '',
+  );
   const code = `window.__assetPrefix__ = '${assetPrefix}';`;
 
   entryNames.forEach(entryName => {
@@ -56,44 +57,27 @@ async function injectAssetPrefix({ chain }: { chain: BundlerChain }) {
 }
 
 /** inject bottom template */
-function applyBottomHtmlPlugin<B extends Bundler>({
-  api,
+function applyBottomHtmlPlugin({
   chain,
   options,
   CHAIN_ID,
   HtmlBundlerPlugin,
+  htmlPaths,
 }: {
-  api: RsbuildPluginAPI;
-  chain: BundlerChain;
-  options: BuilderOptions<B>;
+  chain: RspackChain;
+  options: BuilderOptions;
   CHAIN_ID: ChainIdentifier;
   HtmlBundlerPlugin: any;
+  htmlPaths: Record<string, string>;
 }) {
   const { normalizedConfig: modernConfig, appContext } = options;
   // inject bottomTemplate into html-webpack-plugin
-  for (const entryName of Object.keys(api.context.entry)) {
-    const {
-      source: { mainEntryName },
-    } = modernConfig;
-    const isMainEntry = entryName === (mainEntryName || MAIN_ENTRY_NAME);
+  for (const entryName of Object.keys(htmlPaths)) {
     // FIXME: the only need necessary
     const baseTemplateParams = {
       entryName,
-      title: getEntryOptions<HtmlUserConfig['title']>(
-        entryName,
-        isMainEntry,
-        modernConfig.html.title,
-        modernConfig.html.titleByEntries,
-        appContext.packageName,
-      ),
+      title: modernConfig.html.title,
       mountId: modernConfig.html.mountId,
-      ...getEntryOptions<any>(
-        entryName,
-        isMainEntry,
-        modernConfig.html.templateParameters,
-        modernConfig.html.templateParametersByEntries,
-        appContext.packageName,
-      ),
     };
 
     chain.plugin(`${CHAIN_ID.PLUGIN.HTML}-${entryName}`).tap(args => [

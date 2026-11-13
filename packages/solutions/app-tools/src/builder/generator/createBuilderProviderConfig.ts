@@ -1,9 +1,12 @@
-import type { Bundler, IAppContext, AppNormalizedConfig } from '../../types';
-import { createUploadPattern } from '../builder-webpack/createCopyPattern';
+import type { IncomingMessage } from 'node:http';
+import { DEFAULT_API_PREFIX } from '@modern-js/utils';
+import type { AppNormalizedConfig } from '../../types';
+import type { AppToolsContext } from '../../types/plugin';
+import { createUploadPattern } from './createCopyPattern';
 
-function modifyOutputConfig<B extends Bundler>(
-  config: AppNormalizedConfig<B>,
-  appContext: IAppContext,
+function modifyOutputConfig(
+  config: AppNormalizedConfig,
+  appContext: AppToolsContext,
 ) {
   const defaultCopyPattern = createUploadPattern(appContext, config);
   const { copy } = config.output;
@@ -16,33 +19,77 @@ function modifyOutputConfig<B extends Bundler>(
   };
 }
 
-export function createBuilderProviderConfig<B extends Bundler>(
-  resolveConfig: AppNormalizedConfig<B>,
-  appContext: IAppContext,
-): Omit<AppNormalizedConfig<B>, 'plugins'> {
+export function createBuilderProviderConfig(
+  resolveConfig: AppNormalizedConfig,
+  appContext: AppToolsContext,
+): Omit<AppNormalizedConfig, 'plugins'> {
+  const builderDevConfig = { ...resolveConfig.dev };
+  delete builderDevConfig.mockDir;
+
   const htmlConfig = { ...resolveConfig.html };
   if (!htmlConfig.template) {
-    htmlConfig.templateByEntries = {
-      ...appContext.htmlTemplates,
-      ...htmlConfig.templateByEntries,
+    htmlConfig.template = ({ entryName }) => {
+      return appContext.htmlTemplates[entryName];
     };
   }
+
+  const serverConfig: any = {
+    ...resolveConfig.server,
+  };
+
+  // If dev.cors is configured, map it to server.cors
+  if (resolveConfig.dev?.server?.cors !== undefined) {
+    serverConfig.cors = resolveConfig.dev?.server?.cors;
+  }
+
   const config = {
     ...resolveConfig,
     plugins: [],
+    resolve: {
+      ...resolveConfig.resolve,
+    },
+    source: {
+      ...resolveConfig.source,
+    },
     dev: {
-      ...resolveConfig.dev,
+      ...builderDevConfig,
       port: appContext.port,
     },
+    server: serverConfig,
     html: htmlConfig,
     output: {
       ...resolveConfig.output,
       // We need to do this in the app-tools prepare hook because some files will be generated into the dist directory in the analyze process
       cleanDistPath: false,
     },
+    tools: {
+      ...resolveConfig.tools,
+      devServer: {
+        ...resolveConfig.tools?.devServer,
+        compress: {
+          filter: (req: IncomingMessage) => {
+            const bffPrefix = resolveConfig.bff?.prefix || DEFAULT_API_PREFIX;
+            const url = req.url;
+
+            if (url?.startsWith(bffPrefix)) {
+              return false;
+            }
+
+            return true;
+          },
+        },
+      },
+    },
   };
+
+  // Only works with `enableAsyncEntry`:
+  // when both are enabled, `preEntry` should be handled by Modern.js entry code
+  // generation (inject into `index.jsx`), not by builder.
+  if (config.source?.enableAsyncEntry && config.source?.enableAsyncPreEntry) {
+    delete (config.source as any).preEntry;
+  }
 
   modifyOutputConfig(config, appContext);
 
-  return config as AppNormalizedConfig<B>;
+  return config as AppNormalizedConfig;
 }

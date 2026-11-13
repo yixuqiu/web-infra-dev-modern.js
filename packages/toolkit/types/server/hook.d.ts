@@ -1,6 +1,11 @@
-import { IncomingMessage, ServerResponse, IncomingHttpHeaders } from 'http';
-import { Reporter } from './utils';
-import { ServerRoute } from './route';
+import type {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from 'http';
+import type { ServerRoute } from './route';
+import type { NodeRequest, NodeResponse } from './server';
+import type { Logger, Metrics, Reporter } from './utils';
 
 export type CookieAPI = {
   /**
@@ -16,6 +21,7 @@ export interface ModernResponse {
   get: (key: string) => string | number | string[] | undefined;
   set: (key: string, value: string | number) => void;
   status: (code: number) => void;
+  getStatus: () => number;
   cookies: CookieAPI;
   raw: (
     body: string,
@@ -85,7 +91,7 @@ export type MiddlewareContext<T extends 'worker' | 'node' = 'node'> =
     reporter?: Reporter;
     response: ModernResponse & { locals: Record<string, any> };
     source: {
-      req: T extends 'worker' ? Request : IncomingMessage;
-      res: T extends 'worker' ? ModernResponse : ServerResponse;
+      req: T extends 'worker' ? Request : NodeRequest;
+      res: T extends 'worker' ? ModernResponse : NodeResponse;
     };
   };

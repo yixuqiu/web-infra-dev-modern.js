@@ -1,0 +1,47 @@
+{
+  "name": "@modern-js/adapter-rstest",
+  "description": "Modern.js adapter to run tests via Rstest.",
+  "homepage": "https://modernjs.dev",
+  "bugs": "https://github.com/web-infra-dev/modern.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web-infra-dev/modern.js",
+    "directory": "packages/cli/adapter-rstest"
+  },
+  "license": "MIT",
+  "version": "3.11.3",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "only-allow-pnpm",
+    "build": "rs lib",
+    "dev": "rs lib --watch",
+    "test": "rstest"
+  },
+  "dependencies": {
+    "@modern-js/app-tools": "workspace:*",
+    "@rstest/adapter-rsbuild": "^0.12.3"
+  },
+  "devDependencies": {
+    "@modern-js/rslib": "workspace:*",
+    "@modern-js/tsconfig": "workspace:*",
+    "@modern-js/types": "workspace:*",
+    "@rsbuild/core": "2.3.2",
+    "@rstest/core": "0.12.3",
+    "@scripts/rstest-config": "workspace:*",
+    "@types/node": "^20",
+    "typescript": "^5"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}

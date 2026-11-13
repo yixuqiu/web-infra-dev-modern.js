@@ -1,0 +1,485 @@
+# @modern-js/render
+
+## 3.11.3
+
+### Patch Changes
+
+- @modern-js/types@3.11.3
+- @modern-js/utils@3.11.3
+
+## 3.11.2
+
+### Patch Changes
+
+- @modern-js/types@3.11.2
+- @modern-js/utils@3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- 67782a5: Build render with Rslib while preserving public entry points and application RSC manifest references.
+- Updated dependencies [b11c3cd]
+  - @modern-js/types@3.11.1
+  - @modern-js/utils@3.11.1
+
+## 3.11.0
+
+### Patch Changes
+
+- @modern-js/types@3.11.0
+- @modern-js/utils@3.11.0
+
+## 3.10.4
+
+### Patch Changes
+
+- @modern-js/types@3.10.4
+- @modern-js/utils@3.10.4
+
+## 3.10.3
+
+### Patch Changes
+
+- @modern-js/types@3.10.3
+- @modern-js/utils@3.10.3
+
+## 3.10.2
+
+### Patch Changes
+
+- @modern-js/types@3.10.2
+- @modern-js/utils@3.10.2
+
+## 3.10.1
+
+### Patch Changes
+
+- @modern-js/types@3.10.1
+- @modern-js/utils@3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- Updated dependencies [14c23d0]
+  - @modern-js/types@3.10.0
+  - @modern-js/utils@3.10.0
+
+## 3.9.3
+
+### Patch Changes
+
+- @modern-js/types@3.9.3
+- @modern-js/utils@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- @modern-js/types@3.9.2
+- @modern-js/utils@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- @modern-js/types@3.9.1
+- @modern-js/utils@3.9.1
+
+## 3.9.0
+
+### Patch Changes
+
+- @modern-js/types@3.9.0
+- @modern-js/utils@3.9.0
+
+## 3.8.3
+
+### Patch Changes
+
+- @modern-js/types@3.8.3
+- @modern-js/utils@3.8.3
+
+## 3.8.2
+
+### Patch Changes
+
+- @modern-js/types@3.8.2
+- @modern-js/utils@3.8.2
+
+## 3.8.1
+
+### Patch Changes
+
+- @modern-js/types@3.8.1
+- @modern-js/utils@3.8.1
+
+## 3.8.0
+
+### Patch Changes
+
+- Updated dependencies [b3a0709]
+  - @modern-js/utils@3.8.0
+  - @modern-js/types@3.8.0
+
+## 3.7.0
+
+### Patch Changes
+
+- @modern-js/types@3.7.0
+- @modern-js/utils@3.7.0
+
+## 3.6.0
+
+### Minor Changes
+
+- c34b53d: refactor: drop React 17 support and import react-dom/client statically in the browser runtime
+  refactor: 浏览器运行时移除 React 17 支持，并改为静态引入 react-dom/client
+
+### Patch Changes
+
+- @modern-js/types@3.6.0
+- @modern-js/utils@3.6.0
+
+## 3.5.0
+
+### Patch Changes
+
+- @modern-js/types@3.5.0
+- @modern-js/utils@3.5.0
+
+## 3.4.0
+
+### Patch Changes
+
+- @modern-js/types@3.4.0
+- @modern-js/utils@3.4.0
+
+## 3.3.0
+
+### Patch Changes
+
+- @modern-js/types@3.3.0
+- @modern-js/utils@3.3.0
+
+## 3.2.2
+
+### Patch Changes
+
+- @modern-js/types@3.2.2
+- @modern-js/utils@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [2aa5253]
+  - @modern-js/utils@3.2.1
+  - @modern-js/types@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- @modern-js/types@3.2.0
+- @modern-js/utils@3.2.0
+
+## 3.1.5
+
+### Patch Changes
+
+- @modern-js/utils@3.1.5
+- @modern-js/types@3.1.5
+
+## 3.1.4
+
+### Patch Changes
+
+- @modern-js/types@3.1.4
+- @modern-js/utils@3.1.4
+
+## 3.1.3
+
+### Patch Changes
+
+- @modern-js/types@3.1.3
+- @modern-js/utils@3.1.3
+
+## 3.1.2
+
+### Patch Changes
+
+- @modern-js/types@3.1.2
+- @modern-js/utils@3.1.2
+
+## 3.1.1
+
+### Patch Changes
+
+- 5bfbfd5: fix: preserve closing tags order in RSC HTML responses
+  fix: 为 rsc html 保留 closing tags order
+  - @modern-js/types@3.1.1
+  - @modern-js/utils@3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- 65a06b3: fix: ssr hydration should add prefix_id for react use_id
+  fix: 为了 react useid hook, ssr hydration 应该添加 prefix_id
+- Updated dependencies [65a06b3]
+- Updated dependencies [0fc8c26]
+  - @modern-js/utils@3.1.0
+  - @modern-js/types@3.1.0
+
+## 3.0.5
+
+### Patch Changes
+
+- @modern-js/types@3.0.5
+- @modern-js/utils@3.0.5
+
+## 3.0.4
+
+### Patch Changes
+
+- @modern-js/types@3.0.4
+- @modern-js/utils@3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- @modern-js/types@3.0.3
+- @modern-js/utils@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @modern-js/types@3.0.2
+- @modern-js/utils@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @modern-js/types@3.0.1
+- @modern-js/utils@3.0.1
+
+## 3.0.0
+
+### Minor Changes
+
+- ecd247c: feat: esm runtime
+
+### Patch Changes
+
+- 4c5b645: refactor: update rsc, streaming ssr runtime code
+  refactor: 更新 rsc, streeaming ssr 运行时代码
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0
+  - @modern-js/utils@3.0.0
+
+## 3.0.0-alpha.2
+
+### Minor Changes
+
+- ecd247c: feat: esm runtime
+
+### Patch Changes
+
+- 4c5b645: refactor: update rsc, streaming ssr runtime code
+  refactor: 更新 rsc, streeaming ssr 运行时代码
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0-alpha.2
+  - @modern-js/utils@3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- 4c5b645: refactor: update rsc, streaming ssr runtime code
+  refactor: 更新 rsc, streeaming ssr 运行时代码
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0-alpha.1
+  - @modern-js/utils@3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- Updated dependencies [952f6fe]
+  - @modern-js/types@3.0.0-alpha.0
+  - @modern-js/utils@3.0.0-alpha.0
+
+## 2.68.1
+
+### Patch Changes
+
+- 0d98723: feat: support rsc for spa projects
+  feat: 为 SPA 项目支持 RSC
+  - @modern-js/types@2.68.1
+  - @modern-js/utils@2.68.1
+
+## 2.68.0
+
+### Patch Changes
+
+- @modern-js/types@2.68.0
+- @modern-js/utils@2.68.0
+
+## 2.67.11
+
+### Patch Changes
+
+- @modern-js/types@2.67.11
+- @modern-js/utils@2.67.11
+
+## 2.67.10
+
+### Patch Changes
+
+- @modern-js/types@2.67.10
+- @modern-js/utils@2.67.10
+
+## 2.67.9
+
+### Patch Changes
+
+- @modern-js/types@2.67.9
+- @modern-js/utils@2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- Updated dependencies [23c8201]
+  - @modern-js/utils@2.67.8
+  - @modern-js/types@2.67.8
+
+## 2.67.7
+
+### Patch Changes
+
+- @modern-js/types@2.67.7
+- @modern-js/utils@2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- Updated dependencies [e67b6d0]
+  - @modern-js/types@2.67.6
+  - @modern-js/utils@2.67.6
+
+## 2.67.5
+
+### Patch Changes
+
+- @modern-js/types@2.67.5
+- @modern-js/utils@2.67.5
+
+## 2.67.4
+
+### Patch Changes
+
+- @modern-js/types@2.67.4
+- @modern-js/utils@2.67.4
+
+## 2.67.3
+
+### Patch Changes
+
+- Updated dependencies [f6b81dd]
+  - @modern-js/types@2.67.3
+  - @modern-js/utils@2.67.3
+
+## 2.67.2
+
+### Patch Changes
+
+- @modern-js/types@2.67.2
+- @modern-js/utils@2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- Updated dependencies [1d96265]
+  - @modern-js/types@2.67.1
+  - @modern-js/utils@2.67.1
+
+## 2.67.0
+
+### Patch Changes
+
+- @modern-js/types@2.67.0
+- @modern-js/utils@2.67.0
+
+## 2.66.0
+
+### Patch Changes
+
+- @modern-js/types@2.66.0
+- @modern-js/utils@2.66.0
+
+## 2.65.5
+
+### Patch Changes
+
+- @modern-js/types@2.65.5
+- @modern-js/utils@2.65.5
+
+## 2.65.4
+
+### Patch Changes
+
+- Updated dependencies [0d47cb8]
+  - @modern-js/utils@2.65.4
+  - @modern-js/types@2.65.4
+
+## 2.65.3
+
+### Patch Changes
+
+- Updated dependencies [b337977]
+  - @modern-js/types@2.65.3
+  - @modern-js/utils@2.65.3
+
+## 2.65.2
+
+### Patch Changes
+
+- 1f83d96: fix(render): fork react-server-dom-webpack to avoid warnings about installing dependencies
+  fix(render): 内置 react-server-dom-webpack 到 packages/toolkit/utils/compiled 中，避免安装依赖的警告
+- Updated dependencies [793be44]
+- Updated dependencies [1f83d96]
+  - @modern-js/types@2.65.2
+  - @modern-js/utils@2.65.2
+
+## 2.65.1
+
+### Patch Changes
+
+- @modern-js/types@2.65.1
+
+## 2.65.0
+
+### Patch Changes
+
+- @modern-js/types@2.65.0
+
+## 2.64.3
+
+### Patch Changes
+
+- @modern-js/types@2.64.3
+
+## 2.64.2
+
+### Patch Changes
+
+- Updated dependencies [96a8726]
+  - @modern-js/types@2.64.2

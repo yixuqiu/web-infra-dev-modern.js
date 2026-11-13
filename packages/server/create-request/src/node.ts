@@ -1,55 +1,78 @@
-import nodeFetch from 'node-fetch';
-import { compile, pathToRegexp, Key } from 'path-to-regexp';
-import { useHeaders } from '@modern-js/runtime-utils/node';
-import { stringify } from 'query-string';
+import type { IncomingHttpHeaders } from 'http';
+import { storage } from '@modern-js/runtime-utils/node';
+import { type Key, compile, pathToRegexp } from 'path-to-regexp';
+import { stringify } from 'qs';
 import { handleRes } from './handleRes';
 import type {
   BFFRequestPayload,
-  Sender,
-  RequestCreator,
   IOptions,
+  RequestCreator,
+  Sender,
+  UploadCreator,
 } from './types';
+import { getUploadPayload } from './utiles';
 
-type Fetch = typeof nodeFetch;
+type Fetch = typeof fetch;
 
-let realRequest: Fetch;
-let realAllowedHeaders: string[] = [];
-const originFetch = (...params: Parameters<typeof nodeFetch>) => {
+const realRequest: Map<string, Fetch> = new Map();
+
+const realAllowedHeaders: Map<string, string[]> = new Map();
+
+const domainMap: Map<string, string> = new Map();
+
+const originFetch = (...params: Parameters<Fetch>) => {
   const [, init] = params;
 
   if (init?.method?.toLowerCase() === 'get') {
     init.body = undefined;
   }
 
-  return nodeFetch(...params).then(handleRes);
+  return fetch(...params).then(handleRes);
 };
 
-export const configure = (options: IOptions<typeof nodeFetch>) => {
-  const { request, interceptor, allowedHeaders } = options;
-  realRequest = (request as Fetch) || originFetch;
+export const configure = (options: IOptions<Fetch>) => {
+  const {
+    request,
+    interceptor,
+    allowedHeaders,
+    setDomain,
+    requestId = 'default',
+  } = options;
+  let configuredRequest = (request as Fetch) || originFetch;
   if (interceptor && !request) {
-    realRequest = interceptor(nodeFetch);
+    configuredRequest = interceptor(fetch);
   }
   if (Array.isArray(allowedHeaders)) {
-    realAllowedHeaders = allowedHeaders;
+    realAllowedHeaders.set(requestId, allowedHeaders);
   }
+  if (setDomain) {
+    domainMap.set(
+      requestId,
+      setDomain({
+        target: 'server',
+      }),
+    );
+  }
+  realRequest.set(requestId, configuredRequest);
 };
 
-export const createRequest: RequestCreator<typeof nodeFetch> = (
-  path: string,
-  method: string,
-  port: number,
-  httpMethodDecider = 'functionName',
-  // 后续可能要修改，暂时先保留
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  fetch = nodeFetch,
-) => {
+export const createRequest: RequestCreator<Fetch> = ({
+  path,
+  method,
+  port,
+  httpMethodDecider = 'functionName', // 后续可能要修改，暂时先保留
+  fetch = originFetch,
+  requestId = 'default',
+}) => {
   const getFinalPath = compile(path, { encode: encodeURIComponent });
   const keys: Key[] = [];
   pathToRegexp(path, keys);
 
   const sender: Sender = (...args) => {
-    const webRequestHeaders = useHeaders();
+    let webRequestHeaders = [] as unknown as IncomingHttpHeaders;
+    if (requestId === 'default') {
+      webRequestHeaders = storage.useContext().headers!;
+    }
     let body;
     let headers: Record<string, any>;
     let url: string;
@@ -83,7 +106,9 @@ export const createRequest: RequestCreator<typeof nodeFetch> = (
         ? `${plainPath}?${stringify(payload.query)}`
         : plainPath;
       headers = payload.headers || {};
-      for (const key of realAllowedHeaders) {
+
+      const targetAllowedHeaders = realAllowedHeaders.get(requestId) || [];
+      for (const key of targetAllowedHeaders) {
         if (typeof webRequestHeaders[key] !== 'undefined') {
           headers[key] = webRequestHeaders[key];
         }
@@ -97,7 +122,6 @@ export const createRequest: RequestCreator<typeof nodeFetch> = (
             : payload.body;
       } else if (payload.body) {
         headers['Content-Type'] = 'text/plain';
-        // eslint-disable-next-line prefer-destructuring
         body = payload.body;
       } else if (payload.formData) {
         body = payload.formData;
@@ -112,11 +136,12 @@ export const createRequest: RequestCreator<typeof nodeFetch> = (
           body = payload.formUrlencoded;
         }
       }
+      const configDomain = domainMap.get(requestId);
 
-      url = `http://127.0.0.1:${port}${finalPath}`;
+      url = `${configDomain || `http://127.0.0.1:${port}`}${finalPath}`;
     }
 
-    const fetcher = realRequest || originFetch;
+    const fetcher = realRequest.get(requestId) || originFetch;
 
     if (method.toLowerCase() === 'get') {
       body = undefined;
@@ -125,6 +150,23 @@ export const createRequest: RequestCreator<typeof nodeFetch> = (
     headers.accept = `application/json,*/*;q=0.8`;
 
     return fetcher(url, { method, body, headers });
+  };
+
+  return sender;
+};
+
+export const createUploader: UploadCreator = ({
+  path,
+  requestId = 'default',
+}) => {
+  const sender: Sender = (...args) => {
+    const fetcher = realRequest.get(requestId) || originFetch;
+    const { body, headers } = getUploadPayload(args);
+
+    const configDomain = domainMap.get(requestId);
+    const finalURL = `${configDomain || ''}${path}`;
+
+    return fetcher(finalURL, { method: 'POST', body, headers });
   };
 
   return sender;

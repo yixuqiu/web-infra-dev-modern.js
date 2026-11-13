@@ -3,13 +3,16 @@ import {
   Api,
   Data,
   Get,
-  Query,
   HttpCode,
-  ValidationError,
-  SetHeaders,
+  HttpMetadata,
+  Headers,
+  Params,
+  Query,
   Redirect,
   ResponseMetaType,
-  HttpMetadata,
+  SetHeaders,
+  Upload,
+  ValidationError,
 } from '../../src';
 
 type Assert<T1, T2> = T1 extends T2 ? (T2 extends T1 ? true : false) : false;
@@ -17,6 +20,48 @@ type Assert<T1, T2> = T1 extends T2 ? (T2 extends T1 ? true : false) : false;
 type Expect<T extends true> = T;
 
 describe('test api function', () => {
+  test.each([
+    ['data', Data],
+    ['query', Query],
+    ['params', Params],
+    ['headers', Headers],
+  ] as const)(
+    'should validate and transform %s input',
+    async (key, operator) => {
+      const schema = z.object({
+        value: z.string().transform(value => Number(value)),
+      });
+      const handler = Api(operator(schema), inputs => inputs);
+
+      expect(await handler({ [key]: { value: '42' } } as any)).toEqual({
+        [key]: { value: 42 },
+      });
+      await expect(handler({ [key]: { value: 42 } } as any)).rejects.toThrow(
+        ValidationError,
+      );
+    },
+  );
+
+  test('should validate and transform upload input', async () => {
+    const schema = z.object({
+      value: z.string().transform(value => Number(value)),
+    });
+    const operator = Upload('/upload', schema);
+    const helper = { inputs: { formData: { value: '42' } } };
+    const next = rs.fn();
+
+    await operator.validate!(helper as any, next);
+
+    expect(helper.inputs).toEqual({
+      formData: { value: '42' },
+      files: { value: 42 },
+    });
+    expect(next).toHaveBeenCalledTimes(1);
+    await expect(
+      operator.validate!({ inputs: { formData: { value: 42 } } }, next),
+    ).rejects.toThrow(ValidationError);
+  });
+
   test('should works correctly', async () => {
     const DataSchema = z.object({
       stars: z.number(),
@@ -63,7 +108,6 @@ describe('test api function', () => {
 
     const { query, data } = res;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type Case = Expect<Assert<typeof data, typeof outputsExpectedData>>;
 
     expect(query).toEqual(expectedQuery);
@@ -115,9 +159,7 @@ describe('test api function', () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type Case = Expect<Assert<z.input<typeof DataSchema>, { stars: string }>>;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type Case2 = Expect<
       Assert<z.output<typeof DataSchema>, { stars: { test: number } }>
     >;
@@ -170,7 +212,6 @@ describe('test api function', () => {
     const response = await getResponse(reqData);
     expect(response.data).toEqual(reqData.data);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type Case2 = Expect<Assert<typeof response.data, CircularDataSchemaData>>;
   });
 
@@ -189,7 +230,6 @@ describe('test api function', () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type Case2 = Expect<
       Assert<z.infer<typeof DataSchema>, Record<string, number>>
     >;

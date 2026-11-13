@@ -1,0 +1,112 @@
+import fs from 'fs';
+import path from 'path';
+import {
+  JS_EXTENSIONS,
+  getCommand,
+  normalizeToPosixPath,
+} from '@modern-js/utils';
+import { transform } from '@swc/core';
+import { parse } from 'es-module-lexer';
+
+export const walkDirectory = (dir: string): string[] => {
+  const files: string[] = [];
+  const walk = (current: string) => {
+    for (const dirent of fs.readdirSync(current, { withFileTypes: true })) {
+      const filePath = path.join(current, dirent.name);
+      // Only stat symlinks, so they are followed like before.
+      const isDirectory = dirent.isSymbolicLink()
+        ? fs.statSync(filePath).isDirectory()
+        : dirent.isDirectory();
+      if (isDirectory) {
+        walk(filePath);
+      } else {
+        files.push(filePath);
+      }
+    }
+  };
+  walk(dir);
+  return files;
+};
+
+export const replaceWithAlias = (
+  base: string,
+  filePath: string,
+  alias: string,
+) => {
+  if (filePath.includes(base)) {
+    return normalizeToPosixPath(
+      path.join(alias, path.relative(base, filePath)),
+    );
+  } else {
+    return filePath;
+  }
+};
+
+export const parseModule = async ({
+  source,
+  filename,
+}: {
+  source: string;
+  filename: string;
+}) => {
+  let content = source;
+
+  if (JS_EXTENSIONS.some(ext => filename.endsWith(ext))) {
+    const ext = path.extname(filename);
+    const isTs = ext === '.ts' || ext === '.tsx';
+    const isJsx = ext === '.jsx' || ext === '.tsx';
+    const result = await transform(content, {
+      filename,
+      isModule: true,
+      module: { type: 'es6' },
+      jsc: {
+        parser: isTs
+          ? { syntax: 'typescript', tsx: isJsx, decorators: true }
+          : { syntax: 'ecmascript', jsx: isJsx, decorators: true },
+        transform: { legacyDecorator: true },
+        target: 'es2022',
+        keepClassNames: true,
+      },
+    });
+    content = result.code;
+  }
+
+  return await parse(content);
+};
+
+export const getServerCombinedModuleFile = (
+  internalDirectory: string,
+  entryName: string,
+) => {
+  return path.join(internalDirectory, entryName, 'server-loader-combined.js');
+};
+
+export const checkIsBuildCommands = () => {
+  const buildCommands = [
+    'dev',
+    'start',
+    'build',
+    'inspect',
+    'deploy',
+    'dev-worker',
+  ];
+  const command = getCommand();
+
+  return buildCommands.includes(command);
+};
+
+export const checkIsServeCommand = () => {
+  const command = getCommand();
+
+  return command === 'serve';
+};
+
+export const isSubDirOrEqual = (parent: string, child: string): boolean => {
+  if (parent === child) {
+    return true;
+  }
+  const relative = path.relative(parent, child);
+  const isSubdir =
+    relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  return Boolean(isSubdir);
+};

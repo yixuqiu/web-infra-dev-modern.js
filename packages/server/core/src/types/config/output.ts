@@ -12,9 +12,10 @@ export interface OutputUserConfig {
   };
   enableInlineRouteManifests?: boolean;
   disableInlineRouteManifests?: boolean;
-  path?: string;
   assetPrefix?: string;
   polyfill?: 'entry' | 'usage' | 'ua' | 'off';
+  inlineScripts?: boolean;
+  inlineStyles?: boolean;
 }
 
 export type OutputNormalizedConfig = OutputUserConfig;

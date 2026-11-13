@@ -1,5 +1,310 @@
 # @modern-js/utils
 
+## 3.11.3
+
+## 3.11.2
+
+## 3.11.1
+
+## 3.11.0
+
+## 3.10.4
+
+## 3.10.3
+
+## 3.10.2
+
+## 3.10.1
+
+## 3.10.0
+
+## 3.9.3
+
+## 3.9.2
+
+## 3.9.1
+
+## 3.9.0
+
+## 3.8.3
+
+## 3.8.2
+
+## 3.8.1
+
+## 3.8.0
+
+### Patch Changes
+
+- b3a0709: fix: make custom server output runnable under native ESM (pass `moduleType`, resolve `.tsx` / `.jsx` entries, transform JSX)
+
+  fix: 修复自定义 Server 在原生 ESM 下的产物不可运行问题（透传 `moduleType`、支持 `.tsx` / `.jsx` 入口解析、编译 JSX）
+
+## 3.7.0
+
+## 3.6.0
+
+## 3.5.0
+
+## 3.4.0
+
+## 3.3.0
+
+## 3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- 2aa5253: feat: support tsconfig.server.json for server-side TypeScript
+  feat: 支持单独配置服务端 tsconfig 配置
+
+## 3.2.0
+
+## 3.1.5
+
+## 3.1.4
+
+## 3.1.3
+
+## 3.1.2
+
+## 3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- 65a06b3: fix: ssr hydration should add prefix_id for react use_id
+  fix: 为了 react useid hook, ssr hydration 应该添加 prefix_id
+- 0fc8c26: feat: deploy command generate esm artifact
+  feat: deploy 命令支持生成 ESM 产物
+
+## 3.0.5
+
+## 3.0.4
+
+## 3.0.3
+
+## 3.0.2
+
+## 3.0.1
+
+## 3.0.0
+
+## 3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+## 2.68.1
+
+## 2.68.0
+
+## 2.67.11
+
+## 2.67.10
+
+## 2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- 23c8201: fix(deploy): avoid issues caused by the module-sync field
+  fix(deploy): 避免因为 module-sync 字段导致的问题
+
+## 2.67.7
+
+## 2.67.6
+
+## 2.67.5
+
+## 2.67.4
+
+## 2.67.3
+
+## 2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- 1d96265: feat(ssr): support streaming ssr to work with http2
+  feat(ssr): 支持 streaming ssr 和 http2 协议一起工作
+
+## 2.67.0
+
+## 2.66.0
+
+## 2.65.5
+
+## 2.65.4
+
+### Patch Changes
+
+- 0d47cb8: feat: use require.resolve to check react version to fix use pnpm catalog in pnpm workspace
+
+  feat: 使用 require.resolve 来检查 react 版本，以修复 pnpm workspace 中使用 pnpm catalog 的问题
+
+## 2.65.3
+
+## 2.65.2
+
+### Patch Changes
+
+- 1f83d96: fix(render): fork react-server-dom-webpack to avoid warnings about installing dependencies
+  fix(render): 内置 react-server-dom-webpack 到 packages/toolkit/utils/compiled 中，避免安装依赖的警告
+
+## 2.65.1
+
+## 2.65.0
+
+## 2.64.3
+
+## 2.64.2
+
+## 2.64.1
+
+## 2.64.0
+
+## 2.63.7
+
+## 2.63.6
+
+## 2.63.5
+
+## 2.63.4
+
+## 2.63.3
+
+## 2.63.2
+
+### Patch Changes
+
+- 5fc95f7: feat(app-tools): enable Rsbuild CLI shortcuts
+- 53e3ae0: fix: React is undefined while using react@16.14.0 and webpack mode
+  fix: 使用 react@16.14.0 且在 webpack 模式下时报错 React is undefined
+
+## 2.63.1
+
+## 2.63.0
+
+## 2.62.1
+
+## 2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- 45230e2: fix: hot reload problems for server
+  fix: 修复服务端热更新问题
+
+## 2.60.6
+
+## 2.60.5
+
+## 2.60.4
+
+## 2.60.3
+
+### Patch Changes
+
+- 303331c: fix: should load ts-node from project
+  fix: 应该从项目中加载 ts-node
+
+## 2.60.2
+
+### Patch Changes
+
+- 8a709bc: feat(router): router plugin should use the App Component from other plugins & export the markRoutes method
+  feat(router): router plugin 应该使用 App Component from other plugins & 导出 markRoutes 方法
+
+## 2.60.1
+
+## 2.60.0
+
+## 2.59.0
+
+## 2.58.3
+
+## 2.58.2
+
+### Patch Changes
+
+- a1a9373: fix: fix compatibleRequire problem on windows
+  fix: 修复 windows 下 compatibleRequire 的问题
+
+## 2.58.1
+
+## 2.58.0
+
+## 2.57.1
+
+## 2.57.0
+
+### Patch Changes
+
+- 2515b00: feat(ssr): support server.ssrByRouteIds
+  feat(ssr): 支持 server.ssrByRouteIds
+
+## 2.56.2
+
+## 2.56.1
+
+## 2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- bbcf55a: fix: runtime template windows path
+
+  fix: 修复 runtime 模板 windows 路径不正确
+
+## 2.54.6
+
+## 2.54.5
+
+## 2.54.4
+
+## 2.54.3
+
+## 2.54.2
+
+## 2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- a8d8f0c: feat: support new server plugin & discard server plugin some hooks
+  feat: 支持新 server plugin & 减少 server plugin 钩子
+
+### Patch Changes
+
+- 15a090c: feat: refactor app-tools command and analyze check entry point
+
+  feat: 重构 app-tools 命令和 analyze 插件识别入口逻辑
+
+- 09798ac: feat: refactor runtime plugin
+
+  feat: 重构 runtime 插件
+
+## 2.53.0
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.4
+
+## 2.49.3
+
 ## 2.49.2
 
 ## 2.49.1

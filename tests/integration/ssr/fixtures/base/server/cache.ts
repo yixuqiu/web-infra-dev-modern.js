@@ -1,4 +1,4 @@
-import type { CacheOption, Container } from '@modern-js/runtime/server';
+import type { CacheOption, Container } from '@modern-js/server-runtime';
 
 class MyContainer implements Container {
   map: Map<string, string> = new Map();
@@ -23,7 +23,13 @@ class MyContainer implements Container {
 
 export const customContainer: Container = new MyContainer();
 
-export const cacheOption: CacheOption = {
-  maxAge: 5000,
-  staleWhileRevalidate: 10000,
+export const cacheOption: CacheOption = req => {
+  if (req.url?.includes('no-cache=1')) {
+    return false;
+  } else {
+    return {
+      maxAge: 50000,
+      staleWhileRevalidate: 10000,
+    };
+  }
 };

@@ -1,9 +1,8 @@
 import path from 'path';
-import { IAppContext } from '@modern-js/core';
 import { MAIN_ENTRY_NAME } from '@modern-js/utils';
-import { getServerRoutes } from '../../src/analyze/getServerRoutes';
-import { Entrypoint } from '../../src/analyze/getFileSystemEntry';
-import { AppNormalizedConfig } from '../../src/types';
+import type { Entrypoint } from '../../src/plugins/analyze/getFileSystemEntry';
+import { getServerRoutes } from '../../src/plugins/analyze/getServerRoutes';
+import type { AppNormalizedConfig, AppToolsContext } from '../../src/types';
 
 describe('get server routes', () => {
   const appContext: any = {
@@ -18,7 +17,7 @@ describe('get server routes', () => {
     },
   };
   const htmlConfig = {
-    disableHtmlFolder: false,
+    outputStructure: 'nested',
   };
 
   const serverConfig = { baseUrl: '/' };
@@ -33,7 +32,7 @@ describe('get server routes', () => {
           output: outputConfig,
           server: serverConfig,
           html: {},
-        } as AppNormalizedConfig<'shared'>,
+        } as AppNormalizedConfig,
       },
     );
 
@@ -105,7 +104,7 @@ describe('get server routes', () => {
             ...outputConfig,
           },
           html: {
-            disableHtmlFolder: true,
+            outputStructure: 'flat',
           },
           server: {
             ...serverConfig,
@@ -251,7 +250,7 @@ describe('get server routes', () => {
     );
 
     const routes = getServerRoutes([{ entryName: 'page-a' }] as Entrypoint[], {
-      appContext: { appDirectory: fixture } as IAppContext,
+      appContext: { appDirectory: fixture } as AppToolsContext,
       config: {
         source: sourceConfig,
         output: outputConfig,
@@ -300,6 +299,35 @@ describe('get server routes', () => {
     ]);
   });
 
+  test(`should support public folder without config dir`, () => {
+    const appDirectory = path.resolve(
+      __dirname,
+      './fixtures/server-routes/has-config/config',
+    );
+
+    const routes = getServerRoutes([], {
+      appContext: { appDirectory } as AppToolsContext,
+      config: {
+        source: {},
+        output: outputConfig,
+        html: htmlConfig,
+        server: serverConfig,
+      } as any,
+    });
+
+    expect(
+      routes.map(({ urlPath, entryPath }) => ({ urlPath, entryPath })),
+    ).toEqual(
+      expect.arrayContaining([
+        { urlPath: '/b/about/logo.png', entryPath: 'public/b/about/logo.png' },
+        { urlPath: '/b/info.js', entryPath: 'public/b/info.js' },
+        { urlPath: '/test.json', entryPath: 'public/test.json' },
+        { urlPath: '/wx.txt', entryPath: 'public/wx.txt' },
+      ]),
+    );
+    expect(routes).toHaveLength(4);
+  });
+
   test(`should support disable spa`, () => {
     const routes = getServerRoutes(
       [{ entryName: 'page-a' }] as Entrypoint[],
@@ -318,7 +346,6 @@ describe('get server routes', () => {
       } as any,
     );
 
-    // eslint-disable-next-line max-lines
     expect(routes).toMatchObject([
       {
         urlPath: '/page-a',

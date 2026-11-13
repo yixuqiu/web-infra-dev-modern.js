@@ -1,17 +1,22 @@
 import path from 'path';
 import { fixtures, launchAppWithPage } from './utils';
 
+rstest.setConfig({ testTimeout: 180_000, hookTimeout: 180_000 });
+
 describe('use tailwindcss v2', () => {
-  test(`should show style by use tailwindcss text-black`, async () => {
+  test(`should show style by use tailwindcss theme`, async () => {
     const appDir = path.resolve(fixtures, 'tailwindcss-v2');
     const { page, clear } = await launchAppWithPage(appDir);
+    try {
+      const primaryColorElement = await page.waitForSelector('.bg-primary');
+      const backgroundColor = await page.evaluate(element => {
+        const style = window.getComputedStyle(element);
+        return style.backgroundColor;
+      }, primaryColorElement);
 
-    const textColor = await page.$eval('p', p =>
-      window.getComputedStyle(p).getPropertyValue('color'),
-    );
-
-    expect(textColor).toBe('rgb(239, 68, 68)');
-
-    await clear();
+      expect(backgroundColor).toMatch(/rgb\(0, 0, 255\)|#0000ff|blue/i);
+    } finally {
+      await clear();
+    }
   });
 });

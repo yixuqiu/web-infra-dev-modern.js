@@ -1,5 +1,1069 @@
 # @modern-js/prod-server
 
+## 3.11.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.11.3
+- @modern-js/runtime-utils@3.11.3
+- @modern-js/utils@3.11.3
+
+## 3.11.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.11.2
+- @modern-js/runtime-utils@3.11.2
+- @modern-js/utils@3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- 1391159: fix(prod-server): default production server logging to info and document MODERN_SERVER_LOG_LEVEL. Set MODERN_SERVER_LOG_LEVEL=verbose to restore per-request logs.
+
+  fix(prod-server)：生产服务器默认使用 info 日志级别，并补充 MODERN_SERVER_LOG_LEVEL 文档。设置 MODERN_SERVER_LOG_LEVEL=verbose 可恢复逐请求日志。
+
+- Updated dependencies [b11c3cd]
+  - @modern-js/server-core@3.11.1
+  - @modern-js/runtime-utils@3.11.1
+  - @modern-js/utils@3.11.1
+
+## 3.11.0
+
+### Patch Changes
+
+- Updated dependencies [6a50ea0]
+  - @modern-js/runtime-utils@3.11.0
+  - @modern-js/server-core@3.11.0
+  - @modern-js/utils@3.11.0
+
+## 3.10.4
+
+### Patch Changes
+
+- @modern-js/server-core@3.10.4
+- @modern-js/runtime-utils@3.10.4
+- @modern-js/utils@3.10.4
+
+## 3.10.3
+
+### Patch Changes
+
+- Updated dependencies [52b4a4e]
+  - @modern-js/server-core@3.10.3
+  - @modern-js/runtime-utils@3.10.3
+  - @modern-js/utils@3.10.3
+
+## 3.10.2
+
+### Patch Changes
+
+- Updated dependencies [76c675d]
+- Updated dependencies [2f314e5]
+- Updated dependencies [b1c1018]
+- Updated dependencies [23587d0]
+- Updated dependencies [3b42ce4]
+- Updated dependencies [6a891f0]
+  - @modern-js/runtime-utils@3.10.2
+  - @modern-js/server-core@3.10.2
+  - @modern-js/utils@3.10.2
+
+## 3.10.1
+
+### Patch Changes
+
+- Updated dependencies [e046a11]
+  - @modern-js/server-core@3.10.1
+  - @modern-js/runtime-utils@3.10.1
+  - @modern-js/utils@3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- Updated dependencies [b5f56d5]
+- Updated dependencies [9a766ec]
+- Updated dependencies [9a766ec]
+- Updated dependencies [1d7a38e]
+  - @modern-js/server-core@3.10.0
+  - @modern-js/runtime-utils@3.10.0
+  - @modern-js/utils@3.10.0
+
+## 3.9.3
+
+### Patch Changes
+
+- Updated dependencies [1dcb43c]
+- Updated dependencies [283dc5a]
+- Updated dependencies [a9c110f]
+  - @modern-js/server-core@3.9.3
+  - @modern-js/runtime-utils@3.9.3
+  - @modern-js/utils@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.9.2
+- @modern-js/runtime-utils@3.9.2
+- @modern-js/utils@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- Updated dependencies [2e6d853]
+  - @modern-js/runtime-utils@3.9.1
+  - @modern-js/server-core@3.9.1
+  - @modern-js/utils@3.9.1
+
+## 3.9.0
+
+### Patch Changes
+
+- Updated dependencies [2f4d9c4]
+  - @modern-js/server-core@3.9.0
+  - @modern-js/runtime-utils@3.9.0
+  - @modern-js/utils@3.9.0
+
+## 3.8.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.8.3
+- @modern-js/runtime-utils@3.8.3
+- @modern-js/utils@3.8.3
+
+## 3.8.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.8.2
+- @modern-js/runtime-utils@3.8.2
+- @modern-js/utils@3.8.2
+
+## 3.8.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.8.1
+- @modern-js/runtime-utils@3.8.1
+- @modern-js/utils@3.8.1
+
+## 3.8.0
+
+### Patch Changes
+
+- Updated dependencies [13b960f]
+- Updated dependencies [3b0eacf]
+- Updated dependencies [3981b6b]
+- Updated dependencies [b3a0709]
+  - @modern-js/server-core@3.8.0
+  - @modern-js/utils@3.8.0
+  - @modern-js/runtime-utils@3.8.0
+
+## 3.7.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.7.0
+- @modern-js/runtime-utils@3.7.0
+- @modern-js/utils@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- Updated dependencies [c69486b]
+- Updated dependencies [c34b53d]
+  - @modern-js/server-core@3.6.0
+  - @modern-js/runtime-utils@3.6.0
+  - @modern-js/utils@3.6.0
+
+## 3.5.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.5.0
+- @modern-js/runtime-utils@3.5.0
+- @modern-js/utils@3.5.0
+
+## 3.4.0
+
+### Patch Changes
+
+- Updated dependencies [a46bd4e]
+  - @modern-js/server-core@3.4.0
+  - @modern-js/runtime-utils@3.4.0
+  - @modern-js/utils@3.4.0
+
+## 3.3.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.3.0
+- @modern-js/runtime-utils@3.3.0
+- @modern-js/utils@3.3.0
+
+## 3.2.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.2.2
+- @modern-js/runtime-utils@3.2.2
+- @modern-js/utils@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [2aa5253]
+  - @modern-js/utils@3.2.1
+  - @modern-js/server-core@3.2.1
+  - @modern-js/runtime-utils@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- @modern-js/server-core@3.2.0
+- @modern-js/runtime-utils@3.2.0
+- @modern-js/utils@3.2.0
+
+## 3.1.5
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.5
+- @modern-js/runtime-utils@3.1.5
+- @modern-js/utils@3.1.5
+
+## 3.1.4
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.4
+- @modern-js/runtime-utils@3.1.4
+- @modern-js/utils@3.1.4
+
+## 3.1.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.3
+- @modern-js/runtime-utils@3.1.3
+- @modern-js/utils@3.1.3
+
+## 3.1.2
+
+### Patch Changes
+
+- Updated dependencies [fa4cde0]
+- Updated dependencies [ddd55fa]
+  - @modern-js/server-core@3.1.2
+  - @modern-js/runtime-utils@3.1.2
+  - @modern-js/utils@3.1.2
+
+## 3.1.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.1.1
+- @modern-js/runtime-utils@3.1.1
+- @modern-js/utils@3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [65a06b3]
+- Updated dependencies [0fc8c26]
+  - @modern-js/utils@3.1.0
+  - @modern-js/server-core@3.1.0
+  - @modern-js/runtime-utils@3.1.0
+
+## 3.0.5
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.5
+- @modern-js/runtime-utils@3.0.5
+- @modern-js/utils@3.0.5
+
+## 3.0.4
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.4
+- @modern-js/runtime-utils@3.0.4
+- @modern-js/utils@3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.3
+- @modern-js/runtime-utils@3.0.3
+- @modern-js/utils@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.2
+- @modern-js/runtime-utils@3.0.2
+- @modern-js/utils@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @modern-js/server-core@3.0.1
+- @modern-js/runtime-utils@3.0.1
+- @modern-js/utils@3.0.1
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [96b5424]
+- Updated dependencies [eecb927]
+- Updated dependencies [ecd247c]
+- Updated dependencies [952f6fe]
+- Updated dependencies [79f0efd]
+  - @modern-js/server-core@3.0.0
+  - @modern-js/runtime-utils@3.0.0
+  - @modern-js/utils@3.0.0
+
+## 3.0.0-alpha.2
+
+### Patch Changes
+
+- Updated dependencies [96b5424]
+- Updated dependencies [eecb927]
+- Updated dependencies [ecd247c]
+- Updated dependencies [952f6fe]
+- Updated dependencies [79f0efd]
+  - @modern-js/server-core@3.0.0-alpha.2
+  - @modern-js/runtime-utils@3.0.0-alpha.2
+  - @modern-js/utils@3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- Updated dependencies [eecb927]
+- Updated dependencies [952f6fe]
+- Updated dependencies [79f0efd]
+  - @modern-js/server-core@3.0.0-alpha.1
+  - @modern-js/runtime-utils@3.0.0-alpha.1
+  - @modern-js/utils@3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- Updated dependencies [eecb927]
+- Updated dependencies [952f6fe]
+  - @modern-js/server-core@3.0.0-alpha.0
+  - @modern-js/runtime-utils@3.0.0-alpha.0
+  - @modern-js/utils@3.0.0-alpha.0
+
+## 2.68.1
+
+### Patch Changes
+
+- Updated dependencies [0d98723]
+- Updated dependencies [0d98723]
+  - @modern-js/server-core@2.68.1
+  - @modern-js/runtime-utils@2.68.1
+  - @modern-js/utils@2.68.1
+
+## 2.68.0
+
+### Patch Changes
+
+- 992194b: chore: remove `source-map-support` in prod-server for code start performance
+  chore: 移除 prod-server 中的 `source-map-support` 以提升冷启动性能
+  - @modern-js/server-core@2.68.0
+  - @modern-js/runtime-utils@2.68.0
+  - @modern-js/utils@2.68.0
+
+## 2.67.11
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.11
+- @modern-js/runtime-utils@2.67.11
+- @modern-js/utils@2.67.11
+
+## 2.67.10
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.10
+- @modern-js/runtime-utils@2.67.10
+- @modern-js/utils@2.67.10
+
+## 2.67.9
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.9
+- @modern-js/runtime-utils@2.67.9
+- @modern-js/utils@2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- 532bbcb: fix: 修复 SSG 报错时没有中断构建的问题
+  fix: fix the issue that the build will not be interrupted when an error occurs in SSG
+- Updated dependencies [23c8201]
+  - @modern-js/utils@2.67.8
+  - @modern-js/server-core@2.67.8
+  - @modern-js/runtime-utils@2.67.8
+
+## 2.67.7
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.7
+- @modern-js/runtime-utils@2.67.7
+- @modern-js/utils@2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- Updated dependencies [67a21da]
+- Updated dependencies [e67b6d0]
+  - @modern-js/server-core@2.67.6
+  - @modern-js/runtime-utils@2.67.6
+  - @modern-js/utils@2.67.6
+
+## 2.67.5
+
+### Patch Changes
+
+- @modern-js/server-core@2.67.5
+- @modern-js/runtime-utils@2.67.5
+- @modern-js/utils@2.67.5
+
+## 2.67.4
+
+### Patch Changes
+
+- 35e9786: feat: modern.server supports extended server
+  feat: modern.server 支持扩展 modern.js 服务
+- Updated dependencies [35e9786]
+- Updated dependencies [3a66335]
+- Updated dependencies [03cf233]
+- Updated dependencies [446939a]
+- Updated dependencies [2b65e0c]
+- Updated dependencies [446939a]
+- Updated dependencies [b00922e]
+- Updated dependencies [446939a]
+  - @modern-js/server-core@2.67.4
+  - @modern-js/runtime-utils@2.67.4
+  - @modern-js/utils@2.67.4
+
+## 2.67.3
+
+### Patch Changes
+
+- Updated dependencies [f6b81dd]
+- Updated dependencies [f6b81dd]
+  - @modern-js/server-core@2.67.3
+  - @modern-js/runtime-utils@2.67.3
+  - @modern-js/utils@2.67.3
+
+## 2.67.2
+
+### Patch Changes
+
+- Updated dependencies [8f97aae]
+- Updated dependencies [b310249]
+- Updated dependencies [23a111f]
+- Updated dependencies [c964f07]
+  - @modern-js/runtime-utils@2.67.2
+  - @modern-js/server-core@2.67.2
+  - @modern-js/utils@2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- 1d96265: feat(ssr): support streaming ssr to work with http2
+  feat(ssr): 支持 streaming ssr 和 http2 协议一起工作
+- Updated dependencies [1d96265]
+  - @modern-js/utils@2.67.1
+  - @modern-js/server-core@2.67.1
+  - @modern-js/runtime-utils@2.67.1
+
+## 2.67.0
+
+### Patch Changes
+
+- Updated dependencies [7503f22]
+  - @modern-js/server-core@2.67.0
+  - @modern-js/runtime-utils@2.67.0
+  - @modern-js/utils@2.67.0
+
+## 2.66.0
+
+### Patch Changes
+
+- Updated dependencies [e48a5ae]
+  - @modern-js/server-core@2.66.0
+  - @modern-js/runtime-utils@2.66.0
+  - @modern-js/utils@2.66.0
+
+## 2.65.5
+
+### Patch Changes
+
+- Updated dependencies [fb6bf9e]
+- Updated dependencies [90a3c1c]
+- Updated dependencies [58a1afd]
+  - @modern-js/server-core@2.65.5
+  - @modern-js/runtime-utils@2.65.5
+  - @modern-js/utils@2.65.5
+
+## 2.65.4
+
+### Patch Changes
+
+- Updated dependencies [0d47cb8]
+- Updated dependencies [f1cd095]
+  - @modern-js/utils@2.65.4
+  - @modern-js/runtime-utils@2.65.4
+  - @modern-js/server-core@2.65.4
+
+## 2.65.3
+
+### Patch Changes
+
+- Updated dependencies [087ae7c]
+  - @modern-js/runtime-utils@2.65.3
+  - @modern-js/server-core@2.65.3
+  - @modern-js/utils@2.65.3
+
+## 2.65.2
+
+### Patch Changes
+
+- Updated dependencies [793be44]
+- Updated dependencies [1fe923c]
+- Updated dependencies [8837b85]
+- Updated dependencies [f3fc1db]
+- Updated dependencies [1f83d96]
+  - @modern-js/runtime-utils@2.65.2
+  - @modern-js/server-core@2.65.2
+  - @modern-js/utils@2.65.2
+
+## 2.65.1
+
+### Patch Changes
+
+- @modern-js/server-core@2.65.1
+- @modern-js/runtime-utils@2.65.1
+- @modern-js/utils@2.65.1
+
+## 2.65.0
+
+### Patch Changes
+
+- Updated dependencies [4c0aca6]
+  - @modern-js/server-core@2.65.0
+  - @modern-js/runtime-utils@2.65.0
+  - @modern-js/utils@2.65.0
+
+## 2.64.3
+
+### Patch Changes
+
+- Updated dependencies [d77a6df]
+  - @modern-js/server-core@2.64.3
+  - @modern-js/runtime-utils@2.64.3
+  - @modern-js/utils@2.64.3
+
+## 2.64.2
+
+### Patch Changes
+
+- 4ae943d: fix: add `server.logger` to control internal server logger
+  fix: 添加 `server.logger` 配置来控制 Server 内部日志
+- c73217b: chore: support serve command use custom serve launcher
+  chore: 支持 serve 命令使用自定义启动器
+- 02ca983: feat: unify server monitors usage, add error logger for data loader
+  feat: 统一 server 监控的使用方式，为 data loader 添加错误日志
+- Updated dependencies [4ae943d]
+- Updated dependencies [02ca983]
+  - @modern-js/server-core@2.64.2
+  - @modern-js/runtime-utils@2.64.2
+  - @modern-js/utils@2.64.2
+
+## 2.64.1
+
+### Patch Changes
+
+- @modern-js/server-core@2.64.1
+- @modern-js/runtime-utils@2.64.1
+- @modern-js/utils@2.64.1
+
+## 2.64.0
+
+### Patch Changes
+
+- @modern-js/server-core@2.64.0
+- @modern-js/runtime-utils@2.64.0
+- @modern-js/utils@2.64.0
+
+## 2.63.7
+
+### Patch Changes
+
+- @modern-js/server-core@2.63.7
+- @modern-js/runtime-utils@2.63.7
+- @modern-js/utils@2.63.7
+
+## 2.63.6
+
+### Patch Changes
+
+- Updated dependencies [a7a4573]
+  - @modern-js/server-core@2.63.6
+  - @modern-js/runtime-utils@2.63.6
+  - @modern-js/utils@2.63.6
+
+## 2.63.5
+
+### Patch Changes
+
+- @modern-js/server-core@2.63.5
+- @modern-js/runtime-utils@2.63.5
+- @modern-js/utils@2.63.5
+
+## 2.63.4
+
+### Patch Changes
+
+- Updated dependencies [95b026d]
+  - @modern-js/server-core@2.63.4
+  - @modern-js/runtime-utils@2.63.4
+  - @modern-js/utils@2.63.4
+
+## 2.63.3
+
+### Patch Changes
+
+- Updated dependencies [5c97ec2]
+- Updated dependencies [e5b16df]
+  - @modern-js/server-core@2.63.3
+  - @modern-js/runtime-utils@2.63.3
+  - @modern-js/utils@2.63.3
+
+## 2.63.2
+
+### Patch Changes
+
+- Updated dependencies [5fc95f7]
+- Updated dependencies [524d6af]
+- Updated dependencies [53e3ae0]
+- Updated dependencies [3d2bf55]
+- Updated dependencies [bc1670a]
+- Updated dependencies [30f89d5]
+  - @modern-js/utils@2.63.2
+  - @modern-js/server-core@2.63.2
+  - @modern-js/runtime-utils@2.63.2
+
+## 2.63.1
+
+### Patch Changes
+
+- @modern-js/server-core@2.63.1
+- @modern-js/runtime-utils@2.63.1
+- @modern-js/utils@2.63.1
+
+## 2.63.0
+
+### Patch Changes
+
+- @modern-js/server-core@2.63.0
+- @modern-js/runtime-utils@2.63.0
+- @modern-js/utils@2.63.0
+
+## 2.62.1
+
+### Patch Changes
+
+- Updated dependencies [86213ae]
+  - @modern-js/runtime-utils@2.62.1
+  - @modern-js/server-core@2.62.1
+  - @modern-js/utils@2.62.1
+
+## 2.62.0
+
+### Patch Changes
+
+- @modern-js/server-core@2.62.0
+- @modern-js/runtime-utils@2.62.0
+- @modern-js/utils@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- Updated dependencies [45230e2]
+- Updated dependencies [a7ff13f]
+  - @modern-js/utils@2.61.0
+  - @modern-js/server-core@2.61.0
+  - @modern-js/runtime-utils@2.61.0
+
+## 2.60.6
+
+### Patch Changes
+
+- e6daf22: fix(server): handle the cases that res cannot be writable
+  fix(server): 处理 res 无法写入的情况
+- Updated dependencies [e6daf22]
+- Updated dependencies [c4894e6]
+  - @modern-js/server-core@2.60.6
+  - @modern-js/runtime-utils@2.60.6
+  - @modern-js/utils@2.60.6
+
+## 2.60.5
+
+### Patch Changes
+
+- @modern-js/server-core@2.60.5
+- @modern-js/runtime-utils@2.60.5
+- @modern-js/utils@2.60.5
+
+## 2.60.4
+
+### Patch Changes
+
+- Updated dependencies [518b783]
+- Updated dependencies [a9e3eb7]
+- Updated dependencies [c87813e]
+  - @modern-js/server-core@2.60.4
+  - @modern-js/runtime-utils@2.60.4
+  - @modern-js/utils@2.60.4
+
+## 2.60.3
+
+### Patch Changes
+
+- Updated dependencies [303331c]
+  - @modern-js/utils@2.60.3
+  - @modern-js/server-core@2.60.3
+  - @modern-js/runtime-utils@2.60.3
+
+## 2.60.2
+
+### Patch Changes
+
+- Updated dependencies [8a709bc]
+- Updated dependencies [0a31d31]
+  - @modern-js/utils@2.60.2
+  - @modern-js/server-core@2.60.2
+  - @modern-js/runtime-utils@2.60.2
+
+## 2.60.1
+
+### Patch Changes
+
+- @modern-js/server-core@2.60.1
+- @modern-js/runtime-utils@2.60.1
+- @modern-js/utils@2.60.1
+
+## 2.60.0
+
+### Patch Changes
+
+- 28f0101: feat: generator replace husky to simple git hook
+
+  feat: 生成器模板替换 husky 为 simple-git-hook
+
+- Updated dependencies [d6e0118]
+  - @modern-js/server-core@2.60.0
+  - @modern-js/runtime-utils@2.60.0
+  - @modern-js/utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- Updated dependencies [539d72b]
+- Updated dependencies [ef1ec44]
+- Updated dependencies [80237dc]
+  - @modern-js/server-core@2.59.0
+  - @modern-js/runtime-utils@2.59.0
+  - @modern-js/utils@2.59.0
+
+## 2.58.3
+
+### Patch Changes
+
+- Updated dependencies [36ccad3]
+- Updated dependencies [0b581a4]
+- Updated dependencies [610554c]
+- Updated dependencies [59fba90]
+- Updated dependencies [9e82b00]
+  - @modern-js/server-core@2.58.3
+  - @modern-js/runtime-utils@2.58.3
+  - @modern-js/utils@2.58.3
+
+## 2.58.2
+
+### Patch Changes
+
+- Updated dependencies [1ff0304]
+- Updated dependencies [7715b6d]
+- Updated dependencies [44c1bc4]
+- Updated dependencies [a1a9373]
+  - @modern-js/server-core@2.58.2
+  - @modern-js/runtime-utils@2.58.2
+  - @modern-js/utils@2.58.2
+
+## 2.58.1
+
+### Patch Changes
+
+- Updated dependencies [c904ee2]
+- Updated dependencies [a214ea8]
+  - @modern-js/server-core@2.58.1
+  - @modern-js/runtime-utils@2.58.1
+  - @modern-js/utils@2.58.1
+
+## 2.58.0
+
+### Patch Changes
+
+- @modern-js/server-core@2.58.0
+- @modern-js/runtime-utils@2.58.0
+- @modern-js/utils@2.58.0
+
+## 2.57.1
+
+### Patch Changes
+
+- Updated dependencies [bc565cd]
+  - @modern-js/server-core@2.57.1
+  - @modern-js/runtime-utils@2.57.1
+  - @modern-js/utils@2.57.1
+
+## 2.57.0
+
+### Patch Changes
+
+- 0e906a1: feat: inject renderHandler to appContext & add default serverPlugins
+  feat: 注入 renderHandler 到 appContext & 新增默认 serverPlugins
+- 604ad3a: fix: faviconPlugin should after staticPlugin
+  fix: faviconPlugin 应该在 staticPlugin 之后
+- Updated dependencies [2515b00]
+- Updated dependencies [0e906a1]
+- Updated dependencies [6cec127]
+- Updated dependencies [b5a48a8]
+- Updated dependencies [203c9eb]
+- Updated dependencies [916559a]
+- Updated dependencies [604ad3a]
+- Updated dependencies [dc736ef]
+  - @modern-js/utils@2.57.0
+  - @modern-js/server-core@2.57.0
+  - @modern-js/runtime-utils@2.57.0
+
+## 2.56.2
+
+### Patch Changes
+
+- @modern-js/server-core@2.56.2
+- @modern-js/runtime-utils@2.56.2
+- @modern-js/utils@2.56.2
+
+## 2.56.1
+
+### Patch Changes
+
+- Updated dependencies [e0e29b3]
+  - @modern-js/server-core@2.56.1
+  - @modern-js/runtime-utils@2.56.1
+  - @modern-js/utils@2.56.1
+
+## 2.56.0
+
+### Minor Changes
+
+- bedbbb3: feat: server monitors interface unity
+  feat: server 监控接口统一
+
+### Patch Changes
+
+- Updated dependencies [bedbbb3]
+- Updated dependencies [9eee52a]
+  - @modern-js/server-core@2.56.0
+  - @modern-js/runtime-utils@2.56.0
+  - @modern-js/utils@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- 35cddd7: fix: prod-server support source-map
+  fix: prod-server 支持 source-map
+- Updated dependencies [bbcf55a]
+- Updated dependencies [e0c2384]
+  - @modern-js/utils@2.55.0
+  - @modern-js/server-core@2.55.0
+  - @modern-js/runtime-utils@2.55.0
+
+## 2.54.6
+
+### Patch Changes
+
+- @modern-js/server-core@2.54.6
+- @modern-js/runtime-utils@2.54.6
+- @modern-js/utils@2.54.6
+
+## 2.54.5
+
+### Patch Changes
+
+- 5525a23: fix: logger maybe undefined when server occur error
+  fix: logger 可能是 undefined 当 server 发生错误时
+- Updated dependencies [5525a23]
+  - @modern-js/server-core@2.54.5
+  - @modern-js/runtime-utils@2.54.5
+  - @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/server-core@2.54.4
+- @modern-js/runtime-utils@2.54.4
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- b50d7ec: fix: we should load modern.config.json when production
+  fix: 在生产阶段，我们应该加载 modern.config.json
+- c5644c9: fix: we should add cli config correctly
+  fix: 我们应该正确的添加 cli 配置
+- Updated dependencies [b50d7ec]
+  - @modern-js/server-core@2.54.3
+  - @modern-js/runtime-utils@2.54.3
+  - @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/server-core@2.54.2
+- @modern-js/runtime-utils@2.54.2
+- @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- Updated dependencies [29aeb3c]
+  - @modern-js/server-core@2.54.1
+  - @modern-js/runtime-utils@2.54.1
+  - @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- a8d8f0c: feat: support new server plugin & discard server plugin some hooks
+  feat: 支持新 server plugin & 减少 server plugin 钩子
+
+### Patch Changes
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [8cdb67d]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+  - @modern-js/server-core@2.54.0
+  - @modern-js/runtime-utils@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- Updated dependencies [0fce81a]
+- Updated dependencies [b251046]
+- Updated dependencies [a481488]
+  - @modern-js/server-core@2.53.0
+  - @modern-js/runtime-utils@2.53.0
+  - @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- Updated dependencies [85ac453]
+- Updated dependencies [ad4548d]
+- Updated dependencies [920d856]
+  - @modern-js/runtime-utils@2.52.0
+  - @modern-js/server-core@2.52.0
+  - @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- Updated dependencies [9d4d04d]
+  - @modern-js/server-core@2.51.0
+  - @modern-js/runtime-utils@2.51.0
+  - @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- Updated dependencies [7ed2fbc]
+  - @modern-js/server-core@2.50.0
+  - @modern-js/runtime-utils@2.50.0
+  - @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- 6e12e9f: fix: public middleware should not filter api route & support https
+  fix: public middleware 不应该过滤 api 路由 & 支持 https
+- Updated dependencies [4653e73]
+- Updated dependencies [2c60b6b]
+- Updated dependencies [936ca64]
+- Updated dependencies [6e12e9f]
+  - @modern-js/server-core@2.49.4
+  - @modern-js/runtime-utils@2.49.4
+  - @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- Updated dependencies [d936fe3]
+- Updated dependencies [45cae97]
+- Updated dependencies [0c4929f]
+- Updated dependencies [1b594a5]
+- Updated dependencies [4d728d2]
+- Updated dependencies [aa3a1dc]
+- Updated dependencies [327f607]
+- Updated dependencies [3e663e9]
+  - @modern-js/server-core@2.49.3
+  - @modern-js/runtime-utils@2.49.3
+  - @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes

@@ -1,5 +1,306 @@
 # @modern-js/create
 
+## 3.11.3
+
+## 3.11.2
+
+## 3.11.1
+
+## 3.11.0
+
+### Minor Changes
+
+- 712e1b6: Add MCP Apps support in a single `@modern-js/mcp-apps` package with build plugin, server plugin, BFF and Fetch adapters, React and Module Federation views, manifest-based UI resource registration, and an `mcp-apps` project template.
+
+  新增 MCP Apps 支持，由单一的 `@modern-js/mcp-apps` 包提供构建插件、服务端插件、BFF 和 Fetch 适配器、React 和 Module Federation 视图、基于清单的 UI 资源注册，以及 `mcp-apps` 项目模板。
+
+## 3.10.4
+
+## 3.10.3
+
+## 3.10.2
+
+## 3.10.1
+
+## 3.10.0
+
+### Minor Changes
+
+- 8525dea: Add a pre-commit hook to new standalone projects using Rstack CLI to lint and format staged files.
+- 778f778: Use Rstack CLI for linting and formatting in new projects.
+
+### Patch Changes
+
+- e6cb9d3: Add Rstack CLI documentation guidance to AGENTS.md in new projects.
+- de0d25f: Recommend the Rstack VS Code extension in new standalone projects.
+- 00017a1: Generate only AGENTS.md for AI coding guidance. Stop creating or updating CLAUDE.md in project templates and the --agents-md-only command.
+
+## 3.9.3
+
+## 3.9.2
+
+## 3.9.1
+
+## 3.9.0
+
+## 3.8.3
+
+## 3.8.2
+
+## 3.8.1
+
+## 3.8.0
+
+### Minor Changes
+
+- ea80c84: feat: agent knowledge supply — bundle version-matched English docs into the app-tools tarball (`docs/`) on publish, and generate `AGENTS.md` / `CLAUDE.md` in new projects created by `@modern-js/create` (skip with `--no-agents-md`). Existing projects can run `npx @modern-js/create --agents-md-only` to add or idempotently refresh these files after an upgrade (managed marker block is updated in place, user content is preserved). Also fixes boolean flags swallowing the following positional argument (e.g. `create --sub my-app`).
+
+  feat: Agent 知识供给 —— 发布时将版本匹配的英文文档打进 app-tools tarball（`docs/`），并在 `@modern-js/create` 新建项目时默认生成 `AGENTS.md` / `CLAUDE.md`（`--no-agents-md` 可跳过）。已有项目可运行 `npx @modern-js/create --agents-md-only` 在升级后补齐或幂等更新这两个文件（就地更新托管标记块，保留用户自定义内容）。同时修复布尔参数吞掉后续位置参数的问题（如 `create --sub my-app`）。
+
+### Patch Changes
+
+- a305126: feat: bundle version-matched docs into `@modern-js/app-tools` and generate `AGENTS.md` / `CLAUDE.md` pointing at them, so AI coding agents read docs matching the installed version
+
+  feat: 随包分发与安装版本一致的文档，并生成指向它的 `AGENTS.md` / `CLAUDE.md`，让 AI 编码助手读到与所装版本匹配的文档
+
+## 3.7.0
+
+## 3.6.0
+
+## 3.5.0
+
+## 3.4.0
+
+## 3.3.0
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+## 3.1.5
+
+## 3.1.4
+
+## 3.1.3
+
+## 3.1.2
+
+## 3.1.1
+
+## 3.1.0
+
+## 3.0.5
+
+## 3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- 9387ab3: chore(create): simplify project creation output logs
+
+  chore(create): 简化项目创建输出日志
+
+## 3.0.2
+
+### Patch Changes
+
+- 14d408f: fix(create): skip "enter project directory" step when project is created in current directory
+
+  fix(create): 当项目创建在当前目录时，不再提示执行 cd 进入项目目录
+
+## 3.0.1
+
+## 3.0.0
+
+## 3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+## 2.68.1
+
+## 2.68.0
+
+## 2.67.11
+
+## 2.67.10
+
+## 2.67.9
+
+## 2.67.8
+
+## 2.67.7
+
+## 2.67.6
+
+## 2.67.5
+
+## 2.67.4
+
+## 2.67.3
+
+## 2.67.2
+
+## 2.67.1
+
+## 2.67.0
+
+## 2.66.0
+
+## 2.65.5
+
+## 2.65.4
+
+## 2.65.3
+
+## 2.65.2
+
+## 2.65.1
+
+## 2.65.0
+
+## 2.64.3
+
+## 2.64.2
+
+## 2.64.1
+
+## 2.64.0
+
+## 2.63.7
+
+## 2.63.6
+
+## 2.63.5
+
+## 2.63.4
+
+## 2.63.3
+
+## 2.63.2
+
+## 2.63.1
+
+## 2.63.0
+
+## 2.62.1
+
+### Patch Changes
+
+- 6203806: fix: new and upgrade command run error
+
+  fix: 修复 new 命令和 upgrade 命令执行报错
+
+## 2.62.0
+
+## 2.61.0
+
+### Minor Changes
+
+- 2c95681: feat: create tools and new command not support Module project
+
+  feat: create 工具和 new 命令不再支持模块项目
+
+## 2.60.6
+
+## 2.60.5
+
+## 2.60.4
+
+### Patch Changes
+
+- d6986c5: feat: optimize generator download
+
+  feat: 优化生成器下载
+
+## 2.60.3
+
+## 2.60.2
+
+### Patch Changes
+
+- 0b6d335: feat: create tools support --time option
+
+  feat: create 工具支持 --time 选项
+
+- 0b6d335: feat: Optimize generator log information
+
+  feat: 优化生成器日志信息
+
+## 2.60.1
+
+## 2.60.0
+
+### Patch Changes
+
+- 65b2922: feat: generator update json add endWithNewLine params
+
+  feat: 生成器更新 json 文件增加 endWithNewLine 参数
+
+## 2.59.0
+
+## 2.58.3
+
+## 2.58.2
+
+### Patch Changes
+
+- 7715b6d: feat: update codesmith version
+
+  feat: 更新 codesmith 版本
+
+## 2.58.1
+
+## 2.58.0
+
+## 2.57.1
+
+## 2.57.0
+
+## 2.56.2
+
+## 2.56.1
+
+## 2.56.0
+
+## 2.55.0
+
+## 2.54.6
+
+## 2.54.5
+
+## 2.54.4
+
+## 2.54.3
+
+## 2.54.2
+
+## 2.54.1
+
+## 2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- f0aa3d3: feat: @modern-js/create not support create Monorepo Project
+
+  feat: @modern-js/create 移除创建 Monorepo 项目
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.4
+
+## 2.49.3
+
 ## 2.49.2
 
 ## 2.49.1

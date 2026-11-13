@@ -1,15 +1,24 @@
-import { MAIN_ENTRY_NAME } from '@modern-js/utils';
+import { AGGRED_DIR } from '@modern-js/server-core';
+import { DEFAULT_ENTRY_NAME, MAIN_ENTRY_NAME } from '@modern-js/utils';
+import type { AppUserConfig } from '../types';
+import type { AppToolsContext } from '../types/plugin';
 import { getAutoInjectEnv } from '../utils/env';
-import { IAppContext, AppUserConfig, AppLegacyUserConfig } from '../types';
 
 // Define some default values that are different from rsbuild default config or used in useResolvedConfigContext
 export function createDefaultConfig(
-  appContext: IAppContext,
-): AppUserConfig<'webpack'> | AppUserConfig<'rspack'> {
+  appContext: AppToolsContext,
+): AppUserConfig {
   const dev: AppUserConfig['dev'] = {
-    // `dev.port` should not have a default value
-    // because we will use `server.port` by default
-    port: undefined,
+    mockDir: `./${AGGRED_DIR.mock}`,
+    cliShortcuts: {
+      help: false,
+      // does not support restart server and print urls yet
+      // temporarily disable the `o` shortcut key, as it opens the wrong URL (/html/main => 404).
+      custom: (shortcuts = []) =>
+        shortcuts.filter(
+          ({ key }) => key !== 'r' && key !== 'u' && key !== 'o',
+        ),
+    },
   };
 
   const output: AppUserConfig['output'] = {
@@ -21,10 +30,7 @@ export function createDefaultConfig(
       server: 'bundles',
       worker: 'worker',
     },
-    // no need to emit assets for SSR bundles
-    emitAssets: ({ target }) => target !== 'node',
     cleanDistPath: true,
-    disableNodePolyfill: true,
     enableInlineRouteManifests: true,
     disableInlineRouteManifests: false,
   };
@@ -33,16 +39,21 @@ export function createDefaultConfig(
     alias: Record<string, string>;
   } = {
     entries: undefined,
-    mainEntryName: MAIN_ENTRY_NAME,
+    mainEntryName: DEFAULT_ENTRY_NAME,
     enableAsyncEntry: false,
+    enableAsyncPreEntry: false,
     disableDefaultEntries: false,
     entriesDir: './src',
     configDir: './config',
     globalVars: getAutoInjectEnv(appContext),
+    alias: {},
+  };
+
+  const resolve: AppUserConfig['resolve'] = {
     alias: {
       [appContext.internalDirAlias]: appContext.internalDirectory,
-      [appContext.internalSrcAlias]: appContext.srcDirectory,
-      '@': appContext.srcDirectory,
+      [appContext.internalSrcAlias]: appContext.srcDirectory!,
+      '@': appContext.srcDirectory!,
       '@shared': appContext.sharedDirectory,
     },
   };
@@ -52,14 +63,7 @@ export function createDefaultConfig(
     mountId: 'root',
     meta: {
       charset: { charset: 'utf-8' },
-      viewport:
-        'width=device-width, initial-scale=1.0, shrink-to-fit=no, viewport-fit=cover, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no',
-      'http-equiv': { 'http-equiv': 'x-ua-compatible', content: 'ie=edge' },
-      renderer: 'webkit',
-      layoutmode: 'standard',
-      imagemode: 'force',
-      'wap-font-scale': 'no',
-      'format-detection': 'telephone=no',
+      viewport: 'width=device-width, initial-scale=1',
     },
   };
 
@@ -74,6 +78,7 @@ export function createDefaultConfig(
 
   return {
     source,
+    resolve,
     output,
     server,
     dev,
@@ -87,115 +92,53 @@ export function createDefaultConfig(
     },
     plugins: [],
     builderPlugins: [],
-    runtime: {},
-    runtimeByEntries: {},
   };
 }
 
-export function createLegacyDefaultConfig(
-  appContext: IAppContext,
-): AppLegacyUserConfig {
-  const defaultAlias: Record<string, string> = appContext
-    ? {
-        [appContext.internalDirAlias]: appContext.internalDirectory,
-        [appContext.internalSrcAlias]: appContext.srcDirectory,
-        '@': appContext.srcDirectory,
-        '@shared': appContext.sharedDirectory,
-      }
-    : {};
+type ServerSSRConfig = NonNullable<AppUserConfig['server']>['ssr'];
 
-  const sourceDefaults: AppLegacyUserConfig['source'] = {
-    entries: undefined,
-    mainEntryName: MAIN_ENTRY_NAME,
-    enableAsyncEntry: false,
-    disableDefaultEntries: false,
-    entriesDir: './src',
-    configDir: './config',
-    apiDir: './api',
-    envVars: [],
-    globalVars: getAutoInjectEnv(appContext),
-    alias: defaultAlias,
-    moduleScopes: undefined,
-    include: [],
-  };
+const isStreamSSRConfig = (ssr: ServerSSRConfig) => {
+  if (!ssr) {
+    return false;
+  }
+  if (typeof ssr === 'boolean') {
+    // `ssr: true` defaults to stream SSR in Modern.
+    return ssr;
+  }
+  return ssr.mode !== 'string';
+};
 
-  const outputDefaults: AppLegacyUserConfig['output'] = {
-    assetPrefix: '/',
-    htmlPath: 'html',
-    jsPath: 'static/js',
-    cssPath: 'static/css',
-    mediaPath: 'static/media',
-    path: 'dist',
-    title: '',
-    titleByEntries: undefined,
-    meta: {
-      charset: { charset: 'utf-8' },
-      viewport:
-        'width=device-width, initial-scale=1.0, shrink-to-fit=no, viewport-fit=cover, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no',
-      'http-equiv': { 'http-equiv': 'x-ua-compatible', content: 'ie=edge' },
-      renderer: 'webkit',
-      layoutmode: 'standard',
-      imagemode: 'force',
-      'wap-font-scale': 'no',
-      'format-detection': 'telephone=no',
-    },
-    metaByEntries: undefined,
-    inject: 'head',
-    injectByEntries: undefined,
-    mountId: 'root',
-    favicon: '',
-    faviconByEntries: undefined,
-    copy: undefined,
-    disableHtmlFolder: false,
-    disableCssModuleExtension: false,
-    disableCssExtract: false,
-    enableCssModuleTSDeclaration: false,
-    disableMinimize: false,
-    enableInlineStyles: false,
-    enableInlineScripts: false,
-    disableSourceMap: false,
-    disableInlineRuntimeChunk: false,
-    disableAssetsCache: false,
-    enableLatestDecorators: false,
-    polyfill: 'entry',
-    dataUriLimit: 10000,
-    templateParameters: {},
-    templateParametersByEntries: undefined,
-    cssModuleLocalIdentName: undefined,
-    disableNodePolyfill: false,
-    enableTsLoader: false,
-  };
+/**
+ * Default-enable lazy compilation for pure CSR and stream SSR. Stream SSR keeps
+ * first-screen route assets correct via the route-eager lazyCompilation.test
+ * injected by the SSR builder plugin. String SSR, RSC and SSG stay disabled.
+ */
+export function isLazyCompilationSafeByDefault(
+  userConfig: Pick<AppUserConfig, 'server' | 'output'>,
+): boolean {
+  const { server, output } = userConfig;
 
-  const serverDefaults: AppLegacyUserConfig['server'] = {
-    routes: undefined,
-    publicRoutes: undefined,
-    ssr: undefined,
-    ssrByEntries: undefined,
-    baseUrl: '/',
-    port: 8080,
-  };
+  if (
+    output?.ssg ||
+    (output?.ssgByEntries && Object.keys(output.ssgByEntries).length > 0)
+  ) {
+    return false;
+  }
+  if (server?.rsc) {
+    return false;
+  }
+  if (server?.ssr && !isStreamSSRConfig(server.ssr)) {
+    return false;
+  }
+  if (
+    server?.ssrByEntries &&
+    typeof server.ssrByEntries === 'object' &&
+    Object.values(server.ssrByEntries).some(
+      ssr => Boolean(ssr) && !isStreamSSRConfig(ssr),
+    )
+  ) {
+    return false;
+  }
 
-  const devDefaults = { assetPrefix: false, https: false };
-
-  const toolsDefaults = {
-    webpack: undefined,
-    babel: undefined,
-    postcss: undefined,
-    autoprefixer: undefined,
-    lodash: undefined,
-    devServer: undefined,
-    tsLoader: undefined,
-    terser: undefined,
-    minifyCss: undefined,
-  };
-
-  return {
-    source: sourceDefaults,
-    output: outputDefaults,
-    server: serverDefaults,
-    dev: devDefaults,
-    tools: toolsDefaults,
-    runtime: {},
-    runtimeByEntries: {},
-  };
+  return true;
 }

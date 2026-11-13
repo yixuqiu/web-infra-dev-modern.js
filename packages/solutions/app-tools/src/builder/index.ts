@@ -1,9 +1,12 @@
-export async function createBuilderGenerator(bundler: 'webpack' | 'rspack') {
-  if (bundler === 'rspack') {
-    const { createRspackBuilderForModern } = await import('./builder-rspack');
-    return createRspackBuilderForModern;
-  }
-
-  const { createWebpackBuilderForModern } = await import('./builder-webpack');
-  return createWebpackBuilderForModern;
+export async function createBuilderGenerator() {
+  const { createRspackBuilderForModern } =
+    await import('./builder-rspack/index.js');
+  return createRspackBuilderForModern;
 }
+
+export { parseRspackConfig } from '@modern-js/builder';
+
+export {
+  builderPluginAdapterBasic,
+  builderPluginAdapterHooks,
+} from './shared/builderPlugins';

@@ -1,16 +1,20 @@
-import { compile, pathToRegexp, Key } from 'path-to-regexp';
-import { stringify } from 'query-string';
+import { type Key, compile, pathToRegexp } from 'path-to-regexp';
+import { stringify } from 'qs';
 import { handleRes } from './handleRes';
 import type {
   BFFRequestPayload,
+  IOptions,
   RequestCreator,
   Sender,
-  IOptions,
+  UploadCreator,
 } from './types';
+import { getUploadPayload } from './utiles';
 
-let realRequest: typeof fetch;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let realAllowedHeaders: string[];
+const realRequest: Map<string, typeof fetch> = new Map();
+
+const realAllowedHeaders: Map<string, string[]> = new Map();
+
+const domainMap: Map<string, string> = new Map();
 
 const originFetch = (...params: Parameters<typeof fetch>) => {
   const [url, init] = params;
@@ -18,39 +22,55 @@ const originFetch = (...params: Parameters<typeof fetch>) => {
   if (init?.method?.toLowerCase() === 'get') {
     init.body = undefined;
   }
-
   return fetch(url, init).then(handleRes);
 };
 
 export const configure = (options: IOptions) => {
-  const { request, interceptor, allowedHeaders } = options;
-  realRequest = request || originFetch;
+  const {
+    request,
+    interceptor,
+    allowedHeaders,
+    setDomain,
+    requestId = 'default',
+  } = options;
+  let configuredRequest = request || originFetch;
   if (interceptor && !request) {
-    realRequest = interceptor(fetch);
+    configuredRequest = interceptor(fetch);
   }
   if (Array.isArray(allowedHeaders)) {
-    realAllowedHeaders = allowedHeaders;
+    realAllowedHeaders.set(requestId, allowedHeaders);
   }
+  if (setDomain) {
+    domainMap.set(
+      requestId,
+      setDomain({
+        target: 'browser',
+      }),
+    );
+  }
+  realRequest.set(requestId, configuredRequest as any);
 };
 
-export const createRequest: RequestCreator = (
+export const createRequest: RequestCreator = ({
   path,
   method,
   port,
-  httpMethodDecider = 'functionName',
-  // 后续可能要修改，暂时先保留
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  httpMethodDecider = 'functionName', // 后续可能要修改，暂时先保留
   fetch = originFetch,
-) => {
+  domain,
+  requestId = 'default',
+}) => {
   const getFinalPath = compile(path, { encode: encodeURIComponent });
   const keys: Key[] = [];
   pathToRegexp(path, keys);
 
   const sender: Sender = async (...args) => {
-    const fetcher = realRequest || originFetch;
+    const fetcher = realRequest.get(requestId) || originFetch;
+
     let body;
     let finalURL: string;
     let headers: Record<string, any>;
+
     if (httpMethodDecider === 'inputParams') {
       finalURL = path;
       body = JSON.stringify({
@@ -97,7 +117,6 @@ export const createRequest: RequestCreator = (
             : payload.body;
       } else if (payload.body) {
         headers['Content-Type'] = 'text/plain';
-        // eslint-disable-next-line prefer-destructuring
         body = payload.body;
       } else if (payload.formData) {
         body = payload.formData;
@@ -109,7 +128,6 @@ export const createRequest: RequestCreator = (
         if (
           typeof payload.formUrlencoded === 'object' &&
           // @ts-expect-error
-          // eslint-disable-next-line node/prefer-global/url-search-params,node/no-unsupported-features/node-builtins
           !(payload.formUrlencoded instanceof URLSearchParams)
         ) {
           body = stringify(payload.formUrlencoded);
@@ -121,8 +139,37 @@ export const createRequest: RequestCreator = (
 
     headers.accept = `application/json,*/*;q=0.8`;
 
+    const configDomain = domainMap.get(requestId);
+
+    finalURL = `${configDomain || domain || ''}${finalURL}`;
+
     return fetcher(finalURL, {
       method,
+      body,
+      headers,
+    });
+  };
+
+  return sender;
+};
+
+export const createUploader: UploadCreator = ({
+  path,
+  domain,
+  requestId = 'default',
+}) => {
+  const getFinalPath = compile(path, { encode: encodeURIComponent });
+  const sender: Sender = (...args) => {
+    const fetcher = realRequest.get(requestId) || originFetch;
+
+    const { body, headers, params } = getUploadPayload(args);
+    const finalPath = getFinalPath(params);
+
+    const configDomain = domainMap.get(requestId);
+    const finalURL = `${configDomain || domain || ''}${finalPath}`;
+
+    return fetcher(finalURL, {
+      method: 'POST',
       body,
       headers,
     });

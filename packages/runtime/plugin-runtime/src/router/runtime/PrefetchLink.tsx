@@ -1,23 +1,24 @@
+'use client';
+import {
+  type Path,
+  type RouteObject,
+  Link as RouterLink,
+  type LinkProps as RouterLinkProps,
+  NavLink as RouterNavLink,
+  type NavLinkProps as RouterNavLinkProps,
+  matchRoutes,
+  useHref,
+  useMatches,
+  useResolvedPath,
+} from '@modern-js/runtime-utils/router';
 import React, { useContext, useMemo } from 'react';
 import type {
   FocusEventHandler,
   MouseEventHandler,
   TouchEventHandler,
 } from 'react';
-import {
-  LinkProps as RouterLinkProps,
-  RouteObject,
-  Link as RouterLink,
-  matchRoutes,
-  useResolvedPath,
-  useHref,
-  useMatches,
-  NavLink as RouterNavLink,
-  NavLinkProps as RouterNavLinkProps,
-  Path,
-} from '@modern-js/runtime-utils/router';
-import { RuntimeReactContext } from '../../core';
-import { RouteAssets, RouteManifest } from './types';
+import { InternalRuntimeContext } from '../../core/context';
+import type { RouteAssets, RouteManifest } from './types';
 
 interface PrefetchHandlers {
   onFocus?: FocusEventHandler<Element>;
@@ -27,14 +28,7 @@ interface PrefetchHandlers {
   onTouchStart?: TouchEventHandler<Element>;
 }
 
-// TODO: 支持 rspack
-declare const __webpack_chunk_load__:
-  | ((chunkId: string) => Promise<void>)
-  | undefined;
-
-export function composeEventHandlers<
-  EventType extends React.SyntheticEvent | Event,
->(
+function composeEventHandlers<EventType extends React.SyntheticEvent | Event>(
   theirHandler: ((event: EventType) => any) | undefined,
   ourHandler: (event: EventType) => any,
 ): (event: EventType) => any {
@@ -106,7 +100,6 @@ function usePrefetchBehavior(
     }
   };
 
-  // eslint-disable-next-line consistent-return
   React.useEffect(() => {
     if (maybePrefetch) {
       const id = setTimeout(() => {
@@ -152,7 +145,8 @@ async function loadRouteModule(
   try {
     await Promise.all(
       chunkIds.map(chunkId => {
-        return __webpack_chunk_load__?.(String(chunkId));
+        // @ts-ignore
+        return WEBPACK_CHUNK_LOAD?.(chunkId);
       }),
     );
   } catch (error) {
@@ -189,7 +183,7 @@ const getDataHref = (
 
 const PrefetchPageLinks: React.FC<{ path: Path }> = ({ path }) => {
   const { pathname } = path;
-  const context = useContext(RuntimeReactContext);
+  const context = useContext(InternalRuntimeContext);
   const { routeManifest, routes } = context;
   const { routeAssets } = routeManifest || {};
   const matches = Array.isArray(routes) ? matchRoutes(routes, pathname) : [];
@@ -205,7 +199,7 @@ const PrefetchPageLinks: React.FC<{ path: Path }> = ({ path }) => {
     <PrefetchDataLinks
       matches={matches}
       path={path}
-      routeManifest={routeManifest}
+      routeManifest={routeManifest!}
     />
   );
 };
@@ -272,8 +266,8 @@ const PrefetchDataLinks: React.FC<{
 type InputLinkProps<T> = T extends typeof RouterNavLink
   ? NavLinkProps
   : T extends typeof RouterLink
-  ? LinkProps
-  : never;
+    ? LinkProps
+    : never;
 
 const createPrefetchLink = <T extends typeof RouterLink | typeof RouterNavLink>(
   Link: T,
@@ -295,7 +289,9 @@ const createPrefetchLink = <T extends typeof RouterLink | typeof RouterNavLink>(
             {...(props as any)}
             {...prefetchHandlers}
           />
-          {shouldPrefetch && __webpack_chunk_load__ && !isAbsolute ? (
+          {shouldPrefetch && // @ts-ignore
+          WEBPACK_CHUNK_LOAD &&
+          !isAbsolute ? (
             <PrefetchPageLinks path={resolvedPath} />
           ) : null}
         </>

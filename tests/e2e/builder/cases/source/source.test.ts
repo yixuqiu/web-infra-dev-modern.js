@@ -1,5 +1,5 @@
-import { join } from 'path';
-import { expect, test } from '@modern-js/e2e/playwright';
+import path, { join } from 'path';
+import { expect, test } from '@playwright/test';
 import { build, getHrefByEntryName } from '@scripts/shared';
 
 const fixtures = __dirname;
@@ -43,51 +43,7 @@ test.describe('source configure multi', () => {
   });
 });
 
-// todo: moduleScopes not work when buildCache is false ???
-test.skip('module-scopes', async ({ page }) => {
-  const buildOpts = {
-    cwd: join(fixtures, 'module-scopes'),
-    entry: {
-      main: join(fixtures, 'module-scopes/src/index.js'),
-    },
-  };
-
-  await expect(
-    build({
-      ...buildOpts,
-      builderConfig: {
-        source: {
-          moduleScopes: ['./src'],
-        },
-      },
-    }),
-  ).rejects.toThrowError('webpack build failed!');
-
-  let builder = await build({
-    ...buildOpts,
-    runServer: true,
-  });
-
-  await page.goto(getHrefByEntryName('main', builder.port));
-
-  await expect(page.innerHTML('#test')).resolves.toBe('Hello Builder! 1');
-
-  builder.close();
-
-  // should not throw
-  builder = await build({
-    ...buildOpts,
-    builderConfig: {
-      source: {
-        moduleScopes: ['./src', './common'],
-      },
-    },
-  });
-
-  builder.close();
-});
-
-test('global-vars', async ({ page }) => {
+test('global-vars', async ({ page }, testInfo) => {
   const builder = await build({
     cwd: join(fixtures, 'global-vars'),
     entry: {
@@ -95,6 +51,11 @@ test('global-vars', async ({ page }) => {
     },
     runServer: true,
     builderConfig: {
+      output: {
+        distPath: {
+          root: testInfo.outputPath('dist'),
+        },
+      },
       source: {
         globalVars: {
           ENABLE_TEST: true,
@@ -111,7 +72,7 @@ test('global-vars', async ({ page }) => {
   builder.close();
 });
 
-test('define', async ({ page }) => {
+test('define', async ({ page }, testInfo) => {
   const builder = await build({
     cwd: join(fixtures, 'global-vars'),
     entry: {
@@ -119,6 +80,11 @@ test('define', async ({ page }) => {
     },
     runServer: true,
     builderConfig: {
+      output: {
+        distPath: {
+          root: testInfo.outputPath('dist'),
+        },
+      },
       source: {
         define: {
           ENABLE_TEST: JSON.stringify(true),
@@ -177,6 +143,8 @@ test('tsconfig paths should not work when aliasStrategy is "prefer-alias"', asyn
         alias: {
           '@/common': './src/common2',
         },
+      },
+      resolve: {
         aliasStrategy: 'prefer-alias',
       },
     },

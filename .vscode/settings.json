@@ -1,8 +1,6 @@
 {
   "files.associations": {
     ".code-workspace": "jsonc",
-    ".eslintrc": "jsonc",
-    ".eslintrc*.json": "jsonc",
     ".stylelintrc": "jsonc",
     "stylelintrc": "jsonc",
     "README": "markdown"
@@ -25,56 +23,15 @@
   "files.insertFinalNewline": true,
   //
   "cSpell.diagnosticLevel": "Hint",
-  "eslint.run": "onType",
-  "eslint.probe": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "vue"
-  ],
-  "eslint.format.enable": true,
-  "eslint.lintTask.enable": true,
   "javascript.validate.enable": false,
   "typescript.validate.enable": true,
   "css.validate": false,
   "scss.validate": false,
   "less.validate": false,
-  "[css]": {
-    "editor.formatOnType": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
-  },
-  "[scss]": {
-    "editor.formatOnType": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
-  },
-  "[less]": {
-    "editor.formatOnType": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
-  },
-  //
+  "editor.defaultFormatter": "rstack.rstack",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "javascript.format.enable": false,
-  "typescript.format.enable": false,
-  //
-  "json.format.enable": false,
-  "[json]": {
-    "editor.tabSize": 2,
-    "editor.formatOnType": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
-  },
-  "[jsonc]": {
-    "editor.tabSize": 2,
-    "editor.formatOnType": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
+    "source.fixAll.rslint": "explicit"
   },
   "emmet.triggerExpansionOnTab": true,
   "typescript.tsdk": "node_modules/typescript/lib",
@@ -83,5 +40,32 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     "**/node_modules": false
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "rstack.rstack"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "rstack.rstack"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "rstack.rstack"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "rstack.rstack"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "rstack.rstack"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "rstack.rstack"
+  },
+  "rust-analyzer.linkedProjects": [
+    "./packages/cli/flight-server-transform-plugin/Cargo.toml"
+  ],
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "[mdx]": {
+    "editor.defaultFormatter": "rstack.rstack"
   }
 }

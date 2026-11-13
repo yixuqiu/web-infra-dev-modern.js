@@ -1,7 +1,23 @@
 import * as path from 'path';
 import type { HttpMethodDecider } from '@modern-js/types';
 import { ApiRouter } from '../router';
-import { Result, Ok, Err } from './result';
+import { Err, Ok, type Result } from './result';
+
+/**
+ * Get package name from package.json file
+ * @param appDir - Application directory path
+ * @returns Package name or undefined if not found
+ */
+const getPackageName = (appDir: string): string | undefined => {
+  try {
+    const packageJsonPath = path.resolve(appDir, './package.json');
+    const packageJson = require(packageJsonPath);
+    return packageJson.name;
+  } catch (error) {
+    // If package.json doesn't exist or is invalid, return undefined
+    return undefined;
+  }
+};
 
 export type GenClientResult = Result<string>;
 
@@ -18,9 +34,10 @@ export type GenClientOptions = {
   target?: string;
   requireResolve?: typeof require.resolve;
   httpMethodDecider?: HttpMethodDecider;
+  domain?: string;
 };
 
-export const DEFAULT_CLIENT_REQUEST_CREATOR = '@modern-js/create-request';
+export const INNER_CLIENT_REQUEST_CREATOR = '@modern-js/plugin-bff/client';
 
 export const generateClient = async ({
   appDir,
@@ -34,24 +51,9 @@ export const generateClient = async ({
   fetcher,
   requireResolve = require.resolve,
   httpMethodDecider,
+  domain,
 }: GenClientOptions): Promise<GenClientResult> => {
-  if (!requestCreator) {
-    // eslint-disable-next-line no-param-reassign
-    requestCreator = requireResolve(
-      `${DEFAULT_CLIENT_REQUEST_CREATOR}${target ? `/${target}` : ''}`,
-    ).replace(/\\/g, '/');
-  } else {
-    // 这里约束传入的 requestCreator 包也必须有两个导出 client 和 server，因为目前的机制 client 和 server 要导出不同的 configure 函数；该 api 不对使用者暴露，后续可优化
-    let resolvedPath = requestCreator;
-    try {
-      resolvedPath = path.dirname(requireResolve(requestCreator));
-    } catch (error) {}
-    // eslint-disable-next-line no-param-reassign
-    requestCreator = `${resolvedPath}${target ? `/${target}` : ''}`.replace(
-      /\\/g,
-      '/',
-    );
-  }
+  requestCreator = requestCreator || INNER_CLIENT_REQUEST_CREATOR;
 
   const apiRouter = new ApiRouter({
     appDir,
@@ -60,15 +62,14 @@ export const generateClient = async ({
     prefix,
     httpMethodDecider,
   });
-
-  const handlerInfos = apiRouter.getSingleModuleHandlers(resourcePath);
+  const handlerInfos = await apiRouter.getSingleModuleHandlers(resourcePath);
   if (!handlerInfos) {
     return Err(`generate client error: Cannot require module ${resourcePath}`);
   }
 
   let handlersCode = '';
   for (const handlerInfo of handlerInfos) {
-    const { name, httpMethod, routePath } = handlerInfo;
+    const { name, httpMethod, routePath, action } = handlerInfo;
     let exportStatement = `var ${name} =`;
     if (name.toLowerCase() === 'default') {
       exportStatement = 'default';
@@ -76,24 +77,43 @@ export const generateClient = async ({
     const upperHttpMethod = httpMethod.toUpperCase();
 
     const routeName = routePath;
-    if (target === 'server') {
-      handlersCode += `export ${exportStatement} createRequest('${routeName}', '${upperHttpMethod}', process.env.PORT || ${String(
-        port,
-      )}, '${httpMethodDecider ? httpMethodDecider : 'functionName'}' ${
-        fetcher ? `, fetch` : ''
-      });
-      `;
+
+    const requestId =
+      target === 'bundle'
+        ? getPackageName(appDir) || process.env.npm_package_name
+        : undefined;
+
+    if (action === 'upload') {
+      const requestOptions = {
+        path: routeName,
+        domain,
+        requestId,
+      };
+      handlersCode += `export ${exportStatement} createUploader(${JSON.stringify(requestOptions)});`;
     } else {
-      handlersCode += `export ${exportStatement} createRequest('${routeName}', '${upperHttpMethod}', ${String(
-        port,
-      )}, '${httpMethodDecider ? httpMethodDecider : 'functionName'}' ${
-        fetcher ? `, fetch` : ''
-      });
+      const portValue =
+        target === 'server'
+          ? `process.env.PORT || ${String(port)}`
+          : String(port);
+
+      const optionsStr = `{
+        path: '${routeName}',
+        method: '${upperHttpMethod}',
+        port: ${portValue},
+        httpMethodDecider: '${httpMethodDecider || 'functionName'}'
+        ${domain ? `, domain: '${domain}'` : ''}
+        ${fetcher ? ", fetch: 'fetch'" : ''}
+        ${requestId ? `, requestId: '${requestId}'` : ''}
+      }`.replace(/\n\s*/g, '');
+
+      handlersCode += `export ${exportStatement} createRequest(${optionsStr});
       `;
     }
   }
 
-  const importCode = `import { createRequest } from '${requestCreator}';
+  const importCode = `import { createRequest${
+    handlerInfos.find(i => i.action === 'upload') ? ', createUploader' : ''
+  } } from '${requestCreator}';
 ${fetcher ? `import { fetch } from '${fetcher}';\n` : ''}`;
 
   return Ok(`${importCode}\n${handlersCode}`);

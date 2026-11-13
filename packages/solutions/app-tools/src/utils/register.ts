@@ -1,79 +1,258 @@
 import path from 'node:path';
 import {
-  Alias,
   fs,
+  type Alias,
   getAliasConfig,
+  isDepExists,
+  loadFromProject,
+  mergeAlias,
   readTsConfigByFile,
+  resolveServerTsconfig,
 } from '@modern-js/utils';
-import { ChainedConfig } from '@rsbuild/shared';
+import type { ConfigChain } from '@rsbuild/core';
 
-export const registerCompiler = async (
-  appDir: string = process.cwd(),
-  distDir: string,
-  alias?: ChainedConfig<Alias>,
+type TsRuntimeRegisterMode = 'ts-node' | 'swc' | 'node-loader' | 'unsupported';
+
+interface TsRuntimeSetupOptions {
+  moduleType?: string;
+  /**
+   * User-configured `server.tsconfigPath`. Forwarded into the shared
+   * resolveServerTsconfig helper. Resolved relative to appDir when not
+   * absolute. Falls back to `<appDir>/tsconfig.json` when unset.
+   */
+  tsconfigPath?: string;
+}
+
+const normalizePathValue = ({
+  key,
+  value,
+  absoluteBaseUrl,
+}: {
+  key: string;
+  value: string;
+  absoluteBaseUrl: string;
+}) => {
+  let normalizedValue = value;
+
+  // Modern.js still has some internal aliases that point at packages instead
+  // of source files, so resolve them before handing paths to the runtime.
+  if (key.startsWith('@') && normalizedValue.startsWith('@')) {
+    try {
+      normalizedValue = require.resolve(normalizedValue, {
+        paths: [process.cwd(), ...module.paths],
+      });
+    } catch {}
+  }
+
+  return path.isAbsolute(normalizedValue)
+    ? path.relative(absoluteBaseUrl, normalizedValue)
+    : normalizedValue;
+};
+
+const normalizePathValues = ({
+  key,
+  value,
+  absoluteBaseUrl,
+}: {
+  key: string;
+  value: string | string[];
+  absoluteBaseUrl: string;
+}) => {
+  const values = Array.isArray(value) ? value : [value];
+
+  return values.map(item =>
+    normalizePathValue({
+      key,
+      value: item,
+      absoluteBaseUrl,
+    }),
+  );
+};
+
+const addResolvedAlias = (
+  paths: Record<string, string[]>,
+  key: string,
+  values: string[],
 ) => {
-  const TS_CONFIG_FILENAME = `tsconfig.json`;
-  const tsconfigPath = path.resolve(appDir, TS_CONFIG_FILENAME);
+  if (!key || paths[key]) {
+    return;
+  }
+
+  paths[key] = values;
+};
+
+const createRuntimePaths = ({
+  alias,
+  paths,
+  absoluteBaseUrl,
+}: {
+  alias?: ConfigChain<Alias>;
+  paths: Record<string, string | string[]>;
+  absoluteBaseUrl: string;
+}) => {
+  const mergedAlias = mergeAlias(alias);
+  const normalizedPaths = Object.keys(paths).reduce(
+    (result, key) => {
+      addResolvedAlias(
+        result,
+        key.endsWith('$') ? key.slice(0, -1) : key,
+        normalizePathValues({
+          key,
+          value: paths[key],
+          absoluteBaseUrl,
+        }),
+      );
+
+      return result;
+    },
+    {} as Record<string, string[]>,
+  );
+
+  Object.keys(mergedAlias).forEach(key => {
+    if (key.includes('*') || key.endsWith('$')) {
+      return;
+    }
+
+    // Expand `@service` into `@service/*` so runtime loaders can resolve
+    // nested imports like `@service/user` with the same rules as tsconfig paths.
+    addResolvedAlias(
+      normalizedPaths,
+      `${key}/*`,
+      normalizePathValues({
+        key,
+        value: mergedAlias[key],
+        absoluteBaseUrl,
+      }).map(value => `${value}/*`),
+    );
+  });
+
+  return normalizedPaths;
+};
+
+// Describes final runtime selection policy.
+// Prefer ts-node when available. Otherwise CommonJS projects compile with swc,
+// and module projects use Node.js native TypeScript support.
+export const resolveTsRuntimeRegisterMode = (
+  hasTsNode: boolean,
+  moduleType?: string,
+): TsRuntimeRegisterMode => {
+  if (hasTsNode) {
+    return 'ts-node';
+  }
+
+  // Native type stripping loads files with ESM syntax as ES modules, which
+  // can't be evicted from the module cache, so the dev server could never
+  // reload them. Compile to CommonJS instead.
+  if (moduleType !== 'module') {
+    return 'swc';
+  }
+
+  const hasNativeTypeScriptSupport = (process as any).features?.typescript;
+  const nodeMajorVersion = Number(process.versions.node.split('.')[0]);
+  const supportsNativeTypeScript =
+    hasNativeTypeScriptSupport === undefined
+      ? nodeMajorVersion >= 22
+      : hasNativeTypeScriptSupport !== false;
+
+  if (supportsNativeTypeScript) {
+    return 'node-loader';
+  }
+
+  return 'unsupported';
+};
+
+/**
+ * Setup TypeScript runtime support.
+ * Register ts-node (or swc when ts-node is not installed) for compilation and
+ * tsconfig-paths for path alias resolution.
+ */
+export const setupTsRuntime = async (
+  appDir: string,
+  distDir: string,
+  alias?: ConfigChain<Alias>,
+  options: TsRuntimeSetupOptions = {},
+) => {
+  const tsconfigPath = resolveServerTsconfig(appDir, options.tsconfigPath);
   const isTsProject = await fs.pathExists(tsconfigPath);
+  const hasTsNode = isDepExists(appDir, 'ts-node');
+
+  if (!isTsProject) {
+    return;
+  }
+
+  const registerMode = resolveTsRuntimeRegisterMode(
+    hasTsNode,
+    options.moduleType,
+  );
+
   const aliasConfig = getAliasConfig(alias, {
     appDirectory: appDir,
     tsconfigPath,
   });
   const { paths = {}, absoluteBaseUrl = './' } = aliasConfig;
+  const runtimePaths = createRuntimePaths({
+    alias,
+    paths,
+    absoluteBaseUrl,
+  });
 
-  const tsPaths = Object.keys(paths).reduce((o, key) => {
-    let tsPath = paths[key];
-    if (typeof tsPath === 'string' && path.isAbsolute(tsPath)) {
-      tsPath = path.relative(absoluteBaseUrl, tsPath);
-    }
-    if (typeof tsPath === 'string') {
-      tsPath = [tsPath];
-    }
-    return {
-      ...o,
-      [`${key}`]: tsPath,
-    };
-  }, {});
-
-  let tsConfig: Record<string, any> = {};
-  if (isTsProject) {
-    tsConfig = readTsConfigByFile(tsconfigPath);
+  if (registerMode === 'unsupported') {
+    return;
   }
 
-  try {
-    const tsNode = await import('ts-node');
-    const tsNodeOptions = tsConfig['ts-node'];
-    if (isTsProject) {
-      tsNode.register({
-        project: tsconfigPath,
-        scope: true,
-        // for env.d.ts, https://www.npmjs.com/package/ts-node#missing-types
-        files: true,
-        transpileOnly: true,
-        ignore: [
-          '(?:^|/)node_modules/',
-          `(?:^|/)${path.relative(appDir, distDir)}/`,
-        ],
-        ...tsNodeOptions,
-      });
-    }
-  } catch (error) {
-    const esbuildRegister = await import('esbuild-register/dist/node');
-    esbuildRegister.register({
-      tsconfigRaw: isTsProject ? tsConfig : undefined,
-      hookIgnoreNodeModules: true,
-      hookMatcher: fileName => !fileName.startsWith(distDir),
-    });
-  }
-
-  const tsConfigPaths = await import('@modern-js/utils/tsconfig-paths');
-  if (await fs.pathExists(appDir)) {
-    const loaderRes = tsConfigPaths.loadConfig(appDir);
-    if (loaderRes.resultType === 'success') {
-      tsConfigPaths.register({
+  if (registerMode === 'ts-node') {
+    if (options.moduleType === 'module') {
+      const { registerModuleHooks } = await import('../esm/register-esm.mjs');
+      await registerModuleHooks({
+        appDir,
+        distDir,
         baseUrl: absoluteBaseUrl || './',
-        paths: tsPaths,
+        paths: runtimePaths,
+      });
+    } else {
+      const { register } = await import('@modern-js/utils/tsconfig-paths');
+      register({
+        baseUrl: absoluteBaseUrl || './',
+        paths: runtimePaths,
       });
     }
+
+    // Keep CJS require hooks in module projects:
+    // some server scanners still do `require('*.ts')` first and only
+    // fallback to `import()` on ERR_REQUIRE_ESM.
+    const tsConfig = readTsConfigByFile(tsconfigPath);
+    const tsNode = await loadFromProject('ts-node', appDir);
+    const tsNodeOptions = tsConfig['ts-node'];
+    tsNode.register({
+      project: tsconfigPath,
+      scope: true,
+      // for env.d.ts, https://www.npmjs.com/package/ts-node#missing-types
+      files: true,
+      transpileOnly: true,
+      ignore: [
+        '(?:^|/)node_modules/',
+        `(?:^|/)${path.relative(appDir, distDir)}/`,
+      ],
+      ...tsNodeOptions,
+    });
+  } else if (registerMode === 'swc') {
+    const { register } = await import('@modern-js/utils/tsconfig-paths');
+    register({
+      baseUrl: absoluteBaseUrl || './',
+      paths: runtimePaths,
+    });
+
+    const { readCompilerOptions, registerSwc } = await import('./swcRegister');
+    registerSwc({
+      distDir,
+      compilerOptions: readCompilerOptions(tsconfigPath),
+    });
+  } else if (registerMode === 'node-loader') {
+    const { registerPathsLoader } = await import('../esm/register-esm.mjs');
+    await registerPathsLoader({
+      appDir,
+      baseUrl: absoluteBaseUrl || './',
+      paths: runtimePaths,
+    });
   }
 };

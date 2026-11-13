@@ -23,9 +23,12 @@ tests/
 src/
 
 modern.config.*
-jest.config.js
 .eslintrc.js
 .eslintrc
 tsconfig.json
 CHANGELOG.md
 
+
+# docs bundle for AI agents (copy-main-doc.mjs) — re-include everything
+!docs/
+!docs/**

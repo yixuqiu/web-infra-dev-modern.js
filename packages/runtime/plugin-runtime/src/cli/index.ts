@@ -1,58 +1,113 @@
-import { isReact18, cleanRequireCache } from '@modern-js/utils';
-import type { CliPlugin, AppTools } from '@modern-js/app-tools';
-import { statePlugin } from '../state/cli';
-import { ssrPlugin } from '../ssr/cli';
-import { routerPlugin } from '../router/cli';
+import path from 'path';
+import type { AppTools, CliPlugin } from '@modern-js/app-tools';
+import { cleanRequireCache } from '@modern-js/utils';
 import { documentPlugin } from '../document/cli';
+import { routerPlugin } from '../router/cli';
+import { builderPluginAlias } from './alias';
+import { generateCode } from './code';
+import { ENTRY_BOOTSTRAP_FILE_NAME, ENTRY_POINT_FILE_NAME } from './constants';
+import { isRuntimeEntry } from './entry';
+import { ssrPlugin } from './ssr';
 
-export const runtimePlugin = (): CliPlugin<AppTools> => ({
+export { isRuntimeEntry } from './entry';
+export { ssrPlugin, routerPlugin, documentPlugin };
+export const runtimePlugin = (params?: {
+  plugins?: CliPlugin<AppTools>[];
+}): CliPlugin<AppTools> => ({
   name: '@modern-js/runtime',
   post: [
     '@modern-js/plugin-ssr',
-    '@modern-js/plugin-state',
     '@modern-js/plugin-router',
     '@modern-js/plugin-document',
     '@modern-js/plugin-design-token',
   ],
   // the order of runtime plugins is affected by runtime hooks, mainly `init` and `hoc` hooks
-  usePlugins: [ssrPlugin(), statePlugin(), routerPlugin(), documentPlugin()],
+  usePlugins: params?.plugins || [
+    ssrPlugin(),
+    routerPlugin(),
+    documentPlugin(),
+  ],
   setup: api => {
-    return {
-      config() {
-        const appDir = api.useAppContext().appDirectory;
-        process.env.IS_REACT18 = isReact18(appDir).toString();
-        return {
-          runtime: {},
-          runtimeByEntries: {},
-          source: {
-            alias: {
-              /**
-               * twin.macro inserts styled-components into the code during the compilation process
-               * But it will not be installed under the user project.
-               * So need to add alias
-               */
-              'styled-components': require.resolve('styled-components'),
-            },
-            globalVars: {
-              'process.env.IS_REACT18': process.env.IS_REACT18,
-            },
+    api.checkEntryPoint(({ path, entry }) => {
+      return { path, entry: entry || isRuntimeEntry(path) };
+    });
+
+    api.modifyEntrypoints(({ entrypoints }) => {
+      const { internalDirectory } = api.getAppContext();
+      const {
+        source: { enableAsyncEntry },
+      } = api.getNormalizedConfig();
+      const newEntryPoints = entrypoints.map(entrypoint => {
+        if (entrypoint.isAutoMount) {
+          entrypoint.internalEntry = path.resolve(
+            internalDirectory,
+            `./${entrypoint.entryName}/${
+              enableAsyncEntry
+                ? ENTRY_BOOTSTRAP_FILE_NAME
+                : ENTRY_POINT_FILE_NAME
+            }`,
+          );
+        }
+        return entrypoint;
+      });
+      return { entrypoints: newEntryPoints };
+    });
+    api.generateEntryCode(async ({ entrypoints }) => {
+      const appContext = api.getAppContext();
+      const resolvedConfig = api.getNormalizedConfig();
+      const hooks = api.getHooks();
+      await generateCode(entrypoints, appContext, resolvedConfig, hooks);
+    });
+
+    /* Note that the execution time of the config hook is before prepare.
+    /* This means that the entry information cannot be obtained in the config hook.
+    /* Therefore, aliases cannot be set directly in the config.
+    */
+    api.onPrepare(() => {
+      const { builder, entrypoints, internalDirectory, metaName } =
+        api.getAppContext();
+      builder?.addPlugins([
+        builderPluginAlias({ entrypoints, internalDirectory, metaName }),
+      ]);
+    });
+
+    api.config(() => {
+      const { appDirectory, metaName } = api.getAppContext();
+
+      return {
+        source: {
+          globalVars: {
+            // The runtime itself no longer reads this, but user code may.
+            // React >=18 is required now, so it is always 'true'.
+            'process.env.IS_REACT18': 'true',
           },
-          tools: {
-            styledComponents: {
-              // https://github.com/styled-components/babel-plugin-styled-components/issues/287
-              topLevelImportPaths: ['@modern-js/runtime/styled'],
-            },
+          include: [
+            new RegExp(
+              `[\\\\/]node_modules[\\\\/]@${metaName}[\\\\/]runtime[\\\\/].*[\\\\/]head\\.`,
+            ),
+          ],
+        },
+        tools: {
+          bundlerChain: chain => {
+            chain.module
+              .rule('modern-entry')
+              .test(/\.jsx?$/)
+              .include.add(
+                path.resolve(appDirectory, 'node_modules', `.${metaName}`),
+              )
+              .end()
+              .sideEffects(true);
           },
-        };
-      },
-      async beforeRestart() {
-        cleanRequireCache([
-          require.resolve('../state/cli'),
-          require.resolve('../router/cli'),
-          require.resolve('../ssr/cli'),
-        ]);
-      },
-    };
+        },
+      };
+    });
+
+    api.onBeforeRestart(() => {
+      cleanRequireCache([
+        require.resolve('../router/cli'),
+        require.resolve('./ssr'),
+      ]);
+    });
   },
 });
 

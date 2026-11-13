@@ -1,17 +1,120 @@
-import { URL } from 'url';
 import assert from 'assert';
+import type { PathLike } from 'node:fs';
+import net from 'node:net';
 import { join } from 'path';
-import fs from '@modern-js/utils/fs-extra';
+import { URL } from 'url';
 import type {
-  UniBuilderConfig,
-  CreateUniBuilderOptions,
-  StartDevServerOptions,
-} from '@modern-js/uni-builder';
+  BuilderConfig,
+  CreateBuilderOptions as _CreateBuilderOptions,
+} from '@modern-js/builder';
+import { getPort } from '@modern-js/utils';
+import { type GlobbyOptions, upath } from '@modern-js/utils';
+import fs from '@modern-js/utils/fs-extra';
+import _ from '@modern-js/utils/lodash';
+import {
+  type ConsoleType,
+  type RsbuildPlugin,
+  logger,
+  mergeRsbuildConfig,
+} from '@rsbuild/core';
+import createServer from 'connect';
+import serveStaticMiddle from './static.js';
+
+logger.level = 'error';
 
 type CreateBuilderOptions = Omit<
-  CreateUniBuilderOptions,
+  _CreateBuilderOptions,
   'bundlerType' | 'config'
 >;
+
+export interface GlobContentJSONOptions extends GlobbyOptions {
+  maxSize?: number;
+}
+
+export interface StaticServerOptions {
+  hostname?: string;
+  port?: number;
+}
+
+function isPortAvailable(port: number) {
+  try {
+    const server = net.createServer().listen(port);
+    return new Promise(resolve => {
+      server.on('listening', () => {
+        server.close();
+        resolve(true);
+      });
+      server.on('error', () => {
+        resolve(false);
+      });
+    });
+  } catch {
+    return false;
+  }
+}
+
+const portMap = new Map();
+
+/**
+ * Get a random port
+ * Available port ranges: 1024 ～ 65535
+ * `10080` is not available on macOS CI, `> 50000` get 'permission denied' on Windows.
+ * so we use `15000` ~ `45000`.
+ */
+export async function getRandomPort(
+  defaultPort = Math.ceil(Math.random() * 30000) + 15000,
+) {
+  let port = defaultPort;
+  while (true) {
+    if (!portMap.get(port) && (await isPortAvailable(port))) {
+      portMap.set(port, 1);
+      return port;
+    }
+    port++;
+  }
+}
+
+export async function runStaticServer(
+  root: string,
+  options?: StaticServerOptions,
+) {
+  const server = createServer();
+
+  server.use(serveStaticMiddle(root));
+
+  const port = await getPort(options?.port || (await getRandomPort()));
+  const hostname = options?.hostname ?? '127.0.0.1';
+  const listener = server.listen(port, hostname);
+
+  return { port, hostname, close: () => listener.close() };
+}
+
+const filenameToGlobExpr = (file: PathLike) => {
+  let _file = upath.normalizeSafe(file.toString());
+  fs.statSync(file).isDirectory() && (_file += '/**/*');
+  return _file;
+};
+
+export const globContentJSON = async (
+  paths: PathLike | PathLike[],
+  options?: GlobContentJSONOptions,
+) => {
+  const { globby, fs } = await import('@modern-js/utils');
+  const _paths = _.castArray(paths).map(filenameToGlobExpr);
+  const files = await globby(_paths, options);
+  let totalSize = 0;
+  const maxSize = 1024 * (options?.maxSize ?? 4096);
+  const ret: Record<string, string> = {};
+  for await (const file of files) {
+    const { size } = await fs.stat(file);
+    totalSize += size;
+    if (maxSize && totalSize > maxSize) {
+      throw new Error('too large');
+    }
+    ret[file] = await fs.readFile(file, 'utf-8');
+  }
+  return ret;
+};
 
 export const getHrefByEntryName = (entryName: string, port: number) => {
   const baseUrl = new URL(`http://localhost:${port}`);
@@ -21,44 +124,34 @@ export const getHrefByEntryName = (entryName: string, port: number) => {
   return homeUrl.href;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
 
-export const createUniBuilder = async (
+export const createBuilder = async (
   builderOptions: CreateBuilderOptions,
-  builderConfig: UniBuilderConfig = {},
+  builderConfig: BuilderConfig = {},
 ) => {
-  const { createUniBuilder } = await import('@modern-js/uni-builder');
+  const { createBuilder } = await import('@modern-js/builder');
 
-  const builder = await createUniBuilder({
+  const builder = await createBuilder({
     ...builderOptions,
-    bundlerType: process.env.PROVIDE_TYPE === 'rspack' ? 'rspack' : 'webpack',
+    bundlerType: 'rspack',
     config: builderConfig,
   });
 
   return builder;
 };
 
-const portMap = new Map();
-
-function getRandomPort(defaultPort = Math.ceil(Math.random() * 10000) + 10000) {
-  let port = defaultPort;
-  while (true) {
-    if (!portMap.get(port)) {
-      portMap.set(port, 1);
-      return port;
-    } else {
-      port++;
-    }
-  }
-}
-
-const updateConfigForTest = (config: UniBuilderConfig) => {
+const updateConfigForTest = (
+  config: BuilderConfig,
+  entry?: Record<string, string>,
+) => {
   // make devPort random to avoid port conflict
   config.dev = {
     ...(config.dev || {}),
-    port: getRandomPort(config.dev?.port),
   };
+  config.source ??= {};
+
+  config.source.entry = entry;
 
   config.dev!.progressBar = config.dev!.progressBar || false;
 
@@ -89,55 +182,62 @@ const updateConfigForTest = (config: UniBuilderConfig) => {
 };
 
 export async function dev({
-  serverOptions,
   builderConfig = {},
+  entry,
   ...options
 }: CreateBuilderOptions & {
-  builderConfig?: UniBuilderConfig;
-  serverOptions?: StartDevServerOptions['serverOptions'];
+  entry: Record<string, string>;
+  builderConfig?: BuilderConfig;
 }) {
   process.env.NODE_ENV = 'development';
 
-  updateConfigForTest(builderConfig);
+  updateConfigForTest(builderConfig, entry);
 
-  const builder = await createUniBuilder(options, builderConfig);
-
-  return builder.startDevServer({
-    serverOptions,
-  });
+  const builder = await createBuilder(options, builderConfig);
+  builder.addPlugins([
+    {
+      setup(api) {
+        api.modifyRsbuildConfig((config: any) => {
+          return mergeRsbuildConfig(config, {
+            server: {
+              middlewareMode: false,
+            },
+          });
+        });
+      },
+    } as RsbuildPlugin,
+  ]);
+  return builder.startDevServer();
 }
 
 export async function build({
   plugins,
   runServer = false,
   builderConfig = {},
+  entry,
   ...options
 }: CreateBuilderOptions & {
+  entry?: Record<string, string>;
   plugins?: any[];
   runServer?: boolean;
-  builderConfig?: UniBuilderConfig;
+  builderConfig?: BuilderConfig;
 }) {
   process.env.NODE_ENV = 'production';
 
-  updateConfigForTest(builderConfig);
+  updateConfigForTest(builderConfig, entry);
 
-  const builder = await createUniBuilder(options, builderConfig);
+  const builder = await createBuilder(options, builderConfig);
 
   if (plugins) {
     builder.addPlugins(plugins);
   }
 
-  const [{ runStaticServer, globContentJSON }] = await Promise.all([
-    import('@modern-js/e2e'),
-    builder.build(),
-  ]);
+  await builder.build();
 
   const { distPath } = builder.context;
 
   const { port, close } = runServer
-    ? await runStaticServer(distPath, {
-        port: builderConfig.dev!.port,
-      })
+    ? await runStaticServer(distPath, {})
     : { port: 0, close: noop };
 
   const clean = async () => await fs.remove(distPath);
@@ -172,7 +272,35 @@ export async function build({
     close,
     unwrapOutputJSON,
     getIndexFile,
-    providerType: process.env.PROVIDE_TYPE || 'webpack',
     instance: builder,
   };
 }
+
+export const proxyConsole = (
+  types: ConsoleType | ConsoleType[] = ['log', 'warn', 'info', 'error'],
+  keepAnsi = false,
+) => {
+  const logs: string[] = [];
+  const restores: Array<() => void> = [];
+
+  for (const type of Array.isArray(types) ? types : [types]) {
+    const method = console[type];
+
+    restores.push(() => {
+      console[type] = method;
+    });
+
+    console[type] = log => {
+      logs.push(log);
+    };
+  }
+
+  return {
+    logs,
+    restore: () => {
+      for (const restore of restores) {
+        restore();
+      }
+    },
+  };
+};

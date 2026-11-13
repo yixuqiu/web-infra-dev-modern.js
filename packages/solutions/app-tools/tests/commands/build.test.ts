@@ -1,43 +1,103 @@
-import { manager } from '@modern-js/core';
+import { type Plugin, createPluginManager } from '@modern-js/plugin';
 import { build } from '../../src/commands/build';
 
-const mockGenerateRoutes = jest.fn();
+const mockGenerateRoutes = rstest.fn();
+const mockSetupTsRuntime = rstest.fn();
+const mockLoadServerPlugins = rstest.fn();
 
-jest.mock('../../src/utils/routes', () => ({
+rstest.mock('../../src/utils/routes', () => ({
   __esModule: true,
   generateRoutes: () => mockGenerateRoutes(),
 }));
 
+rstest.mock('../../src/utils/register', () => ({
+  __esModule: true,
+  setupTsRuntime: (...args: unknown[]) => mockSetupTsRuntime(...args),
+}));
+
+rstest.mock('../../src/utils/loadPlugins', () => ({
+  __esModule: true,
+  loadServerPlugins: (...args: unknown[]) => mockLoadServerPlugins(...args),
+}));
+
 describe('command build', () => {
   afterAll(() => {
-    jest.resetAllMocks();
+    rstest.resetAllMocks();
   });
 
   test('hooks should be invoke correctly', async () => {
-    const mockBeforeBuild = jest.fn();
-    const mockAfterBuild = jest.fn();
+    const mockBeforeBuild = { call: rstest.fn() };
+    const mockAfterBuild = { call: rstest.fn() };
+    const mockInternalServerPlugins = {
+      call: rstest.fn(() => ({ plugins: [] })),
+    };
+
     const mockAPI = {
-      useAppContext: jest.fn((): any => ({
+      getAppContext: rstest.fn((): any => ({
         apiOnly: true,
         distDirectory: '',
         appDirectory: '',
       })),
-      useResolvedConfigContext: jest.fn(),
-      useHookRunners: (): any => ({
-        afterBuild: mockAfterBuild,
-        beforeBuild: mockBeforeBuild,
+      getNormalizedConfig: rstest.fn(),
+      getHooks: (): any => ({
+        onAfterBuild: mockAfterBuild,
+        onBeforeBuild: mockBeforeBuild,
+        _internalServerPlugins: mockInternalServerPlugins,
       }),
+      updateAppContext: rstest.fn(),
     };
 
-    const cloned = manager.clone(mockAPI);
-    cloned.usePlugin({
-      async setup(api) {
-        await build(api);
-        expect(mockBeforeBuild).toBeCalled();
-        expect(mockGenerateRoutes).toBeCalled();
-        expect(mockAfterBuild).toBeCalled();
-      },
+    mockLoadServerPlugins.mockImplementation(async (api: any) => {
+      api.getHooks()._internalServerPlugins.call({ plugins: [] });
+      return [];
     });
-    await cloned.init();
+
+    const pluginManager = createPluginManager();
+    pluginManager.addPlugins([
+      {
+        name: 'test',
+        async setup(api) {
+          await build(api as any);
+          expect(mockBeforeBuild.call).toBeCalled();
+          expect(mockGenerateRoutes).toBeCalled();
+          expect(mockAfterBuild.call).toBeCalled();
+          expect(mockInternalServerPlugins.call).toBeCalled();
+          expect(mockSetupTsRuntime).toBeCalledWith('', '', [], {
+            moduleType: undefined,
+          });
+        },
+      } as Plugin,
+    ]);
+    const plugins = await pluginManager.getPlugins();
+    for (const plugin of plugins) {
+      await plugin.setup(mockAPI);
+    }
+  });
+
+  test('does not close a completed non-watch build', async () => {
+    const close = rstest.fn();
+    const builderBuild = rstest.fn(async () => ({ close }));
+    const mockAPI = {
+      getAppContext: rstest.fn((): any => ({
+        apiOnly: false,
+        distDirectory: '/app/dist',
+        appDirectory: '/app',
+        metaName: 'modern-js',
+        builder: {
+          build: builderBuild,
+          onAfterBuild: rstest.fn(),
+        },
+      })),
+      getNormalizedConfig: rstest.fn(() => ({})),
+      getHooks: rstest.fn(() => ({
+        _internalServerPlugins: { call: rstest.fn(() => ({ plugins: [] })) },
+      })),
+      updateAppContext: rstest.fn(),
+    };
+
+    await build(mockAPI as any);
+
+    expect(builderBuild).toHaveBeenCalledWith({ watch: undefined });
+    expect(close).not.toHaveBeenCalled();
   });
 });

@@ -1,27 +1,27 @@
-import type { ServerUserConfig, BffUserConfig } from '@modern-js/server-core';
-import type { UniBuilderPlugin } from '@modern-js/uni-builder';
-import type { Bundler } from '../utils';
-import type { OutputUserConfig } from './output';
-import type { SourceUserConfig } from './source';
-import type { TestingUserConfig } from './testing';
-import type { DevUserConfig } from './dev';
-import type { ToolsUserConfig } from './tools';
-import type { HtmlUserConfig } from './html';
-import type { SecurityUserConfig } from './security';
+import type { RsbuildPlugins } from '@modern-js/builder';
+import type { CLIPlugin, CLIPluginExtends } from '@modern-js/plugin';
+import type { BffUserConfig, ServerUserConfig } from '@modern-js/server-core';
+import type { RsbuildConfig } from '@rsbuild/core';
+import type {
+  AppToolsExtendAPI,
+  AppToolsExtendContext,
+  AppToolsExtendHooks,
+} from '../plugin';
 import type { DeployUserConfig } from './deploy';
+import type { DevUserConfig } from './dev';
 import type { ExperimentsUserConfig } from './experiments';
+import type { HtmlUserConfig } from './html';
+import type { OutputUserConfig } from './output';
 import type { PerformanceUserConfig } from './performance';
+import type { ResolveUserConfig } from './resolve';
+import type { SecurityUserConfig } from './security';
+import type { SourceUserConfig } from './source';
+import type { ToolsUserConfig } from './tools';
 
 export * from './output';
 
-export interface RuntimeUserConfig {
-  [name: string]: any;
-}
-export interface RuntimeByEntriesUserConfig {
-  [name: string]: RuntimeUserConfig;
-}
-
-export interface AppToolsUserConfig<B extends Bundler> {
+export interface AppToolsUserConfig {
+  resolve?: ResolveUserConfig;
   server?: ServerUserConfig;
   source?: SourceUserConfig;
   output?: OutputUserConfig;
@@ -34,15 +34,14 @@ export interface AppToolsUserConfig<B extends Bundler> {
   bff?: BffUserConfig;
   dev?: DevUserConfig;
   deploy?: DeployUserConfig;
-  runtime?: RuntimeUserConfig;
-  runtimeByEntries?: RuntimeByEntriesUserConfig;
   html?: HtmlUserConfig;
-  tools?: ToolsUserConfig<B>;
+  tools?: ToolsUserConfig;
   security?: SecurityUserConfig;
-  testing?: TestingUserConfig;
-  builderPlugins?: UniBuilderPlugin[];
+  builderPlugins?: RsbuildPlugins;
   performance?: PerformanceUserConfig;
-  devtools?: any;
+  environments?: RsbuildConfig['environments'];
+  splitChunks?: RsbuildConfig['splitChunks'];
+  plugins?: CliPlugin<AppTools>[];
 }
 
 interface SharedNormalizedConfig<RawConfig> {
@@ -50,5 +49,17 @@ interface SharedNormalizedConfig<RawConfig> {
   _raw: RawConfig;
 }
 
-export type AppToolsNormalizedConfig<Config = AppToolsUserConfig<'shared'>> =
+export type AppToolsNormalizedConfig<Config = AppToolsUserConfig> =
   Required<Config> & SharedNormalizedConfig<Config>;
+
+export type AppTools = Required<
+  CLIPluginExtends<
+    AppToolsUserConfig,
+    AppToolsNormalizedConfig,
+    AppToolsExtendContext,
+    AppToolsExtendAPI,
+    AppToolsExtendHooks
+  >
+>;
+
+export type CliPlugin<Extends extends CLIPluginExtends> = CLIPlugin<Extends>;

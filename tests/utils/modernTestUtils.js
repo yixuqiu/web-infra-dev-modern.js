@@ -9,8 +9,65 @@ const kModernAppTools = path.join(
   '../node_modules/@modern-js/app-tools/bin/modern.js',
 );
 
-function runModernCommand(argv, options = {}) {
+function runContinuousTask(argv, stdOut, options = {}) {
   const { cwd } = options;
+  const env = {
+    ...process.env,
+    ...options.env,
+  };
+
+  return new Promise((resolve, reject) => {
+    const instance = spawn(process.execPath, argv, {
+      cwd,
+      env,
+    });
+
+    let didResolve = false;
+
+    function handleStdout(data) {
+      const message = data.toString();
+
+      if (options.errorMessage?.test(message)) {
+        if (!didResolve) {
+          didResolve = true;
+          reject(new Error(message));
+        }
+      }
+
+      if (options.waitMessage.test(message)) {
+        if (!didResolve) {
+          didResolve = true;
+          resolve(stdOut ? message : instance);
+        }
+      }
+
+      if (typeof options.onStdout === 'function') {
+        options.onStdout(message);
+      }
+
+      if (stdOut !== false && options.stdout !== false) {
+        process.stdout.write(message);
+      }
+    }
+
+    instance.stdout.on('data', handleStdout);
+
+    instance.on('error', error => {
+      reject(error);
+    });
+
+    instance.on('close', () => {
+      instance.stdout.removeListener('data', handleStdout);
+      if (!didResolve) {
+        didResolve = true;
+        resolve();
+      }
+    });
+  });
+}
+
+function runModernCommand(argv, options = {}) {
+  const { cwd, rejectOnCompileError = true } = options;
   const cmd = argv[0];
   const env = {
     ...process.env,
@@ -45,7 +102,18 @@ function runModernCommand(argv, options = {}) {
       }
       stdoutOutput += chunk;
       const message = chunk.toString();
-      if (marker && marker.test(message)) {
+
+      const compileErrorMarker = /Compile error/i;
+
+      if (
+        cmd === 'build' &&
+        rejectOnCompileError &&
+        compileErrorMarker.test(message)
+      ) {
+        reject(new Error(message));
+      }
+
+      if (marker?.test(message)) {
         resolve({
           code: 0,
           stdout: stdoutOutput,
@@ -72,55 +140,20 @@ function runModernCommand(argv, options = {}) {
 }
 
 function runModernCommandDev(argv, stdOut, options = {}) {
-  const { cwd } = options;
-  const env = {
-    ...process.env,
-    ...options.env,
+  const { rejectOnCompileError = true } = options;
+
+  const bootupMarkers = {
+    dev: /> Local:/i,
+    serve: /> Local:/i,
   };
+  const compileErrorMarker = /Compile error/i;
 
-  return new Promise((resolve, reject) => {
-    const instance = spawn(process.execPath, [kModernAppTools, ...argv], {
-      cwd,
-      env,
-    });
+  const errorMessage = rejectOnCompileError ? compileErrorMarker : undefined;
 
-    let didResolve = false;
-
-    function handleStdout(data) {
-      const message = data.toString();
-      const bootupMarkers = {
-        dev: /> Local:/i,
-        serve: /> Local:/i,
-      };
-      if (bootupMarkers[options.modernServe ? 'serve' : 'dev'].test(message)) {
-        if (!didResolve) {
-          didResolve = true;
-          resolve(stdOut ? message : instance);
-        }
-      }
-
-      if (typeof options.onStdout === 'function') {
-        options.onStdout(message);
-      }
-
-      if (options.stdout !== false) {
-        process.stdout.write(message);
-      }
-    }
-
-    instance.stdout.on('data', handleStdout);
-
-    instance.on('error', error => {
-      reject(error);
-    });
-
-    instance.on('close', () => {
-      instance.stdout.removeListener('data', handleStdout);
-      if (!didResolve) {
-        didResolve = true;
-        resolve();
-      }
-    });
+  return runContinuousTask([kModernAppTools, ...argv], stdOut, {
+    ...options,
+    waitMessage: bootupMarkers[options.modernServe ? 'serve' : 'dev'],
+    errorMessage,
   });
 }
 
@@ -174,7 +207,7 @@ function modernServe(dir, port, opts = {}) {
   });
 }
 
-async function killApp(instance) {
+async function killApp(instance, ignoreError = false) {
   await new Promise((resolve, reject) => {
     if (!instance) {
       resolve();
@@ -195,7 +228,9 @@ async function killApp(instance) {
           // Reason: There is no running instance of the task.
           return resolve();
         }
-        return reject(err);
+        if (!ignoreError) {
+          return reject(err);
+        }
       }
       return resolve();
     });
@@ -218,7 +253,91 @@ function sleep(t) {
   return new Promise(resolve => setTimeout(resolve, t));
 }
 
+/**
+ * Copy a fixture app into a unique temporary sibling directory so test files
+ * that would otherwise share one project directory each run against their own
+ * copy. Concurrent build/dev in a single directory corrupts artifacts: the
+ * build empties `dist` under the running server.
+ *
+ * node_modules is NOT symlinked as a whole: a whole-dir link would make all
+ * copies share `node_modules/.modern-js` (generated code), re-creating the
+ * conflict. Every entry is linked individually instead, and `.cache` /
+ * `.modern-js` are left out so each copy gets its own.
+ */
+async function createIsolatedTestApp(sourceAppDir, options = {}) {
+  const fse = require('fs-extra');
+  const { prefix = `.isolated-${path.basename(sourceAppDir)}-`, exclude = [] } =
+    options;
+
+  const appDir = await fse.mkdtemp(
+    path.join(path.dirname(sourceAppDir), prefix),
+  );
+  const topLevelExcludes = [
+    'node_modules',
+    'dist',
+    'dist-deploy',
+    'dist-ssg',
+    '.output',
+    'tests',
+    'test',
+    ...exclude,
+  ];
+  await fse.copy(sourceAppDir, appDir, {
+    filter: src => {
+      const relative = path.relative(sourceAppDir, src);
+      if (!relative) {
+        return true;
+      }
+      const [firstSegment] = relative.split(path.sep);
+      return !topLevelExcludes.includes(firstSegment);
+    },
+  });
+
+  const sourceNodeModules = path.join(sourceAppDir, 'node_modules');
+  const appNodeModules = path.join(appDir, 'node_modules');
+  await fse.ensureDir(appNodeModules);
+  if (await fse.pathExists(sourceNodeModules)) {
+    for (const entry of await fse.readdir(sourceNodeModules)) {
+      if (entry === '.cache' || entry === '.modern-js') {
+        continue;
+      }
+      const target = path.join(sourceNodeModules, entry);
+      // stat (not lstat): pnpm's top-level entries are themselves symlinks,
+      // and the link type must describe what they finally point to.
+      let isDirectory = true;
+      try {
+        isDirectory = (await fse.stat(target)).isDirectory();
+      } catch {
+        continue; // dangling link in the source tree
+      }
+      await fse.ensureSymlink(
+        target,
+        path.join(appNodeModules, entry),
+        isDirectory ? 'junction' : 'file',
+      );
+    }
+  }
+
+  return {
+    appDir,
+    // Callers must kill any process using appDir before cleanup; removal is
+    // retried because Windows keeps directories busy while children exit.
+    async cleanup() {
+      for (let attempt = 0; attempt < 5; attempt++) {
+        try {
+          await fse.remove(appDir);
+          return;
+        } catch {
+          await sleep(500);
+        }
+      }
+      await fse.remove(appDir).catch(() => {});
+    },
+  };
+}
+
 module.exports = {
+  runContinuousTask,
   runModernCommand,
   runModernCommandDev,
   modernBuild,
@@ -229,4 +348,5 @@ module.exports = {
   getPort,
   sleep,
   launchOptions,
+  createIsolatedTestApp,
 };

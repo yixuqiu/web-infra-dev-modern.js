@@ -1,4 +1,4 @@
-import type { UniBuilderConfig } from '@modern-js/uni-builder';
+import type { BuilderConfig } from '@modern-js/builder';
 
 export type Entry =
   | string
@@ -12,15 +12,19 @@ export type Entry =
        */
       disableMount?: boolean;
       /**
-       * Specify the file path of custom bootstrap.
+       * use src/{entryName}/entry.tsx to custom entry
        */
-      customBootstrap?: string;
+      customEntry?: boolean;
     };
 
 export type Entries = Record<string, Entry>;
 
-export interface SourceUserConfig
-  extends NonNullable<UniBuilderConfig['source']> {
+export interface SourceUserConfig extends NonNullable<BuilderConfig['source']> {
+  /**
+   * Add code before each page entry. It will be executed before the page code.
+   * @default []
+   */
+  preEntry?: string | string[];
   /**
    * Used to configure custom page entries.
    */
@@ -37,6 +41,15 @@ export interface SourceUserConfig
    */
   enableAsyncEntry?: boolean;
   /**
+   * When enabled, framework will inject `source.preEntry` into the top of the
+   * auto-generated entry file (`index.jsx`) and will not pass `source.preEntry`
+   * to builder config.
+   * This is useful when `source.enableAsyncEntry` is enabled and you still want
+   * preEntry to run before the real entry code.
+   * @default false
+   */
+  enableAsyncPreEntry?: boolean;
+  /**
    * Used to disable the functionality of automatically identifying page entry points based on directory structure.
    * @default false
    */
@@ -47,17 +60,7 @@ export interface SourceUserConfig
    */
   entriesDir?: string;
   /**
-   * By default, framework identifies the application entry point based on the `src` directory.
-   * You can use this option to prevent some directories from being recognized as application entry points.
-   */
-  disableEntryDirs?: string[];
-  /**
    * Customize the directory of the framework configuration files.
    */
   configDir?: string;
-  /**
-   * @deprecated designSystem is no longer required.
-   * If you are using Tailwind CSS, you can now use the `theme` option of Tailwind CSS, they are the same.
-   */
-  designSystem?: Record<string, any>;
 }

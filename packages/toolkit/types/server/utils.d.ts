@@ -1,9 +1,10 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { Http2ServerRequest } from 'node:http2';
 import type {
-  Options as ProxyOptions,
   Filter as ProxyFilter,
+  Options as ProxyOptions,
 } from 'http-proxy-middleware';
-
+import type { NodeRequest } from './server';
 export interface Metrics {
   emitCounter: (
     name: string,
@@ -67,12 +68,12 @@ export type ProxyDetail = ProxyOptions & {
   bypass?: (
     req: IncomingMessage,
     res: ServerResponse,
-    proxyOptions: BffProxyOptions,
+    proxyOptions: DevProxyOptions,
   ) => string | undefined | null | false;
   context?: ProxyFilter;
 };
 
-export type BffProxyOptions =
+export type DevProxyOptions =
   | Record<string, string>
   | Record<string, ProxyDetail>
   | ProxyDetail[]
@@ -102,8 +103,8 @@ export type CacheControl = {
 };
 
 export type CacheOptionProvider = (
-  req: IncomingMessage,
-) => Promise<CacheControl> | CacheControl;
+  req: NodeRequest,
+) => Promise<CacheControl | false> | CacheControl | false;
 
 export type CacheOption =
   | false

@@ -1,6 +1,6 @@
-import type { webpack, Rspack } from '@modern-js/uni-builder';
+import type { Rspack } from '@modern-js/builder';
 
-function loader(this: webpack.LoaderContext<void> | Rspack.LoaderContext) {
+function loader(this: Rspack.LoaderContext) {
   return `module.exports = {}`;
 }
 

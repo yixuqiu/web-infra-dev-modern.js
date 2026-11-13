@@ -1,5 +1,326 @@
 # @modern-js/types
 
+## 3.11.3
+
+## 3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- b11c3cd: fix: match prerendered SSG pages exactly and use available entry SSR or CSR fallbacks for other paths. Redirect trailing-slash SSG URLs to their canonical paths while preserving query strings. Skip non-2xx prerender responses with a warning instead of publishing error pages as successful HTML.
+
+  fix: 精确匹配 SSG 预渲染页面，其他路径使用可用的入口 SSR 或 CSR 回退。将带尾部斜杠的 SSG URL 重定向到对应路径，并保留查询参数。跳过非 2xx 预渲染响应并输出警告，避免将错误页面作为成功的静态 HTML 发布。
+
+## 3.11.0
+
+## 3.10.4
+
+## 3.10.3
+
+## 3.10.2
+
+## 3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- 14c23d0: chore: remove obsolete Jest test plugin hooks, configuration types, and the unused `testing` and `tools.jest` configuration options.
+
+  chore: 移除已废弃的 Jest 测试插件钩子、配置类型以及无用的 `testing` 和 `tools.jest` 配置项。
+
+## 3.9.3
+
+## 3.9.2
+
+## 3.9.1
+
+## 3.9.0
+
+## 3.8.3
+
+## 3.8.2
+
+## 3.8.1
+
+## 3.8.0
+
+## 3.7.0
+
+## 3.6.0
+
+## 3.5.0
+
+## 3.4.0
+
+## 3.3.0
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+## 3.1.5
+
+## 3.1.4
+
+## 3.1.3
+
+## 3.1.2
+
+## 3.1.1
+
+## 3.1.0
+
+## 3.0.5
+
+## 3.0.4
+
+## 3.0.3
+
+## 3.0.2
+
+## 3.0.1
+
+## 3.0.0
+
+### Patch Changes
+
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+
+## 3.0.0-alpha.2
+
+### Patch Changes
+
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+
+## 2.68.1
+
+## 2.68.0
+
+## 2.67.11
+
+## 2.67.10
+
+## 2.67.9
+
+## 2.67.8
+
+## 2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- e67b6d0: feat: add middlewares and renderMiddlewares to server plugin context
+  feat: 添加 middlewares 和 renderMiddlewares 到服务端插件上下文中
+
+## 2.67.5
+
+## 2.67.4
+
+## 2.67.3
+
+### Patch Changes
+
+- f6b81dd: refactor: avoid only one of "req" and "request" has a request body
+  refactor: 避免 req 和 request 只有一个有请求体
+
+## 2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- 1d96265: feat(ssr): support streaming ssr to work with http2
+  feat(ssr): 支持 streaming ssr 和 http2 协议一起工作
+
+## 2.67.0
+
+## 2.66.0
+
+## 2.65.5
+
+## 2.65.4
+
+## 2.65.3
+
+### Patch Changes
+
+- b337977: fix: requestContext should be add on runtimeContext before init
+  fix: requestContext 应该在 init 前添加到 runtimeContext
+
+## 2.65.2
+
+### Patch Changes
+
+- 793be44: feat: support get monitors in Data Loader and Component
+  feat: 在 Data Loader 和组件中支持获取 monitors
+- 1f83d96: fix(render): fork react-server-dom-webpack to avoid warnings about installing dependencies
+  fix(render): 内置 react-server-dom-webpack 到 packages/toolkit/utils/compiled 中，避免安装依赖的警告
+
+## 2.65.1
+
+## 2.65.0
+
+## 2.64.3
+
+## 2.64.2
+
+### Patch Changes
+
+- 96a8726: fix: types for custom server hook
+  fix: 自定义 server 的 hook 类型
+
+## 2.64.1
+
+## 2.64.0
+
+## 2.63.7
+
+## 2.63.6
+
+## 2.63.5
+
+## 2.63.4
+
+## 2.63.3
+
+## 2.63.2
+
+### Patch Changes
+
+- 3d2bf55: feat: add route info into unstable_middleware context
+  feat: 添加路由信息到 unstable_middleware 上下文中
+
+## 2.63.1
+
+## 2.63.0
+
+## 2.62.1
+
+## 2.62.0
+
+## 2.61.0
+
+## 2.60.6
+
+## 2.60.5
+
+## 2.60.4
+
+## 2.60.3
+
+## 2.60.2
+
+## 2.60.1
+
+## 2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- 539d72b: fix: typo and type for internalDirectory in server appContext
+  fix: 修复 internalDirectory 在 server appContext 中的类型错误
+
+## 2.58.3
+
+## 2.58.2
+
+## 2.58.1
+
+### Patch Changes
+
+- 2482a6b: fix: ssr context in runtime should get host from X-Forwarded-Host first
+  fix: ssr context 应该优先从 X-Forwarded-Host 获取
+
+## 2.58.0
+
+## 2.57.1
+
+## 2.57.0
+
+### Patch Changes
+
+- 2515b00: feat(ssr): support server.ssrByRouteIds
+  feat(ssr): 支持 server.ssrByRouteIds
+- 6cec127: fix: user can get status in afterRenderContext
+  fix: 用户可以从 afterRenderContext 上拿到 status
+
+## 2.56.2
+
+## 2.56.1
+
+## 2.56.0
+
+### Minor Changes
+
+- bedbbb3: feat: server monitors interface unity
+  feat: server 监控接口统一
+
+### Patch Changes
+
+- 1e85b76: feat: refactor the logic of the system file router entry
+
+  feat: 重构文件系统路由入口逻辑
+
+## 2.55.0
+
+### Patch Changes
+
+- e0c2384: fix: cacheProvider support return false
+  fix: cacheProvider 支持返回 false
+
+## 2.54.6
+
+## 2.54.5
+
+## 2.54.4
+
+## 2.54.3
+
+## 2.54.2
+
+## 2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- a8d8f0c: feat: support new server plugin & discard server plugin some hooks
+  feat: 支持新 server plugin & 减少 server plugin 钩子
+
+## 2.53.0
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.4
+
+## 2.49.3
+
 ## 2.49.2
 
 ## 2.49.1

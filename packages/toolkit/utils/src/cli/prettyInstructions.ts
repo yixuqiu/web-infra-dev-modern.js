@@ -1,8 +1,8 @@
-import os from 'os';
 import { isIPv6 } from 'net';
+import os from 'os';
 import { chalk } from '../compiled';
-import { isDev, isSingleEntry } from './is';
 import { DEFAULT_DEV_HOST } from './constants';
+import { isDev, isSingleEntry } from './is';
 
 // TODO: type
 interface EntryPoint {
@@ -44,6 +44,7 @@ const getHostInUrl = (host: string) => {
 };
 
 export const getAddressUrls = (
+  // biome-ignore lint/style/useDefaultParameterLast: <explanation>
   protocol = 'http',
   port: number,
   host?: string,
@@ -89,7 +90,8 @@ export const prettyInstructions = (appContext: any, config: any) => {
       checkedEntries: string[];
     };
 
-  const isHttps = isDev() && appContext.builder?.context.devServer?.https;
+  const isHttps =
+    isDev() && (config?.dev?.https || config?.tools?.devServer?.https);
 
   const urls = getAddressUrls(
     isHttps ? 'https' : 'http',
@@ -139,6 +141,12 @@ export const prettyInstructions = (appContext: any, config: any) => {
     message += chalk.cyanBright(
       '  ○ (Static) client-side renders as static HTML\n',
     );
+  }
+
+  if (config.dev?.cliShortcuts) {
+    message += `  ${chalk.dim('> press')} ${chalk.bold(
+      'h + enter',
+    )} ${chalk.dim('to show shortcuts')}\n`;
   }
 
   return message;

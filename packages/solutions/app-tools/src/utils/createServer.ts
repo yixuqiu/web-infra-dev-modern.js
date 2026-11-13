@@ -1,12 +1,11 @@
 import type { Server } from 'node:http';
-import { ModernDevServerOptions, createDevServer } from '@modern-js/server';
-import { initProdMiddlewares } from '@modern-js/prod-server';
+import type { Http2SecureServer } from 'node:http2';
 
-let server: Server | null = null;
+let server: Server | Http2SecureServer | null = null;
 
 export const getServer = () => server;
 
-export const setServer = (newServer: Server) => {
+export const setServer = (newServer: Server | Http2SecureServer) => {
   server = newServer;
 };
 
@@ -15,15 +14,4 @@ export const closeServer = async () => {
     server.close();
     server = null;
   }
-};
-
-export const createServer = async (
-  options: ModernDevServerOptions,
-): Promise<Server> => {
-  if (server) {
-    server.close();
-  }
-  server = await createDevServer(options, initProdMiddlewares);
-
-  return server;
 };

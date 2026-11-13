@@ -1,21 +1,10 @@
-import type {
-  RouteProps,
-  RouteObject,
-  Params,
-} from '@modern-js/runtime-utils/router';
-import { PageRoute, NestedRoute } from '@modern-js/types';
 import type { RequestContext } from '@modern-js/runtime-utils/node';
-
-declare global {
-  interface Window {
-    _SERVER_DATA?: {
-      router: {
-        baseUrl: string;
-        params: Record<string, string>;
-      };
-    };
-  }
-}
+import type {
+  Params,
+  RouteObject,
+  RouteProps,
+} from '@modern-js/runtime-utils/router';
+import type { NestedRoute, PageRoute } from '@modern-js/types';
 
 export type SingleRouteConfig = RouteProps & {
   redirect?: string;
@@ -34,10 +23,9 @@ export type SingleRouteConfig = RouteProps & {
 };
 
 export type RouterConfig = {
-  mode?: 'react-router-5';
   routesConfig: {
     globalApp?: React.ComponentType<any>;
-    routes: (NestedRoute | PageRoute)[];
+    routes?: (NestedRoute | PageRoute)[];
   };
   /**
    * You should not use it
@@ -45,9 +33,24 @@ export type RouterConfig = {
   oldVersion?: boolean;
   serverBase?: string[];
   supportHtml5History?: boolean;
-  originalBaseUrl?: string;
   basename?: string;
   createRoutes?: () => RouteObject[];
+  /**
+   * Whether to wrap router state updates in `React.startTransition`.
+   * Passed to `<RouterProvider useTransitions>`. Defaults to React Router's behavior (enabled).
+   * Set to `false` to render route updates synchronously.
+   */
+  useTransitions?: boolean;
+  /**
+   * @deprecated Use `useTransitions` instead.
+   */
+  future?: Partial<{
+    v7_startTransition: boolean;
+  }>;
+  /**
+   * An unstable feature, which will reload the page when the current browser URL and the SSR Context URL do not match.
+   */
+  unstable_reloadOnURLMismatch?: boolean;
 };
 
 export type Routes = RouterConfig['routesConfig']['routes'];
@@ -60,8 +63,25 @@ export interface RouteAssets {
   [routeId: string]: {
     chunkIds?: (string | number)[];
     assets?: string[];
+    referenceCssAssets?: string[];
   };
 }
+
+export interface LazyComponentDescriptor {
+  _init: unknown;
+  _payload: unknown;
+}
+
+export type ModernRouteObject = RouteObject & {
+  isClientComponent?: boolean;
+  hasClientLoader?: boolean;
+  hasLoader?: boolean;
+  hasAction?: boolean;
+  parentId?: string;
+  lazyImport?: () => Promise<{ default: React.ComponentType }>;
+  component?: React.ComponentType | LazyComponentDescriptor;
+  entryCssFiles?: string[];
+};
 
 // fork from react-router
 // due to the context is any in react-router.
@@ -71,10 +91,14 @@ interface DataFunctionArgs<D = any> {
   context?: D;
 }
 
-export type LoaderFunctionArgs = DataFunctionArgs<RequestContext>;
+export type LoaderFunctionArgs<
+  P extends Record<string, unknown> = Record<string, unknown>,
+> = DataFunctionArgs<RequestContext<P>>;
 
 declare type DataFunctionValue = Response | NonNullable<unknown> | null;
 
-export type LoaderFunction = (
-  args: LoaderFunctionArgs,
+export type LoaderFunction = <
+  P extends Record<string, unknown> = Record<string, unknown>,
+>(
+  args: LoaderFunctionArgs<P>,
 ) => Promise<DataFunctionValue> | DataFunctionValue;

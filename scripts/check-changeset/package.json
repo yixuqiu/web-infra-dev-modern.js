@@ -1,18 +1,19 @@
 {
   "name": "@scripts/check-changeset",
-  "version": "2.49.2",
+  "version": "2.66.0",
   "private": true,
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "start": "tsx ./src/index.ts"
+    "start": "tsx ./src/index.ts",
+    "bump": "tsx ./src/bump.ts"
   },
   "dependencies": {
-    "@changesets/read": "^0.5.9",
+    "@changesets/read": "^0.6.7",
     "@manypkg/get-packages": "^1.1.3"
   },
   "devDependencies": {
-    "tsx": "^3.12.7",
-    "@types/node": "^18.0.1"
+    "@types/node": "^20",
+    "tsx": "^3.14.0"
   }
 }

@@ -1,0 +1,58 @@
+name: Unit Test (Windows)
+
+concurrency:
+  group: windows-unit-test-${{ github.head_ref }}
+  cancel-in-progress: true
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on pull request events but only for the main branch
+  pull_request:
+    branches: [main]
+
+  merge_group:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  ut-windows:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          fetch-depth: 1
+
+      - name: Install Pnpm
+        run: npm i -g --force corepack && corepack enable
+
+      - name: Check skip CI
+        shell: bash
+        run: echo "RESULT=$(node ./scripts/skipCI.js)" >> "$GITHUB_OUTPUT"
+        id: skip-ci
+
+      - name: Log skip CI result
+        run: echo "${{steps.skip-ci.outputs.RESULT}}"
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        if: ${{steps.skip-ci.outputs.RESULT != 'true'}}
+        run: pnpm install --ignore-scripts --frozen-lockfile
+
+      - name: Build Required Pkg
+        if: ${{steps.skip-ci.outputs.RESULT != 'true'}}
+        run: pnpm run build:required
+
+      - name: Test
+        if: ${{steps.skip-ci.outputs.RESULT != 'true'}}
+        run: pnpm run test:ut

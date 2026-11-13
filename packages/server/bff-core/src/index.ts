@@ -4,6 +4,7 @@ export * from './router';
 export * from './types';
 export * from './client';
 export * from './operators/http';
+export type * from './operators/standardSchema';
 export {
   getRelativeRuntimePath,
   HANDLER_WITH_META,
@@ -13,3 +14,4 @@ export {
   createStorage,
   registerPaths,
 } from './utils';
+export type * from './compatible';

@@ -1,14 +1,26 @@
-import path from 'path';
 import fs from 'fs';
-import { SERVER_DIR, SHARED_DIR } from '@modern-js/utils';
+import path from 'path';
 import { compile } from '@modern-js/server-utils';
-import { CliPlugin, AppTools } from '../types';
-
-const TS_CONFIG_FILENAME = 'tsconfig.json';
+import {
+  SERVER_DIR,
+  SHARED_DIR,
+  getMeta,
+  resolveServerTsconfig,
+} from '@modern-js/utils';
+import type { AppTools, CliPlugin } from '../types';
 
 function checkHasCache(appDir: string) {
-  const tsFilepath = path.resolve(appDir, 'server', 'cache.ts');
-  const jsfilepath = path.resolve(appDir, 'server', 'cache.js');
+  const tsFilepath = path.resolve(appDir, SERVER_DIR, 'cache.ts');
+  const jsfilepath = path.resolve(appDir, SERVER_DIR, 'cache.js');
+
+  return fs.existsSync(tsFilepath) || fs.existsSync(jsfilepath);
+}
+
+function checkHasConfig(appDir: string, metaName = 'modern-js') {
+  const meta = getMeta(metaName);
+
+  const tsFilepath = path.resolve(appDir, SERVER_DIR, `${meta}.server.ts`);
+  const jsfilepath = path.resolve(appDir, SERVER_DIR, `${meta}.server.js`);
 
   return fs.existsSync(tsFilepath) || fs.existsSync(jsfilepath);
 }
@@ -17,49 +29,53 @@ export default (): CliPlugin<AppTools> => ({
   name: '@modern-js/server-build',
 
   setup(api) {
-    return {
-      async afterBuild() {
-        const { appDirectory, distDirectory } = api.useAppContext();
-        if (!checkHasCache(appDirectory)) {
-          return;
+    api.onAfterBuild(async () => {
+      const { appDirectory, distDirectory, metaName, moduleType } =
+        api.getAppContext();
+      if (
+        !checkHasCache(appDirectory) &&
+        !checkHasConfig(appDirectory, metaName)
+      ) {
+        return;
+      }
+      const modernConfig = api.getNormalizedConfig();
+
+      const distDir = path.resolve(distDirectory);
+      const serverDir = path.resolve(appDirectory, SERVER_DIR);
+      const sharedDir = path.resolve(appDirectory, SHARED_DIR);
+      const tsconfigPath = resolveServerTsconfig(
+        appDirectory,
+        modernConfig?.server?.tsconfigPath,
+      );
+
+      const sourceDirs = [];
+      if (fs.existsSync(serverDir)) {
+        sourceDirs.push(serverDir);
+
+        // compile the sharedDir only when serverDir exists
+        if (fs.existsSync(sharedDir)) {
+          sourceDirs.push(sharedDir);
         }
-        const modernConfig = api.useResolvedConfigContext();
+      }
 
-        const distDir = path.resolve(distDirectory);
-        const serverDir = path.resolve(appDirectory, SERVER_DIR);
-        const sharedDir = path.resolve(appDirectory, SHARED_DIR);
-        const tsconfigPath = path.resolve(appDirectory, TS_CONFIG_FILENAME);
+      const { server } = modernConfig;
+      const { alias } = modernConfig.source;
 
-        const sourceDirs = [];
-        if (fs.existsSync(serverDir)) {
-          sourceDirs.push(serverDir);
-
-          // compile the sharedDir only when serverDir exists
-          if (fs.existsSync(sharedDir)) {
-            sourceDirs.push(sharedDir);
-          }
-        }
-
-        const { server } = modernConfig;
-        const { alias } = modernConfig.source;
-        const { babel } = modernConfig.tools;
-
-        if (sourceDirs.length > 0) {
-          await compile(
-            appDirectory,
-            {
-              server,
-              alias,
-              babelConfig: babel,
-            },
-            {
-              sourceDirs,
-              distDir,
-              tsconfigPath,
-            },
-          );
-        }
-      },
-    };
+      if (sourceDirs.length > 0) {
+        await compile(
+          appDirectory,
+          {
+            server,
+            alias,
+          },
+          {
+            sourceDirs,
+            distDir,
+            tsconfigPath,
+            moduleType,
+          },
+        );
+      }
+    });
   },
 });

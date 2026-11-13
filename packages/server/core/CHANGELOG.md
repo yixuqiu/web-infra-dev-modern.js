@@ -1,5 +1,1208 @@
 # @modern-js/server-plugin
 
+## 3.11.3
+
+### Patch Changes
+
+- Updated dependencies [4d498bb]
+  - @modern-js/plugin@3.11.3
+  - @modern-js/runtime-utils@3.11.3
+  - @modern-js/utils@3.11.3
+
+## 3.11.2
+
+### Patch Changes
+
+- @modern-js/plugin@3.11.2
+- @modern-js/runtime-utils@3.11.2
+- @modern-js/utils@3.11.2
+
+## 3.11.1
+
+### Patch Changes
+
+- b11c3cd: fix: match prerendered SSG pages exactly and use available entry SSR or CSR fallbacks for other paths. Redirect trailing-slash SSG URLs to their canonical paths while preserving query strings. Skip non-2xx prerender responses with a warning instead of publishing error pages as successful HTML.
+
+  fix: 精确匹配 SSG 预渲染页面，其他路径使用可用的入口 SSR 或 CSR 回退。将带尾部斜杠的 SSG URL 重定向到对应路径，并保留查询参数。跳过非 2xx 预渲染响应并输出警告，避免将错误页面作为成功的静态 HTML 发布。
+
+- Updated dependencies [fc6ee73]
+  - @modern-js/plugin@3.11.1
+  - @modern-js/runtime-utils@3.11.1
+  - @modern-js/utils@3.11.1
+
+## 3.11.0
+
+### Patch Changes
+
+- Updated dependencies [6a50ea0]
+  - @modern-js/runtime-utils@3.11.0
+  - @modern-js/plugin@3.11.0
+  - @modern-js/utils@3.11.0
+
+## 3.10.4
+
+### Patch Changes
+
+- @modern-js/plugin@3.10.4
+- @modern-js/runtime-utils@3.10.4
+- @modern-js/utils@3.10.4
+
+## 3.10.3
+
+### Patch Changes
+
+- 52b4a4e: fix: use Hono's pathname normalization when matching render routes to handle encoded characters consistently
+
+  fix: 渲染路由匹配复用 Hono 的路径归一化，修复编码字符路径返回 404 的问题
+
+  - @modern-js/plugin@3.10.3
+  - @modern-js/runtime-utils@3.10.3
+  - @modern-js/utils@3.10.3
+
+## 3.10.2
+
+### Patch Changes
+
+- 2f314e5: fix: preserve literal characters when registering page render routes with Hono
+
+  fix: 向 Hono 注册页面渲染路由时保留路径中的字面字符，修复 HTML 路径及渲染中间件匹配失败
+
+- 23587d0: perf: write Node.js response bodies with a stream reader loop instead of `pipeTo(Writable.toWeb(res))`, `sendResponse` now resolves once `res.end()` is called
+
+  perf: 使用流读取循环代替 `pipeTo(Writable.toWeb(res))` 写入 Node.js 响应体，`sendResponse` 在调用 `res.end()` 后即完成
+
+- 3b42ce4: perf: trim per-request work in the render path and set Server-Timing with a single header update
+
+  perf: 减少渲染链路中每个请求的额外开销，并一次性写入 Server-Timing 响应头
+
+- 6a891f0: perf: create the public middleware once without sorting the shared routes on every request, and stat static files only once per request
+
+  perf: public 中间件只创建一次，不再在每次请求时排序共享的路由数组，静态文件每次请求只调用一次 stat
+
+- Updated dependencies [76c675d]
+- Updated dependencies [b1c1018]
+  - @modern-js/runtime-utils@3.10.2
+  - @modern-js/plugin@3.10.2
+  - @modern-js/utils@3.10.2
+
+## 3.10.1
+
+### Patch Changes
+
+- e046a11: Pass the server-core fileReader singleton from the runtime server into development helpers so HTML templates, static resources, compiler filesystem initialization and rebuild invalidation use the same reader even when the two packages resolve different runtime-utils copies.
+  - @modern-js/plugin@3.10.1
+  - @modern-js/runtime-utils@3.10.1
+  - @modern-js/utils@3.10.1
+
+## 3.10.0
+
+### Patch Changes
+
+- b5f56d5: 修复共享 Rslib 配置中多个构建目标并发写入同一声明目录导致的类型文件损坏问题。
+- 9a766ec: Wait for existing Node production SSR bundle warmup before starting the server, and preserve required SSR entry loading errors instead of starting with missing render modules. Non-SSR/static routes are not treated as required SSR entries. Missing optional loader bundles and manifests remain supported; CSR-only, RSC and development startup behavior is unchanged. Lazy route modules are not eagerly loaded.
+- 1d7a38e: fix(server-core): discard the AsyncLocalStorage callback result when registering request middleware so an unfinished Hono Context cannot escape as the response.
+
+  fix(server-core): 注册请求上下文中间件时，不再返回 AsyncLocalStorage 回调的结果，避免未完成的 Hono Context 被当作响应返回。
+
+- Updated dependencies [da0fe78]
+- Updated dependencies [9a766ec]
+- Updated dependencies [7d9f0bb]
+  - @modern-js/plugin@3.10.0
+  - @modern-js/runtime-utils@3.10.0
+  - @modern-js/utils@3.10.0
+
+## 3.9.3
+
+### Patch Changes
+
+- 1dcb43c: fix: correct the "Middlware" typo in BFF middleware identifiers — the exported `PublicMiddlwareOptions` type from `@modern-js/server-core` is renamed to `PublicMiddlewareOptions`, and the internal `routeMiddlwares` variable in `@modern-js/plugin-bff` is renamed to `routeMiddlewares`
+  fix: 修正 BFF 中间件标识符里的 "Middlware" 拼写错误——`@modern-js/server-core` 导出的 `PublicMiddlwareOptions` 类型更名为 `PublicMiddlewareOptions`，`@modern-js/plugin-bff` 内部变量 `routeMiddlwares` 更名为 `routeMiddlewares`
+- 283dc5a: Keep SSR cache revalidation running after a completed HTTP response while preserving cancellation for disconnected clients. Handle background render and stream failures without unhandled rejections or caching incomplete HTML.
+- Updated dependencies [9f475f6]
+- Updated dependencies [a9c110f]
+  - @modern-js/plugin@3.9.3
+  - @modern-js/runtime-utils@3.9.3
+  - @modern-js/utils@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- Updated dependencies [b4dec57]
+- Updated dependencies [e2bbad2]
+  - @modern-js/plugin@3.9.2
+  - @modern-js/runtime-utils@3.9.2
+  - @modern-js/utils@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- Updated dependencies [4af5bf0]
+- Updated dependencies [2e6d853]
+  - @modern-js/plugin@3.9.1
+  - @modern-js/runtime-utils@3.9.1
+  - @modern-js/utils@3.9.1
+
+## 3.9.0
+
+### Patch Changes
+
+- 2f4d9c4: Remove the server plugin `fallback` hook. SSR-to-CSR fallback events are now reported directly through request monitors as a warning and an `ssr-fallback` counter.
+  - @modern-js/plugin@3.9.0
+  - @modern-js/runtime-utils@3.9.0
+  - @modern-js/utils@3.9.0
+
+## 3.8.3
+
+### Patch Changes
+
+- Updated dependencies [3748f08]
+- Updated dependencies [546e96e]
+  - @modern-js/plugin@3.8.3
+  - @modern-js/runtime-utils@3.8.3
+  - @modern-js/utils@3.8.3
+
+## 3.8.2
+
+### Patch Changes
+
+- @modern-js/plugin@3.8.2
+- @modern-js/runtime-utils@3.8.2
+- @modern-js/utils@3.8.2
+
+## 3.8.1
+
+### Patch Changes
+
+- @modern-js/plugin@3.8.1
+- @modern-js/runtime-utils@3.8.1
+- @modern-js/utils@3.8.1
+
+## 3.8.0
+
+### Minor Changes
+
+- 13b960f: feat: support configuring the Mock directory through `dev.mockDir`
+
+  feat: 支持通过 `dev.mockDir` 配置 Mock 目录
+
+### Patch Changes
+
+- 3b0eacf: fix: type render route misses explicitly
+  fix: 明确渲染路由未命中的类型
+- 3981b6b: fix(server-core): share the hono request context storage across duplicated module copies via a process-global AsyncLocalStorage, so BFF handlers no longer fail with "Can't call useContext out of server scope" when the host and plugin resolve different server-core instances
+  fix(server-core): 通过进程级 AsyncLocalStorage 让 hono 请求上下文在重复加载的模块副本间共享，宿主与插件解析到不同 server-core 实例时 BFF 不再报 "Can't call useContext out of server scope"
+- Updated dependencies [b3a0709]
+  - @modern-js/utils@3.8.0
+  - @modern-js/plugin@3.8.0
+  - @modern-js/runtime-utils@3.8.0
+
+## 3.7.0
+
+### Patch Changes
+
+- @modern-js/plugin@3.7.0
+- @modern-js/runtime-utils@3.7.0
+- @modern-js/utils@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- c69486b: fix: prevent path traversal in static asset middleware
+  fix: 修复静态资源中间件的路径穿越问题
+- Updated dependencies [c34b53d]
+  - @modern-js/runtime-utils@3.6.0
+  - @modern-js/plugin@3.6.0
+  - @modern-js/utils@3.6.0
+
+## 3.5.0
+
+### Patch Changes
+
+- @modern-js/plugin@3.5.0
+- @modern-js/runtime-utils@3.5.0
+- @modern-js/utils@3.5.0
+
+## 3.4.0
+
+### Patch Changes
+
+- a46bd4e: feat(server-core): pass request and monitors context to server plugin fallback hooks
+
+  feat(server-core): 为 server 插件 fallback hook 传递 request 和 monitors 上下文
+
+  - @modern-js/plugin@3.4.0
+  - @modern-js/runtime-utils@3.4.0
+  - @modern-js/utils@3.4.0
+
+## 3.3.0
+
+### Patch Changes
+
+- @modern-js/plugin@3.3.0
+- @modern-js/runtime-utils@3.3.0
+- @modern-js/utils@3.3.0
+
+## 3.2.2
+
+### Patch Changes
+
+- @modern-js/plugin@3.2.2
+- @modern-js/runtime-utils@3.2.2
+- @modern-js/utils@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [2aa5253]
+  - @modern-js/utils@3.2.1
+  - @modern-js/plugin@3.2.1
+  - @modern-js/runtime-utils@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- @modern-js/plugin@3.2.0
+- @modern-js/runtime-utils@3.2.0
+- @modern-js/utils@3.2.0
+
+## 3.1.5
+
+### Patch Changes
+
+- Updated dependencies [95a9645]
+  - @modern-js/plugin@3.1.5
+  - @modern-js/runtime-utils@3.1.5
+  - @modern-js/utils@3.1.5
+
+## 3.1.4
+
+### Patch Changes
+
+- @modern-js/plugin@3.1.4
+- @modern-js/runtime-utils@3.1.4
+- @modern-js/utils@3.1.4
+
+## 3.1.3
+
+### Patch Changes
+
+- @modern-js/plugin@3.1.3
+- @modern-js/runtime-utils@3.1.3
+- @modern-js/utils@3.1.3
+
+## 3.1.2
+
+### Patch Changes
+
+- fa4cde0: feat: support OPTIONS handler on ServerBase
+  feat: 为 serverBase 添加 options handler
+- ddd55fa: Update to address flatted crit cve https://security.snyk.io/vuln/SNYK-JS-FLATTED-15700433
+  - @modern-js/plugin@3.1.2
+  - @modern-js/runtime-utils@3.1.2
+  - @modern-js/utils@3.1.2
+
+## 3.1.1
+
+### Patch Changes
+
+- @modern-js/plugin@3.1.1
+- @modern-js/runtime-utils@3.1.1
+- @modern-js/utils@3.1.1
+
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [65a06b3]
+- Updated dependencies [0fc8c26]
+  - @modern-js/utils@3.1.0
+  - @modern-js/plugin@3.1.0
+  - @modern-js/runtime-utils@3.1.0
+
+## 3.0.5
+
+### Patch Changes
+
+- Updated dependencies [4c25918]
+  - @modern-js/plugin@3.0.5
+  - @modern-js/runtime-utils@3.0.5
+  - @modern-js/utils@3.0.5
+
+## 3.0.4
+
+### Patch Changes
+
+- Updated dependencies [78eeaf8]
+  - @modern-js/plugin@3.0.4
+  - @modern-js/runtime-utils@3.0.4
+  - @modern-js/utils@3.0.4
+
+## 3.0.3
+
+### Patch Changes
+
+- @modern-js/plugin@3.0.3
+- @modern-js/runtime-utils@3.0.3
+- @modern-js/utils@3.0.3
+
+## 3.0.2
+
+### Patch Changes
+
+- @modern-js/plugin@3.0.2
+- @modern-js/runtime-utils@3.0.2
+- @modern-js/utils@3.0.2
+
+## 3.0.1
+
+### Patch Changes
+
+- @modern-js/plugin@3.0.1
+- @modern-js/runtime-utils@3.0.1
+- @modern-js/utils@3.0.1
+
+## 3.0.0
+
+### Patch Changes
+
+- 96b5424: fix: dev hono context error
+  fix: 修复 dev 环境 hono context
+- eecb927: fix: should read html templates only in getHtmlTemplates function
+  fix: 在 getHtmlTemplates 函数中读取 html 模板
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+- 79f0efd: fix: MPA should apply csrRender function for every single page
+  fix: MPA 项目一个为每个单页面应用不同的 csrRender 逻辑
+- Updated dependencies [ecd247c]
+  - @modern-js/runtime-utils@3.0.0
+  - @modern-js/plugin@3.0.0
+  - @modern-js/utils@3.0.0
+
+## 3.0.0-alpha.2
+
+### Patch Changes
+
+- 96b5424: fix: dev hono context error
+  fix: 修复 dev 环境 hono context
+- eecb927: fix: should read html templates only in getHtmlTemplates function
+  fix: 在 getHtmlTemplates 函数中读取 html 模板
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+- 79f0efd: fix: MPA should apply csrRender function for every single page
+  fix: MPA 项目一个为每个单页面应用不同的 csrRender 逻辑
+- Updated dependencies [ecd247c]
+  - @modern-js/runtime-utils@3.0.0-alpha.2
+  - @modern-js/plugin@3.0.0-alpha.2
+  - @modern-js/utils@3.0.0-alpha.2
+
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- eecb927: fix: should read html templates only in getHtmlTemplates function
+  fix: 在 getHtmlTemplates 函数中读取 html 模板
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+- 79f0efd: fix: MPA should apply csrRender function for every single page
+  fix: MPA 项目一个为每个单页面应用不同的 csrRender 逻辑
+  - @modern-js/plugin@3.0.0-alpha.1
+  - @modern-js/runtime-utils@3.0.0-alpha.1
+  - @modern-js/utils@3.0.0-alpha.1
+
+## 3.0.0-alpha.0
+
+### Patch Changes
+
+- eecb927: fix: should read html templates only in getHtmlTemplates function
+  fix: 在 getHtmlTemplates 函数中读取 html 模板
+- 952f6fe: perf: server monitor add more tags for timing/counter event
+  perf: server monitor 为 timing/couter 事件添加更多的 tags
+  - @modern-js/plugin@3.0.0-alpha.0
+  - @modern-js/runtime-utils@3.0.0-alpha.0
+  - @modern-js/utils@3.0.0-alpha.0
+
+## 2.68.1
+
+### Patch Changes
+
+- 0d98723: feat: support rsc for spa projects
+  feat: 为 SPA 项目支持 RSC
+- 0d98723: feat: inject the rsc payload into the html for csr
+  feat: 为 CSR 项目，注入 rsc payload 到 html 中
+  - @modern-js/plugin-v2@2.68.1
+  - @modern-js/plugin@2.68.1
+  - @modern-js/runtime-utils@2.68.1
+  - @modern-js/utils@2.68.1
+
+## 2.68.0
+
+### Patch Changes
+
+- @modern-js/plugin@2.68.0
+- @modern-js/plugin-v2@2.68.0
+- @modern-js/runtime-utils@2.68.0
+- @modern-js/utils@2.68.0
+
+## 2.67.11
+
+### Patch Changes
+
+- @modern-js/plugin@2.67.11
+- @modern-js/plugin-v2@2.67.11
+- @modern-js/runtime-utils@2.67.11
+- @modern-js/utils@2.67.11
+
+## 2.67.10
+
+### Patch Changes
+
+- @modern-js/plugin@2.67.10
+- @modern-js/plugin-v2@2.67.10
+- @modern-js/runtime-utils@2.67.10
+- @modern-js/utils@2.67.10
+
+## 2.67.9
+
+### Patch Changes
+
+- Updated dependencies [474aa1e]
+  - @modern-js/plugin-v2@2.67.9
+  - @modern-js/plugin@2.67.9
+  - @modern-js/runtime-utils@2.67.9
+  - @modern-js/utils@2.67.9
+
+## 2.67.8
+
+### Patch Changes
+
+- Updated dependencies [23c8201]
+  - @modern-js/utils@2.67.8
+  - @modern-js/plugin-v2@2.67.8
+  - @modern-js/plugin@2.67.8
+  - @modern-js/runtime-utils@2.67.8
+
+## 2.67.7
+
+### Patch Changes
+
+- @modern-js/plugin@2.67.7
+- @modern-js/plugin-v2@2.67.7
+- @modern-js/runtime-utils@2.67.7
+- @modern-js/utils@2.67.7
+
+## 2.67.6
+
+### Patch Changes
+
+- 67a21da: fix(server): static middleware should ignore domain when detect whether the request is for static asset
+  fix(server): 资源中间件在检测请求是否为静态资源时，应该忽略 assetPrefix 中的域名
+- e67b6d0: feat: add middlewares and renderMiddlewares to server plugin context
+  feat: 添加 middlewares 和 renderMiddlewares 到服务端插件上下文中
+- Updated dependencies [e67b6d0]
+- Updated dependencies [a3e140d]
+  - @modern-js/plugin-v2@2.67.6
+  - @modern-js/runtime-utils@2.67.6
+  - @modern-js/utils@2.67.6
+  - @modern-js/plugin@2.67.6
+
+## 2.67.5
+
+### Patch Changes
+
+- @modern-js/plugin@2.67.5
+- @modern-js/plugin-v2@2.67.5
+- @modern-js/runtime-utils@2.67.5
+- @modern-js/utils@2.67.5
+
+## 2.67.4
+
+### Patch Changes
+
+- 35e9786: feat: modern.server supports extended server
+  feat: modern.server 支持扩展 modern.js 服务
+- 2b65e0c: fix(server): should sync all headers from req.headers
+  fix(server): 应该从 req.headers 同步所有的 headers
+- Updated dependencies [35e9786]
+- Updated dependencies [3a66335]
+- Updated dependencies [03cf233]
+- Updated dependencies [446939a]
+- Updated dependencies [446939a]
+- Updated dependencies [b00922e]
+- Updated dependencies [446939a]
+  - @modern-js/plugin-v2@2.67.4
+  - @modern-js/runtime-utils@2.67.4
+  - @modern-js/plugin@2.67.4
+  - @modern-js/utils@2.67.4
+
+## 2.67.3
+
+### Patch Changes
+
+- f6b81dd: feat: bff supports hono runtime framework
+  feat: bff 支持 hono 运行时框架
+- f6b81dd: refactor: avoid only one of "req" and "request" has a request body
+  refactor: 避免 req 和 request 只有一个有请求体
+  - @modern-js/plugin-v2@2.67.3
+  - @modern-js/runtime-utils@2.67.3
+  - @modern-js/utils@2.67.3
+  - @modern-js/plugin@2.67.3
+
+## 2.67.2
+
+### Patch Changes
+
+- b310249: feat(ssr): support customizing fallback reason via `x-modern-ssr-fallback` header
+  feat(ssr): 支持在 `x-modern-ssr-fallback` 中自定义降级原因
+- 23a111f: feat: improve modern.js server performance
+  feat: 提升 modern.js 服务器性能
+- c964f07: feat(ssr): inject fallback reason to html
+  feat(ssr): 注入降级原因到响应的 html
+- Updated dependencies [8f97aae]
+  - @modern-js/runtime-utils@2.67.2
+  - @modern-js/plugin-v2@2.67.2
+  - @modern-js/plugin@2.67.2
+  - @modern-js/utils@2.67.2
+
+## 2.67.1
+
+### Patch Changes
+
+- 1d96265: feat(ssr): support streaming ssr to work with http2
+  feat(ssr): 支持 streaming ssr 和 http2 协议一起工作
+- Updated dependencies [1d96265]
+  - @modern-js/utils@2.67.1
+  - @modern-js/plugin-v2@2.67.1
+  - @modern-js/runtime-utils@2.67.1
+  - @modern-js/plugin@2.67.1
+
+## 2.67.0
+
+### Patch Changes
+
+- 7503f22: fix: should detect page route by entryName, not isApi
+  fix: 应该通过 entryName 来判断是否是页面路由，而不是 isApi
+  - @modern-js/plugin@2.67.0
+  - @modern-js/plugin-v2@2.67.0
+  - @modern-js/runtime-utils@2.67.0
+  - @modern-js/utils@2.67.0
+
+## 2.66.0
+
+### Patch Changes
+
+- e48a5ae: feat: rename ServerPlugin to ServerPluginLegacy and ServerPluginFuture to ServerPlugin
+
+  feat: 将 ServerPlugin 类型重命名为 ServerPluginLegacy，ServerPluginFuture 类型重命名为 ServerPlugin
+
+- Updated dependencies [e48a5ae]
+  - @modern-js/plugin-v2@2.66.0
+  - @modern-js/plugin@2.66.0
+  - @modern-js/runtime-utils@2.66.0
+  - @modern-js/utils@2.66.0
+
+## 2.65.5
+
+### Patch Changes
+
+- fb6bf9e: fix: add new mid connet for mock handler
+- Updated dependencies [90a3c1c]
+- Updated dependencies [58a1afd]
+  - @modern-js/runtime-utils@2.65.5
+  - @modern-js/plugin@2.65.5
+  - @modern-js/utils@2.65.5
+
+## 2.65.4
+
+### Patch Changes
+
+- f1cd095: feat: Modern.js server static middleware should always use system fs
+  feat: Modern.js 的静态中间件应该始终使用系统 fs
+- Updated dependencies [0d47cb8]
+- Updated dependencies [f1cd095]
+  - @modern-js/utils@2.65.4
+  - @modern-js/runtime-utils@2.65.4
+  - @modern-js/plugin@2.65.4
+
+## 2.65.3
+
+### Patch Changes
+
+- Updated dependencies [087ae7c]
+  - @modern-js/runtime-utils@2.65.3
+  - @modern-js/utils@2.65.3
+  - @modern-js/plugin@2.65.3
+
+## 2.65.2
+
+### Patch Changes
+
+- 793be44: feat: support get monitors in Data Loader and Component
+  feat: 在 Data Loader 和组件中支持获取 monitors
+- 1fe923c: chore: use monitors instead of reporter to report Data Loader cost
+  chore: 使用 monitors 代替 reporter 来上报 Data Loader 耗时
+- f3fc1db: chore: remove `reporter.init` and use Monitors to report request cost
+  chore: 移除 `reporter.init` 并且使用 Monitors 上报请求耗时
+- Updated dependencies [793be44]
+- Updated dependencies [1fe923c]
+- Updated dependencies [8837b85]
+- Updated dependencies [1f83d96]
+  - @modern-js/runtime-utils@2.65.2
+  - @modern-js/utils@2.65.2
+  - @modern-js/plugin@2.65.2
+
+## 2.65.1
+
+### Patch Changes
+
+- @modern-js/plugin@2.65.1
+- @modern-js/runtime-utils@2.65.1
+- @modern-js/utils@2.65.1
+
+## 2.65.0
+
+### Patch Changes
+
+- 4c0aca6: feat: pass through the body, when query is pass_body
+  feat: 透传 body，当 query 为 pass_body 时
+  - @modern-js/plugin@2.65.0
+  - @modern-js/runtime-utils@2.65.0
+  - @modern-js/utils@2.65.0
+
+## 2.64.3
+
+### Patch Changes
+
+- d77a6df: feat(server): allow x-parse-through-body header to parse through the body of req
+  feat(server): 添加 x-parse-through-body 以透传请求体
+  - @modern-js/plugin@2.64.3
+  - @modern-js/runtime-utils@2.64.3
+  - @modern-js/utils@2.64.3
+
+## 2.64.2
+
+### Patch Changes
+
+- 4ae943d: fix: add `server.logger` to control internal server logger
+  fix: 添加 `server.logger` 配置来控制 Server 内部日志
+- 02ca983: feat: unify server monitors usage, add error logger for data loader
+  feat: 统一 server 监控的使用方式，为 data loader 添加错误日志
+  - @modern-js/runtime-utils@2.64.2
+  - @modern-js/utils@2.64.2
+  - @modern-js/plugin@2.64.2
+
+## 2.64.1
+
+### Patch Changes
+
+- @modern-js/plugin@2.64.1
+- @modern-js/runtime-utils@2.64.1
+- @modern-js/utils@2.64.1
+
+## 2.64.0
+
+### Patch Changes
+
+- @modern-js/plugin@2.64.0
+- @modern-js/runtime-utils@2.64.0
+- @modern-js/utils@2.64.0
+
+## 2.63.7
+
+### Patch Changes
+
+- @modern-js/plugin@2.63.7
+- @modern-js/runtime-utils@2.63.7
+- @modern-js/utils@2.63.7
+
+## 2.63.6
+
+### Patch Changes
+
+- a7a4573: fix: use entryName to ensure match the target route correctly after router.rewrite
+  fix: 通过 entryName 确保 router.rewrite 后能匹配到正确的路由
+  - @modern-js/plugin@2.63.6
+  - @modern-js/runtime-utils@2.63.6
+  - @modern-js/utils@2.63.6
+
+## 2.63.5
+
+### Patch Changes
+
+- @modern-js/plugin@2.63.5
+- @modern-js/runtime-utils@2.63.5
+- @modern-js/utils@2.63.5
+
+## 2.63.4
+
+### Patch Changes
+
+- 95b026d: fix: cache should not be overrides when request has tail slash
+  fix: 当请求有尾斜杠时，缓存不应该被重写
+  - @modern-js/plugin@2.63.4
+  - @modern-js/runtime-utils@2.63.4
+  - @modern-js/utils@2.63.4
+
+## 2.63.3
+
+### Patch Changes
+
+- 5c97ec2: chore: `getServerManifest` should run first on `prepare`
+  chore: `getServerManifest` 应该在 `prepare` 时运行
+- e5b16df: chore: should load html template while server preparing
+  chore: 在 server 准备时应该加载 html 模板
+  - @modern-js/plugin@2.63.3
+  - @modern-js/runtime-utils@2.63.3
+  - @modern-js/utils@2.63.3
+
+## 2.63.2
+
+### Patch Changes
+
+- 524d6af: feat: add server.useJsonScript , for instead ssr.inlineScript
+  feat: 添加 server.useJsonScript 配置，代替 ssr.inlineScript
+- 3d2bf55: feat: add route info into unstable_middleware context
+  feat: 添加路由信息到 unstable_middleware 上下文中
+- bc1670a: fix: should get server routes from route.json in serve command
+  fix: 在 serve 命令下应该从 route.json 中获取 server routes
+- 30f89d5: fix: unstable_middlwares doesn't exec when render.middlewares not empty
+  fix: 修复 unstable_middlwares 在 `render.middlewares` 不为空时不执行的问题
+- Updated dependencies [5fc95f7]
+- Updated dependencies [53e3ae0]
+  - @modern-js/utils@2.63.2
+  - @modern-js/plugin@2.63.2
+  - @modern-js/runtime-utils@2.63.2
+
+## 2.63.1
+
+### Patch Changes
+
+- @modern-js/plugin@2.63.1
+- @modern-js/runtime-utils@2.63.1
+- @modern-js/utils@2.63.1
+
+## 2.63.0
+
+### Patch Changes
+
+- @modern-js/plugin@2.63.0
+- @modern-js/runtime-utils@2.63.0
+- @modern-js/utils@2.63.0
+
+## 2.62.1
+
+### Patch Changes
+
+- Updated dependencies [86213ae]
+  - @modern-js/runtime-utils@2.62.1
+  - @modern-js/plugin@2.62.1
+  - @modern-js/utils@2.62.1
+
+## 2.62.0
+
+### Patch Changes
+
+- @modern-js/plugin@2.62.0
+- @modern-js/runtime-utils@2.62.0
+- @modern-js/utils@2.62.0
+
+## 2.61.0
+
+### Patch Changes
+
+- 45230e2: fix: hot reload problems for server
+  fix: 修复服务端热更新问题
+- a7ff13f: feat: passthrough body, when receiving an mf request
+  feat: 当收到一个 mf 请求时，透传 body
+- Updated dependencies [45230e2]
+  - @modern-js/utils@2.61.0
+  - @modern-js/plugin@2.61.0
+  - @modern-js/runtime-utils@2.61.0
+
+## 2.60.6
+
+### Patch Changes
+
+- e6daf22: fix(server): handle the cases that res cannot be writable
+  fix(server): 处理 res 无法写入的情况
+- Updated dependencies [c4894e6]
+  - @modern-js/runtime-utils@2.60.6
+  - @modern-js/plugin@2.60.6
+  - @modern-js/utils@2.60.6
+
+## 2.60.5
+
+### Patch Changes
+
+- @modern-js/plugin@2.60.5
+- @modern-js/runtime-utils@2.60.5
+- @modern-js/utils@2.60.5
+
+## 2.60.4
+
+### Patch Changes
+
+- 518b783: feat(server): add catch logic for ssrCache container operation
+  feat(server): 为 ssr 缓存容器操作添加错误捕获逻辑
+- a9e3eb7: fix(server): should get context from unstable middleware correctly
+  fix(server): 应该正确地获取到 loaderContext
+- Updated dependencies [c87813e]
+  - @modern-js/runtime-utils@2.60.4
+  - @modern-js/plugin@2.60.4
+  - @modern-js/utils@2.60.4
+
+## 2.60.3
+
+### Patch Changes
+
+- Updated dependencies [303331c]
+  - @modern-js/utils@2.60.3
+  - @modern-js/plugin@2.60.3
+  - @modern-js/runtime-utils@2.60.3
+
+## 2.60.2
+
+### Patch Changes
+
+- 0a31d31: feat: support <NoSSRCache> Component, only use ssr.mode='string'
+
+  feat: 支持 <NoSSRCache> 组件, 仅在 ssr.mode 为 'string'的时候生效
+
+- Updated dependencies [8a709bc]
+  - @modern-js/utils@2.60.2
+  - @modern-js/plugin@2.60.2
+  - @modern-js/runtime-utils@2.60.2
+
+## 2.60.1
+
+### Patch Changes
+
+- @modern-js/plugin@2.60.1
+- @modern-js/runtime-utils@2.60.1
+- @modern-js/utils@2.60.1
+
+## 2.60.0
+
+### Patch Changes
+
+- d6e0118: fix: we should not cache the html, if we can match the html is downgrading.
+  fix: 在 ssr 降级时，我们不应该缓存 html
+  - @modern-js/plugin@2.60.0
+  - @modern-js/runtime-utils@2.60.0
+  - @modern-js/utils@2.60.0
+
+## 2.59.0
+
+### Patch Changes
+
+- 539d72b: fix: typo and type for internalDirectory in server appContext
+  fix: 修复 internalDirectory 在 server appContext 中的类型错误
+- ef1ec44: fix: we should run runner.fallback when ssr fallback
+  fix: 我们应该在 ssr 降级时运行 runn.fallback
+- 80237dc: fix: server-core should not be import node api
+  fix: server-core 不应该被引入 node api
+  - @modern-js/runtime-utils@2.59.0
+  - @modern-js/utils@2.59.0
+  - @modern-js/plugin@2.59.0
+
+## 2.58.3
+
+### Patch Changes
+
+- 36ccad3: fix: custom server hook context request.path should carray query str
+  fix: custom server hook context request.path 应该带上 query 字符串
+- 0b581a4: fix: remove ssr.preload config
+  fix: 移除 ssr.preload 配置
+- 610554c: chore: add internal directory to server plugin context
+  chore: 在 server 插件上下文中增加 internal 目录
+- 59fba90: fix(data-loader): compatible with asyncEntry for data loader
+  fix(data-loader): data loader 的导出兼容 asyncEntry
+- 9e82b00: fix(server): if res was piped, res should be treated as sent
+  fix(server): 如果响应被 pipe，响应应该被当作已经发送
+  - @modern-js/plugin@2.58.3
+  - @modern-js/runtime-utils@2.58.3
+  - @modern-js/utils@2.58.3
+
+## 2.58.2
+
+### Patch Changes
+
+- 1ff0304: fix: custom server route rewrite should carry honoContext.env
+  fix: custom server 路由重写应该带上 honoContext.env
+- Updated dependencies [7715b6d]
+- Updated dependencies [44c1bc4]
+- Updated dependencies [a1a9373]
+  - @modern-js/runtime-utils@2.58.2
+  - @modern-js/utils@2.58.2
+  - @modern-js/plugin@2.58.2
+
+## 2.58.1
+
+### Patch Changes
+
+- c904ee2: fix: ssrContext get protocal from x-forwarded-proto first, then new server middleware support rewrite request
+  fix: ssrContext 优先从 x-forwarded-proto 取协议, 另外新 server middleware 支持重写 request
+- a214ea8: fix: use flatted instead of safeReplacer
+  fix: 使用 flated 而不是使用 safeReplacer
+  - @modern-js/runtime-utils@2.58.1
+  - @modern-js/utils@2.58.1
+  - @modern-js/plugin@2.58.1
+
+## 2.58.0
+
+### Patch Changes
+
+- @modern-js/plugin@2.58.0
+- @modern-js/runtime-utils@2.58.0
+- @modern-js/utils@2.58.0
+
+## 2.57.1
+
+### Patch Changes
+
+- bc565cd: fix: should use dynamic import to import matchRoutes
+  fix: 应该使用 动态 import 来引入 matchRoutes
+  - @modern-js/plugin@2.57.1
+  - @modern-js/runtime-utils@2.57.1
+  - @modern-js/utils@2.57.1
+
+## 2.57.0
+
+### Patch Changes
+
+- 2515b00: feat(ssr): support server.ssrByRouteIds
+  feat(ssr): 支持 server.ssrByRouteIds
+- 0e906a1: feat: inject renderHandler to appContext & add default serverPlugins
+  feat: 注入 renderHandler 到 appContext & 新增默认 serverPlugins
+- 6cec127: fix: user can get status in afterRenderContext
+  fix: 用户可以从 afterRenderContext 上拿到 status
+- b5a48a8: fix: distPath should from output.distPath.root
+  fix: distPath 应该来自 output.distPath.root
+- 203c9eb: fix: we should export `getLoaderCtx` from server-core
+  fix: 我们应该从 server-core 导出 `getLoaderCtx`
+- 604ad3a: fix: faviconPlugin should after staticPlugin
+  fix: faviconPlugin 应该在 staticPlugin 之后
+- Updated dependencies [2515b00]
+- Updated dependencies [916559a]
+- Updated dependencies [dc736ef]
+  - @modern-js/utils@2.57.0
+  - @modern-js/runtime-utils@2.57.0
+  - @modern-js/plugin@2.57.0
+
+## 2.56.2
+
+### Patch Changes
+
+- @modern-js/plugin@2.56.2
+- @modern-js/runtime-utils@2.56.2
+- @modern-js/utils@2.56.2
+
+## 2.56.1
+
+### Patch Changes
+
+- e0e29b3: fix: new server middleware support get body, if request.method is post
+  fix: 如果请求是 post, 新 server middlewares 可以拿到 body 数据
+  - @modern-js/plugin@2.56.1
+  - @modern-js/runtime-utils@2.56.1
+  - @modern-js/utils@2.56.1
+
+## 2.56.0
+
+### Minor Changes
+
+- bedbbb3: feat: server monitors interface unity
+  feat: server 监控接口统一
+
+### Patch Changes
+
+- 9eee52a: fix: server runtime should get config.disablePrerender from ssr config
+  fix: server runtime 应该从 ssrconfig 获取 config.disablePrerender
+  - @modern-js/runtime-utils@2.56.0
+  - @modern-js/utils@2.56.0
+  - @modern-js/plugin@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- e0c2384: fix: cacheProvider support return false
+  fix: cacheProvider 支持返回 false
+- Updated dependencies [bbcf55a]
+  - @modern-js/utils@2.55.0
+  - @modern-js/plugin@2.55.0
+  - @modern-js/runtime-utils@2.55.0
+
+## 2.54.6
+
+### Patch Changes
+
+- @modern-js/plugin@2.54.6
+- @modern-js/runtime-utils@2.54.6
+- @modern-js/utils@2.54.6
+
+## 2.54.5
+
+### Patch Changes
+
+- 5525a23: fix: logger maybe undefined when server occur error
+  fix: logger 可能是 undefined 当 server 发生错误时
+  - @modern-js/plugin@2.54.5
+  - @modern-js/runtime-utils@2.54.5
+  - @modern-js/utils@2.54.5
+
+## 2.54.4
+
+### Patch Changes
+
+- @modern-js/plugin@2.54.4
+- @modern-js/runtime-utils@2.54.4
+- @modern-js/utils@2.54.4
+
+## 2.54.3
+
+### Patch Changes
+
+- b50d7ec: fix: we should load modern.config.json when production
+  fix: 在生产阶段，我们应该加载 modern.config.json
+  - @modern-js/plugin@2.54.3
+  - @modern-js/runtime-utils@2.54.3
+  - @modern-js/utils@2.54.3
+
+## 2.54.2
+
+### Patch Changes
+
+- @modern-js/plugin@2.54.2
+- @modern-js/runtime-utils@2.54.2
+- @modern-js/utils@2.54.2
+
+## 2.54.1
+
+### Patch Changes
+
+- 29aeb3c: fix: downgrading deepmerge-ts, deepmerge-ts v7 can't run in nodev16.2.0
+  fix: 降级 deepmerge-ts, deepmerge-ts v7 在 nodev16.2.0 上跑
+  - @modern-js/plugin@2.54.1
+  - @modern-js/runtime-utils@2.54.1
+  - @modern-js/utils@2.54.1
+
+## 2.54.0
+
+### Minor Changes
+
+- a8d8f0c: feat: support new server plugin & discard server plugin some hooks
+  feat: 支持新 server plugin & 减少 server plugin 钩子
+
+### Patch Changes
+
+- 8cdb67d: fix: render function dynamic router match error
+  fix: render 函数动态路由匹配错误
+- 09798ac: feat: refactor runtime plugin
+
+  feat: 重构 runtime 插件
+
+- Updated dependencies [15a090c]
+- Updated dependencies [a8d8f0c]
+- Updated dependencies [09798ac]
+  - @modern-js/utils@2.54.0
+  - @modern-js/plugin@2.54.0
+  - @modern-js/runtime-utils@2.54.0
+
+## 2.53.0
+
+### Patch Changes
+
+- 0fce81a: fix: avoid to mismatch header label
+  fix: 避免误匹配 header 标签
+- b251046: fix: Avoid memory leaks in node versions 18 and 20
+  fix: 避免在 node 18 和 20 版本下内存泄露
+- a481488: fix: should add the escape character for the regexps
+  fix: 为正则表达式添加转义字符
+  - @modern-js/plugin@2.53.0
+  - @modern-js/runtime-utils@2.53.0
+  - @modern-js/utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- ad4548d: fix: redablestream should not be locked, when stream transfer
+  fix: redablestream 不应该被锁住当 stream 传输时
+- 920d856: fix: export writeReadableStreamToWritable
+  fix: 暴露 writeReadableStreamToWritable 方法
+- Updated dependencies [85ac453]
+  - @modern-js/runtime-utils@2.52.0
+  - @modern-js/plugin@2.52.0
+  - @modern-js/utils@2.52.0
+
+## 2.51.0
+
+### Minor Changes
+
+- 9d4d04d: feat: support deploy command
+  feat: 支持部署命令
+
+### Patch Changes
+
+- @modern-js/plugin@2.51.0
+- @modern-js/runtime-utils@2.51.0
+- @modern-js/utils@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- 7ed2fbc: chore: add bodyInit for createWebRequest
+  chore: createWebRequest 函数支持 bodyInit 入参
+  - @modern-js/plugin@2.50.0
+  - @modern-js/runtime-utils@2.50.0
+  - @modern-js/utils@2.50.0
+
+## 2.49.4
+
+### Patch Changes
+
+- 4653e73: fix(server-core): server static can't handle page route correctly
+  fix(server-core): server static 无法正确的处理页面路由
+- 2c60b6b: fix(server-core): support custom server middleware redirect, and support render function merge headers from HonoCtx.#header
+  fix(server-core): 支持 custom server middleware 重定向, 并且支持 render 函数合并 HonoCtx.#header
+- 936ca64: fix: Compatible with http-compression, make sure res.end is called before executing the subsequent code
+  fix: 兼容 http-compression，确保执行后续代码前，res.end 先被调用
+- 6e12e9f: fix: public middleware should not filter api route & support https
+  fix: public middleware 不应该过滤 api 路由 & 支持 https
+  - @modern-js/plugin@2.49.4
+  - @modern-js/runtime-utils@2.49.4
+  - @modern-js/utils@2.49.4
+
+## 2.49.3
+
+### Patch Changes
+
+- d936fe3: fix: serverBase may be undefined when get renderHandler
+  fix: 当获得 renderHandler 时, serverBase 有可能是 undefined
+- 45cae97: fix: render should handle api route when open enableHandleWeb
+  fix: 当开启了 enableHandleWeb, render 应该处理 api 路由
+- 0c4929f: fix: add onFallback for renderHandler
+  fix: 给 renderHandler 增加 onFallback 回调
+- 1b594a5: fix: we should not log error when bundle is not exists
+  fix: 我们不应该打印错误日志，当 bundle 不存在时
+- 4d728d2: fix: server middleware response lose some methods
+  fix: server middleware response 丢失一些方法
+- aa3a1dc: fix: log error when load bundle failed
+  fix: 打印错误日志当 bundle 加载错误时
+- 327f607: fix: server support add extends res headers from routes
+  fix: server 支持丛 route.json 添加额外的响应头
+- 3e663e9: feat(server-core): render support dynamic route
+  feat(server-core): render 支持动态路由
+  - @modern-js/plugin@2.49.3
+  - @modern-js/runtime-utils@2.49.3
+  - @modern-js/utils@2.49.3
+
 ## 2.49.2
 
 ### Patch Changes
